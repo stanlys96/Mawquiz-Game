@@ -2,8 +2,11 @@ import { useState } from "react";
 import IC from "./utils/IC";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { IoPersonCircle } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
+  const navigate = useNavigate();
   const { principal } = useSelector((state) => state.user);
   const [isHoveredKahoot, setIsHoveredKahoot] = useState(false);
   const [isHoveredDraft, setIsHoveredDraft] = useState(false);
@@ -13,8 +16,9 @@ function Profile() {
       <div className="circle-bg" />
       <div className="square-bg" />
       <div className="flex flex-col profile justify-center items-center gap-y-3">
-        <div>
-          <p>Identity: {principal?.slice(0, 25) + "..."}</p>
+        <div className="absolute top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
+          <IoPersonCircle className="w-[32px] h-[32px] purple-bg rounded-full" />
+          <p className="dark-text">{principal?.slice(0, 25) + "..."}</p>
         </div>
         <div className="flex gap-x-4 md:flex-row flex-col gap-y-4 items-center md:items-start">
           <div className="your-kahoots h-fit">
@@ -76,7 +80,10 @@ function Profile() {
               </p>
             </div>
           </div>
-          <div className="kahoot-card cursor-pointer">
+          <div
+            onClick={() => navigate("/create")}
+            className="kahoot-card cursor-pointer"
+          >
             <a className="kahoot-card-title">
               <div className="card-top">
                 <img src="/card-kahoot.svg" />

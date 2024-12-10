@@ -1568,6 +1568,13 @@ body {
   text-align: center;
 }
 
+.identity-container {
+  border: 1px rgb(204, 204, 204);
+  background-color: rgb(255, 255, 255);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  border-radius: 4px;
+}
+
 .your-kahoots {
   display: flex;
   flex-direction: column;
@@ -1627,6 +1634,10 @@ body {
 
 .dark-text {
   color: rgb(51, 51, 51);
+}
+
+.purple-bg {
+  background-color: rgb(134, 76, 191);
 }
 
 .question-card {

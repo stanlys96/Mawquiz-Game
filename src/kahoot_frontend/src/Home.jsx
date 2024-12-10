@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setPrincipal } from "../stores/user-slice";
+import { IoPersonCircle } from "react-icons/io5";
 import IC from "./utils/IC";
 
 function Home() {
@@ -31,7 +32,7 @@ function Home() {
         <div className="main-container">
           {identity ? (
             <div className="flex flex-col justify-center items-center gap-y-2">
-              <p className="text-black text-center">Identity:</p>
+              <IoPersonCircle className="w-[32px] h-[32px] purple-bg rounded-full" />
               <p className="text-black text-center">
                 {identity?.slice(0, 20) + "..."}
               </p>
