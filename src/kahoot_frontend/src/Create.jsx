@@ -8,9 +8,53 @@ function Create() {
     setIsOpen(!isOpen);
   };
   return (
-    <main className="background flex justify-center items-center">
-      <div className="circle-bg" />
-      <div className="square-bg" />
+    <main className="background">
+      <nav className="navbar">
+        <div className="flex gap-x-6 items-center w-full">
+          <img className="h-[48px]" src="/kahoot-2.png" />
+          <div className="kahoot-input-container">
+            <button className="kahoot-btn-title font-semibold">
+              Enter kahoot title...
+            </button>
+            <button className="settings-btn">Settings</button>
+          </div>
+        </div>
+        <div className="flex items-center">
+          {/* <div className="vr-container">
+            <div className="vertical-rule" />
+          </div> */}
+
+          <button className="exit-button mr-4">Exit</button>
+          <button className="save-button">Save</button>
+        </div>
+      </nav>
+      <div className="the-sidebar">
+        <ul className="sidebar-ul">
+          <li>
+            <p className="text-black">Hello World</p>
+          </li>
+          <li>
+            <p className="text-black">Hello World</p>
+          </li>
+          <li>
+            <p className="text-black">Hello World</p>
+          </li>
+          <li>
+            <p className="text-black">Hello World</p>
+          </li>
+          <li>
+            <p className="text-black">Hello World</p>
+          </li>
+        </ul>
+        <div className="sidebar-bottom">
+          <div className="question-container">
+            <span>
+              <button className="question-btn">Add question</button>
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Button to open modal */}
       <button
         onClick={toggleModal}
@@ -29,7 +73,7 @@ function Create() {
           <motion.div
             className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
             onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 0, scale: 1 }}
+            initial={{ opacity: 1, scale: 1 }}
             animate={{
               opacity: 1,
               scale: 1,

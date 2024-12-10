@@ -1175,6 +1175,14 @@ body {
   background: rgb(56, 18, 114);
 }
 
+li {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
 .navbar {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -1660,6 +1668,281 @@ body {
 
 .text-see-all {
   color: rgb(19, 104, 206);
+}
+
+.toggle-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #333;
+  color: white;
+  overflow: auto;
+}
+
+.navbar {
+  background: rgb(255, 255, 255);
+  height: 56px;
+  z-index: 150;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px;
+  color: rgb(255, 255, 255);
+  padding: 0px 1rem;
+  -webkit-box-align: center;
+  align-items: center;
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vertical-rule {
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 40px;
+  width: 1px;
+}
+
+.vr-container {
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  margin: 0px 16px;
+}
+
+.save-button {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  display: flex;
+  flex: 0 0 auto;
+  width: initial;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  vertical-align: bottom;
+  background: rgb(19, 104, 206);
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
+.exit-button {
+  margin-right: 0.5rem;
+  display: block;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  flex-shrink: 0;
+  width: initial;
+  border: 0px;
+  cursor: pointer;
+  vertical-align: bottom;
+  background: rgb(242, 242, 242);
+  color: rgb(51, 51, 51);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
+.save-button:hover {
+  background-color: rgb(18, 96, 190);
+}
+
+.exit-button:hover,
+.settings-btn:hover {
+  background-color: rgb(223, 223, 223);
+}
+
+.kahoot-input-container {
+  border-radius: 0.25rem;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  align-items: center;
+  padding: 4px;
+  overflow: hidden;
+  width: 45%;
+  max-width: 20rem;
+  border: 1px solid rgb(204, 204, 204);
+}
+
+.kahoot-btn-title {
+  border: none;
+  background: transparent;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+  font-family: inherit;
+  font-optical-sizing: inherit;
+  font-size-adjust: inherit;
+  font-kerning: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  text-align: start;
+  flex: 1 1 0%;
+  color: rgb(110, 110, 110);
+  padding: 4px 0px;
+  margin-inline-start: 1rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+}
+
+.settings-btn {
+  width: initial;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  background: rgb(242, 242, 242);
+  color: rgb(0, 0, 0);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 32px;
+  min-height: 32px;
+  height: 32px;
+  padding: 0px 16px 4px;
+  line-height: 32px;
+  position: relative;
+}
+
+.the-sidebar {
+  position: fixed;
+  left: 0px;
+  z-index: 101;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-box-align: center;
+  align-items: center;
+  bottom: unset;
+  width: 12rem;
+  height: 100%;
+  background: rgb(255, 255, 255);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 4px 0px;
+  padding-top: 0px;
+}
+
+.sidebar-ul {
+  display: block;
+  position: relative;
+  z-index: 4;
+  max-height: 100%;
+  height: auto;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: start;
+  justify-content: flex-start;
+  min-width: 100%;
+  padding: 0px 1.5rem;
+}
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  background: rgb(255, 255, 255);
+  transition: 0.2s;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.question-btn {
+  width: 100%;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
+  background: rgb(19, 104, 206);
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0px 16px 4px;
+  position: relative;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  cursor: pointer;
+}
+
+.question-btn:hover {
+  min-height: 40px;
+  margin-top: 2px;
+  padding-bottom: 2px;
+  background-color: rgb(18, 96, 190);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -2px inset;
+}
+
+@media (pointer: fine) {
+  .question-btn:hover::after {
+    content: "";
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 42px;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @keyframes spin {
