@@ -1878,6 +1878,20 @@ li {
   overflow-y: auto;
 }
 
+.sidebar-li {
+  width: 100%;
+  outline: none;
+  opacity: 1;
+}
+
+.sidebar-card {
+  height: 100%;
+  background-color: rgb(234, 244, 252);
+  user-select: none;
+  padding: 12px 0px 12px 0px;
+  display: block;
+}
+
 .sidebar-bottom {
   display: flex;
   flex: 1 0 auto;
@@ -1930,6 +1944,54 @@ li {
   padding-bottom: 2px;
   background-color: rgb(18, 96, 190);
   box-shadow: rgba(0, 0, 0, 0.25) 0px -2px inset;
+}
+
+.text-sidebar {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 23px;
+  color: rgb(51, 51, 51);
+}
+
+.quiz-card {
+  outline: 0px;
+  box-shadow: rgb(19, 104, 206) 0px 0px 0px 3px;
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  height: 100%;
+  /* width: 90%; */
+  flex: 1 1 0%;
+  color: rgb(178, 178, 178);
+}
+
+.exclamation-container {
+  position: absolute;
+  top: 50%;
+  right: -9.5%;
+  transform: translateY(-40%);
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.exclamation {
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  height: 24px;
+  width: 24px;
+  margin-bottom: 0.25rem;
+  background: rgb(70, 23, 143);
+  border-radius: 50%;
+  border: 2px solid rgb(255, 255, 255);
+  text-align: center;
+  animation: 0.5s ease 0.5s 1 normal forwards running hkhMOZ;
 }
 
 @media (pointer: fine) {

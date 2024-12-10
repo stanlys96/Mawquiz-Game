@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { FaExclamationCircle } from "react-icons/fa";
+import { MdOutlineFolderCopy } from "react-icons/md";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 function Create() {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,20 +33,32 @@ function Create() {
       </nav>
       <div className="the-sidebar">
         <ul className="sidebar-ul">
-          <li>
-            <p className="text-black">Hello World</p>
-          </li>
-          <li>
-            <p className="text-black">Hello World</p>
-          </li>
-          <li>
-            <p className="text-black">Hello World</p>
-          </li>
-          <li>
-            <p className="text-black">Hello World</p>
-          </li>
-          <li>
-            <p className="text-black">Hello World</p>
+          <li className="sidebar-li">
+            <div className="sidebar-card relative">
+              <div>
+                <div className="flex gap-x-2">
+                  <p className="ml-[32px] text-sidebar">1</p>
+                  <p className="text-sidebar">Quiz</p>
+                </div>
+                <div className="quiz-card ml-[32px] cursor-pointer mt-[5px] mx-[16px] relative">
+                  <p className="text-[0.75rem] my-[5px] text-center font-medium">
+                    Title
+                  </p>
+                  <img src="/kahoot-grey.png" className="rounded-b-[0.25rem]" />
+                  <div className="exclamation-container">
+                    <img className="exclamation" src="/exclamation.svg" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-y-3 absolute top-[60%] left-[7px]">
+                <a className="cursor-pointer">
+                  <MdOutlineFolderCopy color="#6E6E6E" height={16} width={16} />
+                </a>
+                <a className="cursor-pointer">
+                  <RiDeleteBinLine color="#6E6E6E" height={16} width={16} />
+                </a>
+              </div>
+            </div>
           </li>
         </ul>
         <div className="sidebar-bottom">
