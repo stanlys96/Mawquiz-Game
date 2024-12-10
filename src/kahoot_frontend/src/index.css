@@ -1297,6 +1297,10 @@ body {
   min-width: 100vw;
 }
 
+.profile > * {
+  z-index: 100;
+}
+
 .circle-bg {
   position: fixed;
   pointer-events: none;
@@ -1307,6 +1311,7 @@ body {
   min-height: 75cqmin;
   bottom: -15cqmin;
   right: -15cqmin;
+  z-index: 1;
 }
 
 .square-bg {
@@ -1593,6 +1598,57 @@ body {
 }
 
 .kahoot-text {
+}
+
+.game-card-container {
+  padding: 16px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  border: 1px solid rgb(204, 204, 204);
+}
+
+.game-card-inner {
+  min-height: 74px;
+  display: flex;
+}
+
+.bottom-game-card {
+  background-color: rgb(242, 242, 242);
+}
+
+.dark-text {
+  color: rgb(51, 51, 51);
+}
+
+.question-card {
+  position: absolute;
+  bottom: 8px;
+  background-color: rgba(51, 51, 51, 0.8);
+  padding: 1.5px 8px;
+  border-radius: 4px;
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.question-card-text {
+  margin: 0px;
+  color: rgb(255, 255, 255);
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.text-see-all {
+  color: rgb(19, 104, 206);
 }
 
 @keyframes spin {
