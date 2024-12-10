@@ -44,7 +44,9 @@ function Create() {
                   <p className="text-[0.75rem] my-[5px] text-center font-medium">
                     Title
                   </p>
-                  <img src="/kahoot-grey.png" className="rounded-b-[0.25rem]" />
+                  <div className="bg-[#F2F2F2] rounded-b-[0.25rem]">
+                    <img src="/cdn.svg" className="rounded-b-[0.25rem]" />
+                  </div>
                   <div className="exclamation-container">
                     <img className="exclamation" src="/exclamation.svg" />
                   </div>
