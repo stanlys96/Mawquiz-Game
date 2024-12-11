@@ -119,12 +119,12 @@ function Create() {
           <img className="h-[48px]" src="/kahoot-2.png" />
           <div className="kahoot-input-container">
             <button
-              onClick={() => setIsOpen(true)}
+              onClick={toggleModal}
               className="kahoot-btn-title font-semibold"
             >
               Enter kahoot title...
             </button>
-            <button onClick={() => setIsOpen(true)} className="settings-btn">
+            <button onClick={toggleModal} className="settings-btn">
               Settings
             </button>
           </div>
@@ -655,7 +655,9 @@ function Create() {
             >
               ✕
             </button>
-            <h2 className="text-xl font-semibold mb-4">Angular Jiggle Modal</h2>
+            <h2 className="text-xl font-semibold mb-4 text-black">
+              Jiggle Modal
+            </h2>
             <p className="text-gray-600 mb-4">
               This modal juggles both angular rotation and horizontal movement,
               creating a playful jiggle effect!
