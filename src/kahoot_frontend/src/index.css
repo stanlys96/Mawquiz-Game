@@ -1895,7 +1895,8 @@ html {
   max-height: 100%;
   height: auto;
   width: 100%;
-  overflow-y: auto;
+  scrollbar-gutter: stable;
+  /* overflow-y: auto; */
 }
 
 .sidebar-li {
@@ -1904,9 +1905,16 @@ html {
   opacity: 1;
 }
 
+.bg-lightblue {
+  background-color: rgb(234, 244, 252);
+}
+
+.bg-lightgray {
+  background-color: #f2f2f2;
+}
+
 .sidebar-card {
   height: 100%;
-  background-color: rgb(234, 244, 252);
   user-select: none;
   padding: 12px 0px 12px 0px;
   display: block;
@@ -1975,7 +1983,7 @@ html {
 
 .quiz-card {
   outline: 0px;
-  box-shadow: rgb(19, 104, 206) 0px 0px 0px 3px;
+  /* box-shadow: rgb(19, 104, 206) 0px 0px 0px 3px; */
   border-radius: 0.25rem;
   display: flex;
   flex-direction: column;
