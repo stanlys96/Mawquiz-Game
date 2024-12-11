@@ -1,51 +1,34 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaArrowRight, FaRegQuestionCircle } from "react-icons/fa";
-import { MdOutlineFolderCopy, MdQuiz, MdAccessTime } from "react-icons/md";
+import {
+  MdOutlineFolderCopy,
+  MdQuiz,
+  MdAccessTime,
+  MdOutlineQuestionAnswer,
+} from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Dropdown, Tooltip } from "antd";
 import { DownOutlined } from "@ant-design/icons";
-import { VscSymbolBoolean } from "react-icons/vsc";
-import { TiMessageTyping } from "react-icons/ti";
+import {
+  questionTypeItems,
+  timeLimitItems,
+  answerOptionsItems,
+} from "./helper/helper";
 
 function Create() {
   const [isOpenExample, setIsOpenExample] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleModalSecond = () => {
+    setIsOpen(!isOpen);
+  };
 
   const toggleModal = () => {
     setIsOpenExample(!isOpenExample);
   };
 
   const dropdownRef = useRef(null);
-
-  const items = [
-    {
-      label: (
-        <div className="the-gray rounded-[4px] p-[8px] flex flex-col gap-y-2 justify-center items-center">
-          <MdQuiz size="30px" />
-          <p className="text-black">Quiz</p>
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div className="the-gray rounded-[4px] p-[8px] flex flex-col gap-y-2 justify-center items-center">
-          <VscSymbolBoolean size="30px" />
-          <p className="text-black">True or False</p>
-        </div>
-      ),
-      key: "1",
-    },
-    {
-      label: (
-        <div className="the-gray rounded-[4px] p-[8px] flex flex-col gap-y-2 justify-center items-center">
-          <TiMessageTyping size="30px" />
-          <p className="text-black">Type Answer</p>
-        </div>
-      ),
-      key: "3",
-    },
-  ];
 
   return (
     <main className="background" ref={dropdownRef}>
@@ -114,6 +97,54 @@ function Create() {
               <span>
                 <button className="question-btn">Add question</button>
               </span>
+              {/* <button
+                onClick={toggleModalSecond}
+                className="px-4 py-2 bg-purple-600 text-white rounded-md shadow-md hover:bg-purple-700 transition"
+              >
+                Open Bouncy Modal
+              </button> */}
+
+              {/* Modal Overlay */}
+              {isOpen && (
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                  onClick={toggleModalSecond} // Close modal on background click
+                >
+                  {/* Stop propagation to prevent closing when clicking on the modal */}
+                  <motion.div
+                    className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+                    onClick={(e) => e.stopPropagation()}
+                    initial={{ scale: 0.5, opacity: 1 }}
+                    animate={{ scale: [1.2, 0.9, 1], opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={{
+                      duration: 0.6,
+                      ease: [0.68, -0.55, 0.27, 1.55], // Custom spring curve for bounce
+                    }}
+                  >
+                    {/* Close Button */}
+                    <button
+                      onClick={toggleModalSecond}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                    >
+                      ✕
+                    </button>
+
+                    {/* Modal Content */}
+                    <h2 className="text-xl font-semibold mb-4">Bouncy Modal</h2>
+                    <p className="text-gray-600 mb-4">
+                      This modal bounces into place with a spring-like
+                      animation. Add your content here!
+                    </p>
+                    <button
+                      onClick={toggleModalSecond}
+                      className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition"
+                    >
+                      Close Modal
+                    </button>
+                  </motion.div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -151,7 +182,7 @@ function Create() {
             </div>
             <Dropdown
               className="dropdown-sidebar mt-3 w-full text-black"
-              menu={{ items }}
+              menu={{ items: questionTypeItems }}
               trigger={["click"]}
             >
               <a
@@ -172,7 +203,7 @@ function Create() {
             </div>
             <Dropdown
               className="dropdown-sidebar mt-3 w-full text-black"
-              menu={{ items }}
+              menu={{ items: timeLimitItems }}
               trigger={["click"]}
             >
               <a
@@ -180,6 +211,26 @@ function Create() {
                 onClick={(e) => e.preventDefault()}
               >
                 <div className="flex items-center gap-x-2">20 seconds</div>
+                <DownOutlined />
+              </a>
+            </Dropdown>
+            <div className="flex gap-x-2 items-center mt-[16px]">
+              <MdOutlineQuestionAnswer
+                className="w-[24px] h-[24px]"
+                color="black"
+              />
+              <p className="text-[#333333] font-semibold">Answer Options</p>
+            </div>
+            <Dropdown
+              className="dropdown-sidebar mt-3 w-full text-black"
+              menu={{ items: answerOptionsItems }}
+              trigger={["click"]}
+            >
+              <a
+                className="flex justify-between items-center px-[10px]"
+                onClick={(e) => e.preventDefault()}
+              >
+                <div className="flex items-center gap-x-2">Single select</div>
                 <DownOutlined />
               </a>
             </Dropdown>

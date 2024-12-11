@@ -1228,12 +1228,6 @@ li {
   scroll-behavior: smooth;
 }
 
-@layer base {
-  body {
-    @apply font-sans bg-n-8 text-n-1 text-base;
-  }
-}
-
 .rotate-45 {
   @apply rotate-[45deg];
 }
@@ -1296,6 +1290,11 @@ li {
 
 .-rotate-360 {
   @apply rotate-[-360deg];
+}
+
+html {
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
 }
 
 .background {
@@ -1828,11 +1827,19 @@ li {
   font-weight: 700;
 }
 
+.text-semigray {
+  color: rgb(110, 110, 110);
+}
+
 .text-gray {
   color: rgb(51, 51, 51);
 }
 
 .the-gray {
+  background: rgb(242, 242, 242);
+}
+
+.text-time-limit:hover {
   background: rgb(242, 242, 242);
 }
 
@@ -2295,6 +2302,14 @@ li {
 .question-p {
   position: relative;
   width: 100%;
+}
+
+.ant-dropdown-menu {
+  padding: 0 !important;
+}
+
+.ant-dropdown-menu-item {
+  padding: 0 !important;
 }
 
 @media (pointer: fine) {
