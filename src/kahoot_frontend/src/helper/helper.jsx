@@ -35,7 +35,7 @@ export const questionTypeItems = [
 export const timeLimitItems = [
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         5 seconds
       </p>
     ),
@@ -43,7 +43,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         10 seconds
       </p>
     ),
@@ -51,7 +51,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         20 seconds
       </p>
     ),
@@ -59,7 +59,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         30 seconds
       </p>
     ),
@@ -67,7 +67,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         45 seconds
       </p>
     ),
@@ -75,7 +75,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         1 minute
       </p>
     ),
@@ -83,7 +83,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         1 minute 30 seconds
       </p>
     ),
@@ -91,7 +91,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         2 minutes
       </p>
     ),
@@ -99,7 +99,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px]">
         3 minutes
       </p>
     ),
@@ -107,7 +107,7 @@ export const timeLimitItems = [
   },
   {
     label: (
-      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[8px] mt-[8px] mb-[8px]">
+      <p className="text-time-limit p-[8px] z-100 rounded-[4px] mx-[4px] mt-[4px] mb-[4px]">
         4 minutes
       </p>
     ),
