@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { FaArrowRight, FaRegQuestionCircle } from "react-icons/fa";
+import { FaArrowRight, FaRegQuestionCircle, FaArrowDown } from "react-icons/fa";
 import {
   MdOutlineFolderCopy,
   MdQuiz,
@@ -36,6 +36,37 @@ function Create() {
   const [answer4Text, setAnswer4Text] = useState("");
   const [mouseEnter4, setMouseEnter4] = useState(false);
   const [answer4Clicked, setAnswer4Clicked] = useState(false);
+  const [image, setImage] = useState(null);
+  const [dragging, setDragging] = useState(false);
+
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Necessary to allow drop
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+
+    // Access the dropped files
+    const file = e.dataTransfer.files[0];
+
+    // Ensure it's an image
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result); // Convert file to a base64 URL
+      };
+      reader.readAsDataURL(file);
+      console.log(file, "<<< FILE");
+    } else {
+      alert("Please drop an image file.");
+    }
+  };
 
   const toggleModalSecond = () => {
     setIsOpen(!isOpen);
@@ -151,19 +182,48 @@ function Create() {
             </div>
           </div>
           <div className="flex justify-center items-center h-full">
-            <div className="upload-div cursor-pointer gap-y-[16px]">
-              <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
-              <div className="btn-upload-div">
-                <FaPlus size="32px" className="block mx-auto" color="black" />
-              </div>
-              <div>
-                <p className="text-black">
-                  <span className="text-gray font-semibold underline">
-                    Upload file
-                  </span>{" "}
-                  or drag here to upload
-                </p>
-              </div>
+            <div
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              className="upload-div cursor-pointer gap-y-[16px]"
+            >
+              {!image ? (
+                <div className="flex flex-col gap-y-[16px] justify-center items-center">
+                  <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
+                  <div className="btn-upload-div">
+                    <FaPlus
+                      size="32px"
+                      className="block mx-auto"
+                      color="black"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-black">
+                      <span className="text-gray font-semibold underline">
+                        Upload file
+                      </span>{" "}
+                      or drag here to upload
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={image}
+                  alt="Uploaded"
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
+              )}
+              {dragging && (
+                <div className="drop-zone flex flex-col gap-y-[24px]">
+                  <div className="arrow-down-div">
+                    <span className="arrow-down-span">
+                      <FaArrowDown size="88px" />
+                    </span>
+                  </div>
+                  <p className="text-[20px] font-bold">Drop your file here</p>
+                </div>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-[8px]">
