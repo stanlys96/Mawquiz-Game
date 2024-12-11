@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaArrowRight, FaRegQuestionCircle } from "react-icons/fa";
 import { MdOutlineFolderCopy, MdQuiz, MdAccessTime } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { CiCircleQuestion } from "react-icons/ci";
-import { Dropdown, Space } from "antd";
+import { Dropdown, Tooltip } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
@@ -92,16 +91,20 @@ function Create() {
                   </div>
                 </div>
                 <div className="flex flex-col absolute top-[50%] gap-y-1">
-                  <a className="cursor-pointer rounded-full icon-quiz">
-                    <MdOutlineFolderCopy
-                      color="#6E6E6E"
-                      height={16}
-                      width={16}
-                    />
-                  </a>
-                  <a className="cursor-pointer icon-quiz rounded-full">
-                    <RiDeleteBinLine color="#6E6E6E" height={16} width={16} />
-                  </a>
+                  <Tooltip placement="right" title={"Duplicate"}>
+                    <a className="cursor-pointer rounded-full icon-quiz">
+                      <MdOutlineFolderCopy
+                        color="#6E6E6E"
+                        height={16}
+                        width={16}
+                      />
+                    </a>
+                  </Tooltip>
+                  <Tooltip placement="right" title={"Delete"}>
+                    <a className="cursor-pointer icon-quiz rounded-full">
+                      <RiDeleteBinLine color="#6E6E6E" height={16} width={16} />
+                    </a>
+                  </Tooltip>
                 </div>
               </div>
             </li>
