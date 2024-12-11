@@ -114,7 +114,26 @@ function Create() {
             </div>
           </div>
         </div>
-        <div className="middle-div flex-1"></div>
+        <div className="middle-div flex-1">
+          <div className="question-div">
+            <div className="question-inner-div">
+              <div className="question-sub-inner-div">
+                <div className="question-1-div">
+                  <div className="question-2-div">
+                    <input
+                      placeholder="Start typing your question"
+                      className="w-full text-center question-p bg-transparent border-transparent outline-none"
+                      type="text"
+                    />
+                    <p className="absolute top-1 text-gray right-1 text-[14px] font-semibold">
+                      120
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="right-sidebar">
           <button className="right-sidebar-btn text-black">
             <FaArrowRight className="absolute left-[20%]" />
