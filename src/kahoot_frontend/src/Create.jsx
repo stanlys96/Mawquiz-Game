@@ -19,6 +19,7 @@ import {
 function Create() {
   const [isOpenExample, setIsOpenExample] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [question, setQuestion] = useState("");
 
   const toggleModalSecond = () => {
     setIsOpen(!isOpen);
@@ -155,12 +156,17 @@ function Create() {
                 <div className="question-1-div">
                   <div className="question-2-div">
                     <input
+                      value={question}
+                      onChange={(e) => {
+                        if (e.target.value.length > 120) return;
+                        setQuestion(e.target.value);
+                      }}
                       placeholder="Start typing your question"
                       className="w-full text-center question-p bg-transparent border-transparent outline-none"
                       type="text"
                     />
                     <p className="absolute top-1 text-gray right-1 text-[14px] font-semibold">
-                      120
+                      {120 - question?.length}
                     </p>
                   </div>
                 </div>
