@@ -181,7 +181,10 @@ function Create() {
               </div>
               <input
                 value={answer1Text}
-                onChange={(e) => setAnswer1Text(e.target.value)}
+                onChange={(e) => {
+                  if (answer1Text?.length > 75) return;
+                  setAnswer1Text(e.target.value);
+                }}
                 placeholder="Add answer 1"
                 className={`${
                   answer1Text ? "text-white" : "text-black"
@@ -227,7 +230,10 @@ function Create() {
               </div>
               <input
                 value={answer2Text}
-                onChange={(e) => setAnswer2Text(e.target.value)}
+                onChange={(e) => {
+                  if (answer2Text?.length > 75) return;
+                  setAnswer2Text(e.target.value);
+                }}
                 placeholder="Add answer 2"
                 className={`${
                   answer2Text ? "text-white" : "text-black"
@@ -273,7 +279,10 @@ function Create() {
               </div>
               <input
                 value={answer3Text}
-                onChange={(e) => setAnswer3Text(e.target.value)}
+                onChange={(e) => {
+                  if (answer3Text?.length > 75) return;
+                  setAnswer3Text(e.target.value);
+                }}
                 placeholder="Add answer 3 (optional)"
                 className={`${
                   answer3Text ? "text-white" : "text-black"
@@ -319,7 +328,10 @@ function Create() {
               </div>
               <input
                 value={answer4Text}
-                onChange={(e) => setAnswer4Text(e.target.value)}
+                onChange={(e) => {
+                  if (answer4Text?.length > 75) return;
+                  setAnswer4Text(e.target.value);
+                }}
                 placeholder="Add answer 4 (optional)"
                 className={`${
                   answer4Text ? "text-white" : "text-black"
