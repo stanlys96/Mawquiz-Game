@@ -815,10 +815,7 @@ function Create() {
                 </div>
               </div>
               <div className="close-toggle-button">
-                <button
-                  onClick={toggleModalQuestion}
-                  className="toggle-close-btn"
-                >
+                <button onClick={toggleModalQuestion} className="duplicate-btn">
                   Cancel
                 </button>
               </div>
