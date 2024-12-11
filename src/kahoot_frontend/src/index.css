@@ -2169,6 +2169,81 @@ li {
   cursor: pointer;
 }
 
+.middle-div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background: url("/background.webp") center center / cover no-repeat
+    rgb(242, 242, 242);
+  /* flex: 1 1 calc(100% - 2 * clamp(16px, 2vmin, 48px)); */
+  padding: 48px clamp(16px, 2vmin, 48px);
+  max-height: calc(100% - 2 * clamp(16px, 2vmin, 48px));
+  /* margin-left: 12rem; */
+}
+
+.icon-quiz {
+  padding: 6px;
+}
+
+.icon-quiz:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn {
+  width: initial;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  background: rgb(255, 255, 255);
+  color: rgb(51, 51, 51);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 32px;
+  min-height: 32px;
+  height: 32px;
+  padding: 0px 16px 4px;
+  line-height: 32px;
+  position: relative;
+}
+
+.delete-btn:hover,
+.duplicate-btn:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+.duplicate-btn {
+  width: initial;
+  margin: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  background: rgb(255, 255, 255);
+  color: rgb(51, 51, 51);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 32px;
+  min-height: 32px;
+  height: 32px;
+  padding: 0px 16px 4px;
+  line-height: 32px;
+  position: relative;
+  border-width: 1px;
+  border-color: rgb(110, 110, 110);
+}
+
 @media (pointer: fine) {
   .question-btn:hover::after {
     content: "";

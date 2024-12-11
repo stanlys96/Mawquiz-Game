@@ -91,15 +91,15 @@ function Create() {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col gap-y-3 absolute top-[60%] left-[7px]">
-                  <a className="cursor-pointer">
+                <div className="flex flex-col absolute top-[50%] gap-y-1">
+                  <a className="cursor-pointer rounded-full icon-quiz">
                     <MdOutlineFolderCopy
                       color="#6E6E6E"
                       height={16}
                       width={16}
                     />
                   </a>
-                  <a className="cursor-pointer">
+                  <a className="cursor-pointer icon-quiz rounded-full">
                     <RiDeleteBinLine color="#6E6E6E" height={16} width={16} />
                   </a>
                 </div>
@@ -114,7 +114,7 @@ function Create() {
             </div>
           </div>
         </div>
-        <div className="middle-component flex-1 bg-black"></div>
+        <div className="middle-div flex-1"></div>
         <div className="right-sidebar">
           <button className="right-sidebar-btn text-black">
             <FaArrowRight className="absolute left-[20%]" />
@@ -162,8 +162,9 @@ function Create() {
               </a>
             </Dropdown>
           </div>
-          <div className="right-sidebar-bottom mt-auto">
-            <p className="text-black">Asd</p>
+          <div className="right-sidebar-bottom mt-auto flex gap-x-2">
+            <button className="delete-btn">Delete</button>
+            <button className="duplicate-btn">Duplicate</button>
           </div>
         </div>
       </div>
