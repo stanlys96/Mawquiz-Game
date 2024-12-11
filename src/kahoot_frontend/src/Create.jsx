@@ -1,6 +1,11 @@
 import React, { useState, useRef } from "react";
-import { motion } from "framer-motion";
-import { FaArrowRight, FaRegQuestionCircle, FaArrowDown } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaArrowRight,
+  FaRegQuestionCircle,
+  FaArrowDown,
+  FaUpload,
+} from "react-icons/fa";
 import {
   MdOutlineFolderCopy,
   MdQuiz,
@@ -19,6 +24,7 @@ import {
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaCircle, FaSquareFull } from "react-icons/fa";
+import { FaCircleQuestion } from "react-icons/fa6";
 
 function Create() {
   const [isOpenExample, setIsOpenExample] = useState(false);
@@ -48,9 +54,23 @@ function Create() {
     setDragging(false);
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setDragging(false);
+      setIsOpen(false);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleDrop = (e) => {
     e.preventDefault();
     setDragging(false);
+    setIsOpen(false);
 
     // Access the dropped files
     const file = e.dataTransfer.files[0];
@@ -78,6 +98,20 @@ function Create() {
 
   const dropdownRef = useRef(null);
 
+  const modalVariants = {
+    hidden: { scale: 0.5, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        type: "spring", // Spring for bouncy effect
+        stiffness: 500, // Control bounciness
+        damping: 20,
+      },
+    },
+    exit: { scale: 0.5, opacity: 0 },
+  };
+
   return (
     <main className="background" ref={dropdownRef}>
       <nav className="navbar">
@@ -85,12 +119,14 @@ function Create() {
           <img className="h-[48px]" src="/kahoot-2.png" />
           <div className="kahoot-input-container">
             <button
-              onClick={() => setIsOpenExample(true)}
+              onClick={() => setIsOpen(true)}
               className="kahoot-btn-title font-semibold"
             >
               Enter kahoot title...
             </button>
-            <button className="settings-btn">Settings</button>
+            <button onClick={() => setIsOpen(true)} className="settings-btn">
+              Settings
+            </button>
           </div>
         </div>
         <div className="flex items-center">
@@ -186,6 +222,7 @@ function Create() {
               onDragLeave={handleDragLeave}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
+              onClick={() => setIsOpen(true)}
               className="upload-div cursor-pointer gap-y-[16px]"
             >
               {!image ? (
@@ -502,62 +539,100 @@ function Create() {
           </div>
         </div>
       </div>
-
-      {/* Button to open modal */}
-      {/* <button
-        onClick={toggleModal}
-        className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition"
-      >
-        Open Modal
-      </button> */}
-      {/* Modal Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-500"
-          onClick={toggleModalSecond} // Close modal on background click
-        >
-          {/* Stop propagation to prevent closing when clicking on the modal */}
-          <motion.div
-            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
-            onClick={(e) => e.stopPropagation()}
-            initial={{ scale: 0.5, opacity: 1 }}
-            animate={{ scale: [1.2, 0.9, 1], opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{
-              duration: 0.6,
-              ease: [0.68, -0.55, 0.27, 1.55], // Custom spring curve for bounce
-            }}
+      <AnimatePresence>
+        {isOpen && (
+          <div
+            onClick={() => toggleModalSecond()}
+            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
           >
-            {/* Close Button */}
-            <button
-              onClick={toggleModalSecond}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            <motion.div
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg shadow-lg w-[712px] text-center"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
-              ✕
-            </button>
-
-            {/* Modal Content */}
-            <h2 className="text-xl font-semibold mb-4">Bouncy Modal</h2>
-            <p className="text-gray-600 mb-4">
-              This modal bounces into place with a spring-like animation. Add
-              your content here!
-            </p>
-            <button
-              onClick={toggleModalSecond}
-              className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition"
-            >
-              Close Modal
-            </button>
-          </motion.div>
-        </div>
-      )}
-      {/* Modal Overlay */}
+              <div className="pb-[16px]">
+                <p className="text-[#333333] text-left font-semibold text-[24px] upload-image-p">
+                  Upload image
+                </p>
+              </div>
+              <div className="upload-modal-div relative">
+                <div className="inner-modal-div relative">
+                  <div className="flex gap-x-[15px] items-center">
+                    <FaUpload size="32px" color="black" />
+                    <div className="flex flex-col gap-y-1">
+                      <p className="text-[#333333] text-left font-semibold">
+                        Drop your files here
+                      </p>
+                      <div className="flex gap-x-2 items-center">
+                        <p className="text-[#6E6E6E] text-left">
+                          Max. file size: 80MB
+                        </p>
+                        <Tooltip
+                          className="z-infinite"
+                          placement="top"
+                          title={"Image: 80 MB"}
+                        >
+                          <FaCircleQuestion color="gray" />
+                        </Tooltip>
+                      </div>
+                      <div className="flex gap-x-2 items-center">
+                        <p className="text-[#6E6E6E] text-left">
+                          Drop your files here
+                        </p>
+                        <Tooltip
+                          className="z-infinite"
+                          placement="top"
+                          title={"Image: jpeg, jpg, png, gif and webp"}
+                        >
+                          <FaCircleQuestion color="gray" />
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </div>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <label htmlFor="file-upload" className="save-button">
+                    Upload Media
+                  </label>
+                </div>
+                {dragging && (
+                  <div className="drop-zone flex flex-col gap-y-[24px]">
+                    <div className="arrow-down-div">
+                      <span className="arrow-down-span">
+                        <FaArrowDown size="88px" />
+                      </span>
+                    </div>
+                    <p className="text-[20px] font-bold">Drop your file here</p>
+                  </div>
+                )}
+              </div>
+              <div className="close-toggle-button">
+                <button
+                  onClick={toggleModalSecond}
+                  className="toggle-close-btn"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       {isOpenExample && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-500"
-          onClick={toggleModal} // Close modal on background click
+          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+          onClick={toggleModal}
         >
-          {/* Stop propagation to prevent closing when clicking on the modal */}
           <motion.div
             className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
             onClick={(e) => e.stopPropagation()}
@@ -565,8 +640,8 @@ function Create() {
             animate={{
               opacity: 1,
               scale: 1,
-              rotate: [0, -5, 5, -3, 3, 0], // Angular jiggle
-              x: [0, -10, 10, -5, 5, 0], // Slight horizontal jiggle
+              rotate: [0, -5, 5, -3, 3, 0],
+              x: [0, -10, 10, -5, 5, 0],
             }}
             exit={{ opacity: 0, scale: 1 }}
             transition={{
@@ -574,15 +649,12 @@ function Create() {
               ease: "easeInOut",
             }}
           >
-            {/* Close Button */}
             <button
               onClick={toggleModal}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
               ✕
             </button>
-
-            {/* Modal Content */}
             <h2 className="text-xl font-semibold mb-4">Angular Jiggle Modal</h2>
             <p className="text-gray-600 mb-4">
               This modal juggles both angular rotation and horizontal movement,
