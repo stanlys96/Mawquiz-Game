@@ -220,7 +220,7 @@ function Create() {
       )}
       <div className="flex justify-between">
         {isMobileOrTablet && (
-          <div className="fixed h-[4.5rem] bottom-0 bg-white z-infinite w-full flex items-center gap-x-2">
+          <div className="fixed bottom-container-mobile h-[4.5rem] bottom-0 bg-white z-infinite w-full flex items-center gap-x-2">
             <ul
               ref={bottomRef}
               onMouseEnter={() => setMouseEnterUl(true)}
@@ -1084,7 +1084,7 @@ function Create() {
         )}
         {isMobileOrTablet && (
           <div className="middle-div-mobile mt-[56px] w-full flex flex-col gap-y-4">
-            <div className="question-div">
+            <div className="question-div-main-question">
               <div className="flex gap-x-2 items-center">
                 <div className="question-inner-div">
                   <div className="question-sub-inner-div">

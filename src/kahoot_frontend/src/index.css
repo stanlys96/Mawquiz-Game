@@ -1933,6 +1933,10 @@ html {
   scrollbar-gutter: stable overlay;
 }
 
+.bottom-container-mobile {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -2px 4px 0px;
+}
+
 .mobile-ul {
   overflow-x: auto;
 }
@@ -2349,6 +2353,10 @@ html {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+}
+
+.question-div-main-question {
+  width: 100%;
 }
 
 .question-inner-div-answer {
