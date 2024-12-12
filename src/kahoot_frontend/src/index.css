@@ -1709,7 +1709,6 @@ html {
   -webkit-box-align: center;
   align-items: center;
   display: flex;
-  position: relative;
   justify-content: space-between;
   align-items: center;
 }
@@ -1786,7 +1785,8 @@ html {
 }
 
 .exit-button:hover,
-.settings-btn:hover {
+.settings-btn:hover,
+.settings-btn-mobile:hover {
   background-color: rgb(223, 223, 223);
 }
 
@@ -1876,6 +1876,30 @@ html {
   position: relative;
 }
 
+.settings-btn-mobile {
+  width: initial;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  background: rgb(242, 242, 242);
+  color: rgb(0, 0, 0);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 32px;
+  min-height: 32px;
+  height: 32px;
+  padding: 0px 16px 0px;
+  line-height: 32px;
+  position: relative;
+}
+
 .the-sidebar {
   /* position: fixed; */
   left: 0px;
@@ -1907,6 +1931,14 @@ html {
   scrollbar-width: none;
   overflow: auto;
   scrollbar-gutter: stable overlay;
+}
+
+.mobile-ul {
+  overflow-x: auto;
+}
+
+.mobile-ul::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-ul::-webkit-scrollbar {
@@ -2021,6 +2053,17 @@ html {
   position: absolute;
   top: 50%;
   right: -9.5%;
+  transform: translateY(-40%);
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.exclamation-container-mobile {
+  position: absolute;
+  top: 50%;
+  right: -20%;
   transform: translateY(-40%);
   margin: auto;
   display: flex;
@@ -2219,6 +2262,20 @@ html {
     rgb(242, 242, 242);
   /* flex: 1 1 calc(100% - 2 * clamp(16px, 2vmin, 48px)); */
   padding: 48px clamp(16px, 2vmin, 48px);
+  max-height: calc(100% - 2 * clamp(16px, 2vmin, 48px));
+  /* margin-left: 12rem; */
+}
+
+.middle-div-mobile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background: url("/background.webp") center center / cover no-repeat
+    rgb(242, 242, 242);
+  /* flex: 1 1 calc(100% - 2 * clamp(16px, 2vmin, 48px)); */
+  padding: 48px clamp(16px, 2vmin, 48px);
+  padding-bottom: 180px;
   max-height: calc(100% - 2 * clamp(16px, 2vmin, 48px));
   /* margin-left: 12rem; */
 }
@@ -2497,6 +2554,18 @@ html {
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
+.shape-div-mobile {
+  flex: 0 0 auto;
+  border-radius: 4px;
+  /* height: calc(100% - 1rem); */
+  margin: 0px 0.25rem 0.25rem;
+  /* padding: 0px; */
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
+}
+
 .check-btn {
   flex: 0 0 auto;
   background: transparent;
@@ -2504,6 +2573,25 @@ html {
   width: 2.875rem;
   height: 2.875rem;
   border: 0.25rem solid rgb(255, 255, 255);
+  transition: background 0.2s;
+  transform-origin: center bottom;
+  box-shadow: transparent 0px 0px 0px 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0.125rem 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0px 0px 0.0625rem;
+  transform: translateY(0px) scaleX(1) scaleY(1);
+  padding: 0;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.check-btn-mobile {
+  flex: 0 0 auto;
+  background: transparent;
+  margin: 0px 0.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0.15rem solid rgb(255, 255, 255);
   transition: background 0.2s;
   transform-origin: center bottom;
   box-shadow: transparent 0px 0px 0px 0.125rem,
@@ -2539,12 +2627,33 @@ html {
   cursor: pointer;
 }
 
-.check-btn:hover {
+.check-btn-mobile-clicked {
+  flex: 0 0 auto;
+  background: rgb(102, 191, 57);
+  margin: 0px 0.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0.15rem solid rgb(255, 255, 255);
+  transition: background 0.2s;
+  transform-origin: center bottom;
+  box-shadow: transparent 0px 0px 0px 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0.125rem 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0px 0px 0.0625rem;
+  transform: translateY(0px) scaleX(1) scaleY(1);
+  padding: 0;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.check-btn:hover,
+.check-btn-mobile:hover {
   background: rgba(0, 0, 0, 0.1);
   animation: 0.2s linear 0s 1 normal forwards running ifTzCt;
 }
 
-.check-btn-clicked:hover {
+.check-btn-clicked:hover,
+.check-btn-mobile-clicked:hover {
   background: rgb(102, 191, 57);
   animation: 0.2s linear 0s 1 normal forwards running ifTzCt;
 }
@@ -2562,6 +2671,16 @@ html {
 .centang-span {
   width: 46px;
   height: 46px;
+  display: block;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.centang-span-mobile {
+  width: 22.5px;
+  height: 22.5px;
   display: block;
   transform: translate(-50%, -50%);
   position: absolute;
