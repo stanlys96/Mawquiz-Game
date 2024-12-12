@@ -182,16 +182,10 @@ function Create() {
           <div className="flex gap-x-6 items-center w-full">
             <img className="h-[36px]" src="/kahoot-2.png" />
             <div className="kahoot-input-container">
-              <button
-                onClick={toggleModalJiggle}
-                className="kahoot-btn-title font-semibold"
-              >
+              <button className="kahoot-btn-title font-semibold">
                 Enter kahoot title...
               </button>
-              <button
-                onClick={toggleModalJiggle}
-                className="settings-btn-mobile"
-              >
+              <button className="settings-btn-mobile">
                 <FaGear size="16px" />
               </button>
             </div>
@@ -409,7 +403,18 @@ function Create() {
                       hoveredQuizIndex === index) && (
                       <div className="flex flex-col absolute top-[50%] gap-y-1">
                         <Tooltip placement="right" title={"Duplicate"}>
-                          <a className="cursor-pointer rounded-full icon-quiz">
+                          <a
+                            onClick={() => {
+                              let quizTemp = [...quizData];
+                              quizTemp.splice(index + 1, 0, {
+                                ...quizData?.[index],
+                                id: currentId + 1,
+                              });
+                              setCurrentId((prevState) => prevState + 1);
+                              setQuizData([...quizTemp]);
+                            }}
+                            className="cursor-pointer rounded-full icon-quiz"
+                          >
                             <MdOutlineFolderCopy
                               color="#6E6E6E"
                               height={16}
@@ -1156,7 +1161,22 @@ function Create() {
                       <div className="flex gap-x-2 items-center">
                         <p className="montserrat">Set time limit</p>
                       </div>
-                      <div className="flex gap-x-2 items-center">
+                      <div
+                        onClick={() => {
+                          let quizTemp = [...quizData];
+                          quizTemp.splice(clickedQuizIndex + 1, 0, {
+                            ...quizData?.[clickedQuizIndex],
+                            id: currentId + 1,
+                          });
+                          setCurrentId((prevState) => prevState + 1);
+                          if (clickedQuizIndex === quizData?.length - 1) {
+                            scrollToEnd();
+                          }
+                          setQuizData([...quizTemp]);
+                          handleOpenChange(false);
+                        }}
+                        className="flex gap-x-2 items-center"
+                      >
                         <p className="montserrat">Duplicate</p>
                       </div>
                       {quizData?.length > 1 && (
