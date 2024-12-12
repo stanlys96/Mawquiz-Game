@@ -2021,6 +2021,11 @@ html {
   cursor: pointer;
 }
 
+.montserrat {
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+}
+
 .question-btn:hover {
   min-height: 40px;
   margin-top: 2px;
