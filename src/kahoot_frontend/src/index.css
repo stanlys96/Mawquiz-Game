@@ -1175,6 +1175,11 @@ body {
   background: rgb(56, 18, 114);
 }
 
+ul {
+  margin: 0;
+  padding: 0;
+}
+
 li {
   margin: 0;
   padding: 0;
@@ -1888,6 +1893,10 @@ html {
   padding-top: 0px;
 }
 
+[data-rfd-droppable-context-id="0"] {
+  overflow-anchor: none;
+}
+
 .sidebar-ul {
   display: block;
   position: relative;
@@ -1895,8 +1904,13 @@ html {
   max-height: 100%;
   height: auto;
   width: 100%;
-  scrollbar-gutter: stable;
-  /* overflow-y: auto; */
+  scrollbar-width: none;
+  overflow: auto;
+  scrollbar-gutter: stable overlay;
+}
+
+.sidebar-ul::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-li {
@@ -1915,9 +1929,14 @@ html {
 
 .sidebar-card {
   height: 100%;
+  width: 100%;
   user-select: none;
   padding: 12px 0px 12px 0px;
   display: block;
+}
+
+.sidebar-card-clicked {
+  background-color: rgb(234, 244, 252);
 }
 
 .sidebar-bottom {
@@ -1983,7 +2002,6 @@ html {
 
 .quiz-card {
   outline: 0px;
-  /* box-shadow: rgb(19, 104, 206) 0px 0px 0px 3px; */
   border-radius: 0.25rem;
   display: flex;
   flex-direction: column;
@@ -1993,6 +2011,10 @@ html {
   /* width: 90%; */
   flex: 1 1 0%;
   color: rgb(178, 178, 178);
+}
+
+.quiz-card-clicked {
+  box-shadow: rgb(19, 104, 206) 0px 0px 0px 3px;
 }
 
 .exclamation-container {
@@ -2268,7 +2290,30 @@ html {
   display: flex;
   -webkit-box-align: center;
   align-items: center;
-  /* flex: 0 0 auto; */
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.question-inner-div-answer {
+  height: auto;
+  position: relative;
+  background: rgb(255, 255, 255);
+  padding-bottom: 4px;
+  border-radius: 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -4px 0px 0px inset;
+  z-index: 1;
+  width: calc(75% - 0.5rem);
+}
+
+.question-answer-full {
+  height: auto;
+  position: relative;
+  background: rgb(255, 255, 255);
+  padding-bottom: 4px;
+  border-radius: 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -4px 0px 0px inset;
+  z-index: 1;
+  width: 100%;
 }
 
 .question-inner-div {
@@ -2296,6 +2341,18 @@ html {
   max-height: calc(
     clamp(0.5rem, 3.2vmin, 3rem) * 4 + clamp(0.5rem, 1.2vmin, 1rem) * 2
   );
+  width: 100%;
+}
+
+.question-1-div-answer {
+  max-height: calc(
+    clamp(0.5rem, 3.2vmin, 3rem) * 4 + clamp(0.5rem, 1.2vmin, 1rem) * 2
+  );
+  height: 100%;
+  padding: clamp(0.5rem, 1.2vmin, 1rem) 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
 }
 
@@ -2335,15 +2392,21 @@ html {
   backdrop-filter: blur(12px);
   border-radius: 0.25rem;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
-  min-height: 9.875rem;
-  min-width: 14.8125rem;
-  min-height: 260px;
-  min-width: 200px;
   max-width: 24.375rem;
   max-height: 16.25rem;
   --max-width: 24.375rem;
   --max-height: 16.25rem;
   flex-direction: column;
+}
+
+.upload-div-quiz {
+  min-height: 260px;
+  min-width: 200px;
+}
+
+.upload-div-true-or-false {
+  min-height: 400px;
+  min-width: 600px;
 }
 
 .btn-upload-div {
@@ -2397,6 +2460,11 @@ html {
 
 .bg-red {
   background-color: rgb(226, 27, 60);
+  transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
+}
+
+.bg-green-only {
+  background-color: rgb(102, 191, 57);
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
@@ -2606,6 +2674,43 @@ html {
   padding: 0px 32px 4px;
   line-height: 42px;
   position: relative;
+}
+
+.border-quiz-hover {
+  box-shadow: rgb(204, 204, 204) 0px 0px 0px 3px;
+}
+
+.shadow-overlay-button {
+  border: none;
+  overflow: visible;
+  outline: none;
+  font-style: inherit;
+  font-variant: inherit;
+  font-stretch: inherit;
+  font-family: inherit;
+  font-optical-sizing: inherit;
+  font-size-adjust: inherit;
+  font-kerning: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  cursor: pointer;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  display: flex;
+  gap: 8px;
+  -webkit-box-align: center;
+  align-items: center;
+  width: fit-content;
+  margin: 8px;
+  padding: 16px;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+  border-radius: 0.25rem;
 }
 
 @media (pointer: fine) {

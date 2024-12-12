@@ -27,6 +27,7 @@ import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaCircle, FaSquareFull } from "react-icons/fa";
 import { FaCircleQuestion } from "react-icons/fa6";
+import { Scrollbars } from "react-custom-scrollbars";
 
 function Create() {
   const [currentId, setCurrentId] = useState(1);
@@ -49,13 +50,17 @@ function Create() {
   const [image, setImage] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [mouseEnterUl, setMouseEnterUl] = useState(false);
+  const [clickedQuizIndex, setClickedQuizIndex] = useState(0);
+  const [hoveredQuizIndex, setHoveredQuizIndex] = useState(-1);
   const [quizData, setQuizData] = useState([
     {
       id: currentId,
       type: "Quiz",
-      title: "Title",
+      title: "Question",
     },
   ]);
+  const [currentQuizData, setCurrentQuizData] = useState(quizData?.[0]);
+  const [addedAdditionalAnswers, setAddedAdditionalAnswers] = useState(0);
 
   const [value, setValue] = useState(1);
 
@@ -182,6 +187,8 @@ function Create() {
           >
             {quizData?.map((quiz, index) => (
               <motion.li
+                onMouseEnter={() => setHoveredQuizIndex(index)}
+                onMouseLeave={() => setHoveredQuizIndex(-1)}
                 initial={{ opacity: 1, scale: 1 }}
                 animate={
                   index !== 0
@@ -200,13 +207,29 @@ function Create() {
                 key={quiz?.id}
                 className="sidebar-li"
               >
-                <div className="sidebar-card relative">
+                <div
+                  className={`${
+                    clickedQuizIndex === index && "sidebar-card-clicked"
+                  } sidebar-card relative`}
+                >
                   <div>
                     <div className="flex gap-x-2">
                       <p className="ml-[32px] text-sidebar">{index + 1}</p>
                       <p className="text-sidebar">{quiz?.type}</p>
                     </div>
-                    <div className="quiz-card ml-[32px] cursor-pointer mt-[5px] mx-[16px] relative">
+                    <div
+                      onClick={() => {
+                        setClickedQuizIndex(index);
+                        setCurrentQuizData(quiz);
+                      }}
+                      className={`${
+                        clickedQuizIndex === index
+                          ? "quiz-card-clicked"
+                          : hoveredQuizIndex === index
+                          ? "border-quiz-hover"
+                          : ""
+                      } quiz-card bg-white ml-[32px] cursor-pointer mt-[5px] mx-[16px] relative`}
+                    >
                       <p className="text-[0.75rem] my-[5px] text-center font-medium">
                         {quiz?.title}
                       </p>
@@ -221,26 +244,29 @@ function Create() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col absolute top-[50%] gap-y-1">
-                    <Tooltip placement="right" title={"Duplicate"}>
-                      <a className="cursor-pointer rounded-full icon-quiz">
-                        <MdOutlineFolderCopy
-                          color="#6E6E6E"
-                          height={16}
-                          width={16}
-                        />
-                      </a>
-                    </Tooltip>
-                    <Tooltip placement="right" title={"Delete"}>
-                      <a className="cursor-pointer icon-quiz rounded-full">
-                        <RiDeleteBinLine
-                          color="#6E6E6E"
-                          height={16}
-                          width={16}
-                        />
-                      </a>
-                    </Tooltip>
-                  </div>
+                  {(clickedQuizIndex === index ||
+                    hoveredQuizIndex === index) && (
+                    <div className="flex flex-col absolute top-[50%] gap-y-1">
+                      <Tooltip placement="right" title={"Duplicate"}>
+                        <a className="cursor-pointer rounded-full icon-quiz">
+                          <MdOutlineFolderCopy
+                            color="#6E6E6E"
+                            height={16}
+                            width={16}
+                          />
+                        </a>
+                      </Tooltip>
+                      <Tooltip placement="right" title={"Delete"}>
+                        <a className="cursor-pointer icon-quiz rounded-full">
+                          <RiDeleteBinLine
+                            color="#6E6E6E"
+                            height={16}
+                            width={16}
+                          />
+                        </a>
+                      </Tooltip>
+                    </div>
+                  )}
                 </div>
               </motion.li>
             ))}
@@ -296,7 +322,12 @@ function Create() {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={() => setIsOpen(true)}
-              className="upload-div cursor-pointer gap-y-[16px]"
+              className={`upload-div ${
+                currentQuizData?.type === "Quiz" ||
+                currentQuizData?.type === "Type answer"
+                  ? "upload-div-quiz"
+                  : "upload-div-true-or-false"
+              } cursor-pointer gap-y-[16px]`}
             >
               {!image ? (
                 <div className="flex flex-col gap-y-[16px] justify-center items-center">
@@ -336,34 +367,237 @@ function Create() {
               )}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-[8px]">
-            <div
-              className={`answer-card ${
-                answer1Text ? "bg-red" : "bg-white"
-              } flex gap-x-2 items-center relative`}
-            >
-              <div className="shape-div bg-red">
-                <IoTriangleSharp
-                  className="mx-[8px]"
-                  size="32px"
-                  color="white"
+          {currentQuizData?.type === "Quiz" && (
+            <div className="grid grid-cols-2 gap-[8px]">
+              <div
+                className={`answer-card ${
+                  answer1Text ? "bg-red" : "bg-white"
+                } flex gap-x-2 items-center relative`}
+              >
+                <div className="shape-div bg-red">
+                  <IoTriangleSharp
+                    className="mx-[8px]"
+                    size="32px"
+                    color="white"
+                  />
+                </div>
+                <input
+                  value={answer1Text}
+                  onChange={(e) => {
+                    if (answer1Text?.length > 75) return;
+                    setAnswer1Text(e.target.value);
+                  }}
+                  placeholder="Add answer 1"
+                  className={`${
+                    answer1Text ? "text-white" : "text-black"
+                  } w-full outline-none bg-transparent border-none`}
                 />
-              </div>
-              <input
-                value={answer1Text}
-                onChange={(e) => {
-                  if (answer1Text?.length > 75) return;
-                  setAnswer1Text(e.target.value);
-                }}
-                placeholder="Add answer 1"
-                className={`${
-                  answer1Text ? "text-white" : "text-black"
-                } w-full outline-none bg-transparent border-none`}
-              />
 
-              {answer1Text && (
+                {answer1Text && (
+                  <button
+                    onClick={() => setAnswer1Clicked((prevState) => !prevState)}
+                    onMouseEnter={() => setMouseEnter1(true)}
+                    onMouseLeave={() => setMouseEnter1(false)}
+                    className={`${
+                      answer1Clicked
+                        ? "check-btn-clicked"
+                        : `${
+                            !answer1Clicked &&
+                            !answer2Clicked &&
+                            !answer3Clicked &&
+                            !answer4Clicked
+                              ? "check-btn-animation"
+                              : ""
+                          } check-btn`
+                    }`}
+                  >
+                    <span className={`centang-span`}>
+                      {(mouseEnter1 || answer1Clicked) && (
+                        <img src="centang.svg" className="centang-img" />
+                      )}
+                    </span>
+                  </button>
+                )}
+                <p className="text-white absolute top-1 right-[10px]">
+                  {75 - answer1Text?.length}
+                </p>
+              </div>
+              <div
+                className={`answer-card ${
+                  answer2Text ? "bg-blue" : "bg-white"
+                } flex gap-x-2 items-center`}
+              >
+                <div className="shape-div bg-blue">
+                  <MdHexagon className="mx-[8px]" size="32px" color="white" />
+                </div>
+                <input
+                  value={answer2Text}
+                  onChange={(e) => {
+                    if (answer2Text?.length > 75) return;
+                    setAnswer2Text(e.target.value);
+                  }}
+                  placeholder="Add answer 2"
+                  className={`${
+                    answer2Text ? "text-white" : "text-black"
+                  } w-full outline-none bg-transparent border-none`}
+                />
+
+                {answer2Text && (
+                  <button
+                    onClick={() => setAnswer2Clicked((prevState) => !prevState)}
+                    onMouseEnter={() => setMouseEnter2(true)}
+                    onMouseLeave={() => setMouseEnter2(false)}
+                    className={`${
+                      answer2Clicked
+                        ? "check-btn-clicked"
+                        : `${
+                            !answer1Clicked &&
+                            !answer2Clicked &&
+                            !answer3Clicked &&
+                            !answer4Clicked
+                              ? "check-btn-animation"
+                              : ""
+                          } check-btn`
+                    }`}
+                  >
+                    <span className={`centang-span`}>
+                      {(mouseEnter2 || answer2Clicked) && (
+                        <img src="centang.svg" className="centang-img" />
+                      )}
+                    </span>
+                  </button>
+                )}
+                <p className="text-white absolute top-1 right-[10px]">
+                  {75 - answer2Text?.length}
+                </p>
+              </div>
+              <div
+                className={`answer-card ${
+                  answer3Text ? "bg-orange" : "bg-white"
+                } flex gap-x-2 items-center`}
+              >
+                <div className="shape-div bg-orange">
+                  <FaCircle className="mx-[8px]" size="32px" color="white" />
+                </div>
+                <input
+                  value={answer3Text}
+                  onChange={(e) => {
+                    if (answer3Text?.length > 75) return;
+                    setAnswer3Text(e.target.value);
+                  }}
+                  placeholder="Add answer 3 (optional)"
+                  className={`${
+                    answer3Text ? "text-white" : "text-black"
+                  } w-full outline-none bg-transparent border-none`}
+                />
+
+                {answer3Text && (
+                  <button
+                    onClick={() => setAnswer3Clicked((prevState) => !prevState)}
+                    onMouseEnter={() => setMouseEnter3(true)}
+                    onMouseLeave={() => setMouseEnter3(false)}
+                    className={`${
+                      answer3Clicked
+                        ? "check-btn-clicked"
+                        : `${
+                            !answer1Clicked &&
+                            !answer2Clicked &&
+                            !answer3Clicked &&
+                            !answer4Clicked
+                              ? "check-btn-animation"
+                              : ""
+                          } check-btn`
+                    }`}
+                  >
+                    <span className={`centang-span`}>
+                      {(mouseEnter3 || answer3Clicked) && (
+                        <img src="centang.svg" className="centang-img" />
+                      )}
+                    </span>
+                  </button>
+                )}
+                <p className="text-white absolute top-1 right-[10px]">
+                  {75 - answer3Text?.length}
+                </p>
+              </div>
+              <div
+                className={`answer-card ${
+                  answer4Text ? "bg-dark-green" : "bg-white"
+                } flex gap-x-2 items-center relative`}
+              >
+                <div className="shape-div bg-dark-green">
+                  <FaSquareFull
+                    className="mx-[8px]"
+                    size="32px"
+                    color="white"
+                  />
+                </div>
+                <input
+                  value={answer4Text}
+                  onChange={(e) => {
+                    if (answer4Text?.length > 75) return;
+                    setAnswer4Text(e.target.value);
+                  }}
+                  placeholder="Add answer 4 (optional)"
+                  className={`${
+                    answer4Text ? "text-white" : "text-black"
+                  } w-full outline-none bg-transparent border-none`}
+                />
+
+                {answer4Text && (
+                  <button
+                    onClick={() => setAnswer4Clicked((prevState) => !prevState)}
+                    onMouseEnter={() => setMouseEnter4(true)}
+                    onMouseLeave={() => setMouseEnter4(false)}
+                    className={`${
+                      answer4Clicked
+                        ? "check-btn-clicked"
+                        : `${
+                            !answer1Clicked &&
+                            !answer2Clicked &&
+                            !answer3Clicked &&
+                            !answer4Clicked
+                              ? "check-btn-animation"
+                              : ""
+                          } check-btn`
+                    }`}
+                  >
+                    <span className={`centang-span`}>
+                      {(mouseEnter4 || answer4Clicked) && (
+                        <img src="centang.svg" className="centang-img" />
+                      )}
+                    </span>
+                  </button>
+                )}
+                <p className="text-white absolute top-1 right-[10px]">
+                  {75 - answer4Text?.length}
+                </p>
+              </div>
+            </div>
+          )}
+          {currentQuizData?.type === "True or false" && (
+            <div className="grid grid-cols-2 gap-[8px]">
+              <div
+                className={`answer-card bg-red flex gap-x-2 items-center relative`}
+              >
+                <div className="shape-div bg-red">
+                  <IoTriangleSharp
+                    className="mx-[8px]"
+                    size="32px"
+                    color="white"
+                  />
+                </div>
+                <p className="text-white w-full outline-none bg-transparent border-none">
+                  True
+                </p>
+
                 <button
-                  onClick={() => setAnswer1Clicked((prevState) => !prevState)}
+                  onClick={() => {
+                    if (answer2Clicked || answer1Clicked) {
+                      setAnswer2Clicked((prevState) => !prevState);
+                    }
+                    setAnswer1Clicked((prevState) => !prevState);
+                  }}
                   onMouseEnter={() => setMouseEnter1(true)}
                   onMouseLeave={() => setMouseEnter1(false)}
                   className={`${
@@ -385,34 +619,21 @@ function Create() {
                     )}
                   </span>
                 </button>
-              )}
-              <p className="text-white absolute top-1 right-[10px]">
-                {75 - answer1Text?.length}
-              </p>
-            </div>
-            <div
-              className={`answer-card ${
-                answer2Text ? "bg-blue" : "bg-white"
-              } flex gap-x-2 items-center`}
-            >
-              <div className="shape-div bg-blue">
-                <MdHexagon className="mx-[8px]" size="32px" color="white" />
               </div>
-              <input
-                value={answer2Text}
-                onChange={(e) => {
-                  if (answer2Text?.length > 75) return;
-                  setAnswer2Text(e.target.value);
-                }}
-                placeholder="Add answer 2"
-                className={`${
-                  answer2Text ? "text-white" : "text-black"
-                } w-full outline-none bg-transparent border-none`}
-              />
-
-              {answer2Text && (
+              <div className={`answer-card bg-blue flex gap-x-2 items-center`}>
+                <div className="shape-div bg-blue">
+                  <MdHexagon className="mx-[8px]" size="32px" color="white" />
+                </div>
+                <p className="text-white w-full outline-none bg-transparent border-none">
+                  False
+                </p>
                 <button
-                  onClick={() => setAnswer2Clicked((prevState) => !prevState)}
+                  onClick={() => {
+                    if (answer1Clicked || answer2Clicked) {
+                      setAnswer1Clicked((prevState) => !prevState);
+                    }
+                    setAnswer2Clicked((prevState) => !prevState);
+                  }}
                   onMouseEnter={() => setMouseEnter2(true)}
                   onMouseLeave={() => setMouseEnter2(false)}
                   className={`${
@@ -434,110 +655,172 @@ function Create() {
                     )}
                   </span>
                 </button>
-              )}
-              <p className="text-white absolute top-1 right-[10px]">
-                {75 - answer2Text?.length}
-              </p>
-            </div>
-            <div
-              className={`answer-card ${
-                answer3Text ? "bg-orange" : "bg-white"
-              } flex gap-x-2 items-center`}
-            >
-              <div className="shape-div bg-orange">
-                <FaCircle className="mx-[8px]" size="32px" color="white" />
               </div>
-              <input
-                value={answer3Text}
-                onChange={(e) => {
-                  if (answer3Text?.length > 75) return;
-                  setAnswer3Text(e.target.value);
-                }}
-                placeholder="Add answer 3 (optional)"
-                className={`${
-                  answer3Text ? "text-white" : "text-black"
-                } w-full outline-none bg-transparent border-none`}
-              />
-
-              {answer3Text && (
-                <button
-                  onClick={() => setAnswer3Clicked((prevState) => !prevState)}
-                  onMouseEnter={() => setMouseEnter3(true)}
-                  onMouseLeave={() => setMouseEnter3(false)}
-                  className={`${
-                    answer3Clicked
-                      ? "check-btn-clicked"
-                      : `${
-                          !answer1Clicked &&
-                          !answer2Clicked &&
-                          !answer3Clicked &&
-                          !answer4Clicked
-                            ? "check-btn-animation"
-                            : ""
-                        } check-btn`
+            </div>
+          )}
+          {currentQuizData?.type === "Type answer" && (
+            <div className="flex justify-center flex-col gap-y-2 items-center w-full">
+              <div className="question-div">
+                <div
+                  className={`question-inner-div-answer ${
+                    question?.length > 0 && "bg-red"
                   }`}
                 >
-                  <span className={`centang-span`}>
-                    {(mouseEnter3 || answer3Clicked) && (
-                      <img src="centang.svg" className="centang-img" />
-                    )}
-                  </span>
-                </button>
-              )}
-              <p className="text-white absolute top-1 right-[10px]">
-                {75 - answer3Text?.length}
-              </p>
-            </div>
-            <div
-              className={`answer-card ${
-                answer4Text ? "bg-dark-green" : "bg-white"
-              } flex gap-x-2 items-center relative`}
-            >
-              <div className="shape-div bg-dark-green">
-                <FaSquareFull className="mx-[8px]" size="32px" color="white" />
+                  <div className="question-sub-inner-div">
+                    <div className="question-1-div-answer">
+                      <div className="question-2-div">
+                        <input
+                          value={question}
+                          onChange={(e) => {
+                            if (e.target.value.length > 20) return;
+                            setQuestion(e.target.value);
+                          }}
+                          placeholder="Type an answer"
+                          className={`${
+                            question?.length > 0 ? "text-white" : "text-black"
+                          } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                          type="text"
+                        />
+                        <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
+                          {20 - question?.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <input
-                value={answer4Text}
-                onChange={(e) => {
-                  if (answer4Text?.length > 75) return;
-                  setAnswer4Text(e.target.value);
+              <button
+                onClick={() => {
+                  if (addedAdditionalAnswers > 0) return;
+                  setAddedAdditionalAnswers((prevState) => prevState + 1);
                 }}
-                placeholder="Add answer 4 (optional)"
-                className={`${
-                  answer4Text ? "text-white" : "text-black"
-                } w-full outline-none bg-transparent border-none`}
-              />
-
-              {answer4Text && (
-                <button
-                  onClick={() => setAnswer4Clicked((prevState) => !prevState)}
-                  onMouseEnter={() => setMouseEnter4(true)}
-                  onMouseLeave={() => setMouseEnter4(false)}
-                  className={`${
-                    answer4Clicked
-                      ? "check-btn-clicked"
-                      : `${
-                          !answer1Clicked &&
-                          !answer2Clicked &&
-                          !answer3Clicked &&
-                          !answer4Clicked
-                            ? "check-btn-animation"
-                            : ""
-                        } check-btn`
-                  }`}
-                >
-                  <span className={`centang-span`}>
-                    {(mouseEnter4 || answer4Clicked) && (
-                      <img src="centang.svg" className="centang-img" />
-                    )}
-                  </span>
-                </button>
+                className="shadow-overlay-button"
+              >
+                {addedAdditionalAnswers <= 0
+                  ? "Add other accepted answers"
+                  : `Other accepted answers ${
+                      addedAdditionalAnswers < 3 ? "(" : ""
+                    }${
+                      addedAdditionalAnswers < 3
+                        ? 3 - addedAdditionalAnswers
+                        : ""
+                    }${addedAdditionalAnswers < 3 ? ")" : ""}`}
+              </button>
+              {addedAdditionalAnswers > 0 && (
+                <div className="grid grid-cols-3 gap-4">
+                  {addedAdditionalAnswers > 0 && (
+                    <div className="question-div">
+                      <div
+                        className={`question-answer-full ${
+                          question?.length > 0 && "bg-blue"
+                        }`}
+                      >
+                        <div className="question-sub-inner-div">
+                          <div className="question-1-div-answer">
+                            <div className="question-2-div">
+                              <input
+                                value={question}
+                                onChange={(e) => {
+                                  if (e.target.value.length > 20) return;
+                                  setQuestion(e.target.value);
+                                }}
+                                placeholder="Type an answer"
+                                className={`${
+                                  question?.length > 0
+                                    ? "text-white"
+                                    : "text-black"
+                                } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                                type="text"
+                              />
+                              <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
+                                {20 - question?.length}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {addedAdditionalAnswers > 1 && (
+                    <div className="question-div">
+                      <div
+                        className={`question-answer-full ${
+                          question?.length > 0 && "bg-orange"
+                        }`}
+                      >
+                        <div className="question-sub-inner-div">
+                          <div className="question-1-div-answer">
+                            <div className="question-2-div">
+                              <input
+                                value={question}
+                                onChange={(e) => {
+                                  if (e.target.value.length > 20) return;
+                                  setQuestion(e.target.value);
+                                }}
+                                placeholder="Type an answer"
+                                className={`${
+                                  question?.length > 0
+                                    ? "text-white"
+                                    : "text-black"
+                                } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                                type="text"
+                              />
+                              <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
+                                {20 - question?.length}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {addedAdditionalAnswers > 2 && (
+                    <div className="question-div">
+                      <div
+                        className={`question-answer-full ${
+                          question?.length > 0 && "bg-green-only"
+                        }`}
+                      >
+                        <div className="question-sub-inner-div">
+                          <div className="question-1-div-answer">
+                            <div className="question-2-div">
+                              <input
+                                value={question}
+                                onChange={(e) => {
+                                  if (e.target.value.length > 20) return;
+                                  setQuestion(e.target.value);
+                                }}
+                                placeholder="Type an answer"
+                                className={`${
+                                  question?.length > 0
+                                    ? "text-white"
+                                    : "text-black"
+                                } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                                type="text"
+                              />
+                              <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
+                                {20 - question?.length}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {addedAdditionalAnswers > 0 && addedAdditionalAnswers < 3 && (
+                    <button
+                      onClick={() =>
+                        setAddedAdditionalAnswers((prevState) => prevState + 1)
+                      }
+                      className="shadow-overlay-button"
+                    >
+                      Add more
+                    </button>
+                  )}
+                </div>
               )}
-              <p className="text-white absolute top-1 right-[10px]">
-                {75 - answer4Text?.length}
-              </p>
             </div>
-          </div>
+          )}
         </div>
         <div className="right-sidebar">
           <button className="right-sidebar-btn text-black">
@@ -765,7 +1048,7 @@ function Create() {
                     onClick={() => {
                       const newQuizData = {
                         id: currentId + 1,
-                        title: "Title",
+                        title: "Question",
                         type: "Quiz",
                       };
                       setQuizData((prevState) => [...prevState, newQuizData]);
@@ -782,10 +1065,15 @@ function Create() {
                     onClick={() => {
                       const newQuizData = {
                         id: currentId + 1,
-                        title: "Title",
+                        title: "Question",
                         type: "True or false",
                       };
-                      setQuizData((prevState) => [...prevState, newQuizData]);
+                      setQuizData((prevState) => {
+                        const updatedQuizData = [...prevState, newQuizData];
+                        // setClickedQuizIndex(quizData?.length - 1);
+                        // setCurrentQuizData(newQuizData);
+                        return updatedQuizData;
+                      });
                       setCurrentId((prevState) => prevState + 1);
                       scrollToBottom();
                       toggleModalQuestion();
@@ -799,7 +1087,7 @@ function Create() {
                     onClick={() => {
                       const newQuizData = {
                         id: currentId + 1,
-                        title: "Title",
+                        title: "Question",
                         type: "Type answer",
                       };
                       setQuizData((prevState) => [...prevState, newQuizData]);
