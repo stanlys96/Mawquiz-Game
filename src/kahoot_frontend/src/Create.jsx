@@ -276,11 +276,11 @@ function Create() {
                             ? quiz?.question?.slice(0, 5) + "..."
                             : quiz?.question || "Question"}
                         </p>
-                        <div className="bg-[#F2F2F2] rounded-b-[0.25rem] px-[4px]">
+                        <div className="bg-[#F2F2F2] rounded-b-[0.25rem] px-[4px] flex justify-center items-center">
                           {quizData?.[index]?.imageUrl !== "cdn.svg" ? (
                             <img
                               src={quizData?.[index]?.imageUrl ?? "walaoeh.svg"}
-                              className="rounded-b-[0.25rem] py-[10px] h-[30px] w-[60px]"
+                              className="rounded-b-[0.25rem] py-[10px] h-[30px] w-[30px]"
                             />
                           ) : (
                             <div className="">
@@ -383,10 +383,10 @@ function Create() {
                             ? quiz?.question?.slice(0, 15) + "..."
                             : quiz?.question || "Question"}
                         </p>
-                        <div className="bg-[#F2F2F2] rounded-b-[0.25rem]">
+                        <div className="bg-[#F2F2F2] rounded-b-[0.25rem] flex justify-center items-center">
                           <img
                             src={quizData?.[index]?.imageUrl ?? "walaoeh.svg"}
-                            className="rounded-b-[0.25rem] py-[10px] h-[60px] w-full"
+                            className="rounded-b-[0.25rem] py-[10px] h-[60px] w-[50px] w-full"
                           />
                         </div>
                         <div className="exclamation-container">
@@ -502,7 +502,7 @@ function Create() {
                   <img
                     src={quizData?.[clickedQuizIndex]?.imageUrl ?? "cdn.svg"}
                     alt="Uploaded"
-                    style={{ maxWidth: "100%", height: "auto" }}
+                    className="h-[200px] w-[200px]"
                   />
                 )}
                 {dragging && (
@@ -1146,7 +1146,7 @@ function Create() {
                   <img
                     src={quizData?.[clickedQuizIndex]?.imageUrl ?? "cdn.svg"}
                     alt="Uploaded"
-                    style={{ maxWidth: "100%", height: "auto" }}
+                    className="h-[200px] w-[200px]"
                   />
                 )}
                 {dragging && (
@@ -1671,7 +1671,7 @@ function Create() {
                         <div
                           className={`question-answer-full ${
                             quizData?.[clickedQuizIndex]?.text4?.length > 0 &&
-                            "bg-green-only"
+                            "bg-dark-green"
                           }`}
                         >
                           <div className="question-sub-inner-div">
