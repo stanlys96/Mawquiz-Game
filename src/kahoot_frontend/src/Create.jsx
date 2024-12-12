@@ -332,12 +332,7 @@ function Create() {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={() => setIsOpen(true)}
-              className={`upload-div ${
-                currentQuizData?.type === "Quiz" ||
-                currentQuizData?.type === "Type answer"
-                  ? "upload-div-quiz"
-                  : "upload-div-true-or-false"
-              } cursor-pointer gap-y-[16px]`}
+              className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
             >
               {!quizData?.[clickedQuizIndex]?.imageUrl ? (
                 <div className="flex flex-col gap-y-[16px] justify-center items-center">
@@ -771,7 +766,7 @@ function Create() {
                 }}
                 className="shadow-overlay-button"
               >
-                {quizData?.[clickedQuizIndex]?.additionalAnswers ?? 0 <= 0
+                {(quizData?.[clickedQuizIndex]?.additionalAnswers ?? 0) <= 0
                   ? "Add other accepted answers"
                   : `Other accepted answers ${
                       quizData?.[clickedQuizIndex]?.additionalAnswers < 3
