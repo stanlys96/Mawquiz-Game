@@ -204,15 +204,10 @@ function Create() {
           <div className="flex gap-x-6 items-center w-full">
             <img className="h-[48px]" src="/kahoot-2.png" />
             <div className="kahoot-input-container">
-              <button
-                onClick={toggleModalJiggle}
-                className="kahoot-btn-title font-semibold"
-              >
+              <button className="kahoot-btn-title font-semibold">
                 Enter kahoot title...
               </button>
-              <button onClick={toggleModalJiggle} className="settings-btn">
-                Settings
-              </button>
+              <button className="settings-btn">Settings</button>
             </div>
           </div>
           <div className="flex items-center">
