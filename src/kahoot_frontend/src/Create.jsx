@@ -57,6 +57,9 @@ function Create() {
       answer4Clicked: false,
       additionalAnswers: 0,
       trueOrFalseAnswer: "",
+      timeLimit: 20,
+      answerOptions: "single",
+      imageUrl: "cdn.svg",
     },
   ]);
   const [currentQuizData, setCurrentQuizData] = useState(quizData?.[0]);
@@ -78,7 +81,9 @@ function Create() {
       setIsOpen(false);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImage(e.target.result);
+        let quizTemp = [...quizData];
+        quizTemp[clickedQuizIndex].imageUrl = e.target.result;
+        setQuizData([...quizTemp]);
       };
       reader.readAsDataURL(file);
     }
@@ -96,10 +101,11 @@ function Create() {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = () => {
-        setImage(reader.result); // Convert file to a base64 URL
+        let quizTemp = [...quizData];
+        quizTemp[clickedQuizIndex].imageUrl = reader.result;
+        setQuizData([...quizTemp]);
       };
       reader.readAsDataURL(file);
-      console.log(file, "<<< FILE");
     } else {
       alert("Please drop an image file.");
     }
@@ -155,7 +161,11 @@ function Create() {
     answer4Clicked: false,
     additionalAnswers: 0,
     trueOrFalseAnswer: "",
+    timeLimit: 20,
+    answerOptions: "single",
+    imageUrl: "cdn.svg",
   };
+
   return (
     <main className="background" ref={dropdownRef}>
       <nav className="navbar">
@@ -244,8 +254,8 @@ function Create() {
                       </p>
                       <div className="bg-[#F2F2F2] rounded-b-[0.25rem]">
                         <img
-                          src="/cdn.svg"
-                          className="rounded-b-[0.25rem] py-[10px]"
+                          src={quizData?.[index]?.imageUrl ?? "walaoeh.svg"}
+                          className="rounded-b-[0.25rem] py-[10px] h-[60px] w-full"
                         />
                       </div>
                       <div className="exclamation-container">
@@ -341,7 +351,7 @@ function Create() {
                   : "upload-div-true-or-false"
               } cursor-pointer gap-y-[16px]`}
             >
-              {!image ? (
+              {!quizData?.[clickedQuizIndex]?.imageUrl ? (
                 <div className="flex flex-col gap-y-[16px] justify-center items-center">
                   <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
                   <div className="btn-upload-div">
@@ -362,7 +372,7 @@ function Create() {
                 </div>
               ) : (
                 <img
-                  src={image}
+                  src={quizData?.[clickedQuizIndex]?.imageUrl ?? "cdn.svg"}
                   alt="Uploaded"
                   style={{ maxWidth: "100%", height: "auto" }}
                 />
