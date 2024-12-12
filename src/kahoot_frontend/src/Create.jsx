@@ -15,7 +15,7 @@ import {
 import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { Dropdown, Tooltip, Radio, Input, Space } from "antd";
+import { Dropdown, Tooltip } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { FaPlus } from "react-icons/fa6";
 import {
@@ -27,26 +27,16 @@ import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaCircle, FaSquareFull } from "react-icons/fa";
 import { FaCircleQuestion } from "react-icons/fa6";
-import { Scrollbars } from "react-custom-scrollbars";
 
 function Create() {
   const [currentId, setCurrentId] = useState(1);
   const [isOpenExample, setIsOpenExample] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [openModalQuestion, setOpenModalQuestion] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [answer1Text, setAnswer1Text] = useState("");
   const [mouseEnter1, setMouseEnter1] = useState(false);
-  const [answer1Clicked, setAnswer1Clicked] = useState(false);
-  const [answer2Text, setAnswer2Text] = useState("");
   const [mouseEnter2, setMouseEnter2] = useState(false);
-  const [answer2Clicked, setAnswer2Clicked] = useState(false);
-  const [answer3Text, setAnswer3Text] = useState("");
   const [mouseEnter3, setMouseEnter3] = useState(false);
-  const [answer3Clicked, setAnswer3Clicked] = useState(false);
-  const [answer4Text, setAnswer4Text] = useState("");
   const [mouseEnter4, setMouseEnter4] = useState(false);
-  const [answer4Clicked, setAnswer4Clicked] = useState(false);
   const [image, setImage] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [mouseEnterUl, setMouseEnterUl] = useState(false);
@@ -70,15 +60,8 @@ function Create() {
     },
   ]);
   const [currentQuizData, setCurrentQuizData] = useState(quizData?.[0]);
-  const [addedAdditionalAnswers, setAddedAdditionalAnswers] = useState(0);
 
   const [value, setValue] = useState(1);
-
-  const onChange = (e) => {
-    console.log("radio checked", e.target.value);
-    setValue(e.target.value);
-  };
-
   const handleDragOver = (e) => {
     e.preventDefault(); // Necessary to allow drop
     setDragging(true);
@@ -158,7 +141,21 @@ function Create() {
     },
     exit: { scale: 0.5, opacity: 0 },
   };
-  console.log(quizData[clickedQuizIndex]);
+  const newQuizData = {
+    id: currentId + 1,
+    type: "True or false",
+    question: "",
+    text1: "",
+    text2: "",
+    text3: "",
+    text4: "",
+    answer1Clicked: false,
+    answer2Clicked: false,
+    answer3Clicked: false,
+    answer4Clicked: false,
+    additionalAnswers: 0,
+    trueOrFalseAnswer: "",
+  };
   return (
     <main className="background" ref={dropdownRef}>
       <nav className="navbar">
@@ -324,7 +321,7 @@ function Create() {
                       type="text"
                     />
                     <p className="absolute top-1 text-gray right-1 text-[14px] font-semibold">
-                      {120 - question?.length}
+                      {120 - quizData?.[clickedQuizIndex].question?.length}
                     </p>
                   </div>
                 </div>
@@ -1166,22 +1163,10 @@ function Create() {
                 <div className="flex gap-x-4 items-center justify-center w-full">
                   <div
                     onClick={() => {
-                      const newQuizData = {
-                        id: currentId + 1,
-                        type: "Quiz",
-                        question: "",
-                        text1: "",
-                        text2: "",
-                        text3: "",
-                        text4: "",
-                        answer1Clicked: false,
-                        answer2Clicked: false,
-                        answer3Clicked: false,
-                        answer4Clicked: false,
-                        additionalAnswers: 0,
-                        trueOrFalseAnswer: "",
-                      };
-                      setQuizData((prevState) => [...prevState, newQuizData]);
+                      setQuizData((prevState) => [
+                        ...prevState,
+                        { ...newQuizData, type: "Quiz" },
+                      ]);
                       setCurrentId((prevState) => prevState + 1);
                       scrollToBottom();
                       toggleModalQuestion();
@@ -1193,23 +1178,11 @@ function Create() {
                   </div>
                   <div
                     onClick={() => {
-                      const newQuizData = {
-                        id: currentId + 1,
-                        type: "True or false",
-                        question: "",
-                        text1: "",
-                        text2: "",
-                        text3: "",
-                        text4: "",
-                        answer1Clicked: false,
-                        answer2Clicked: false,
-                        answer3Clicked: false,
-                        answer4Clicked: false,
-                        additionalAnswers: 0,
-                        trueOrFalseAnswer: "",
-                      };
                       setQuizData((prevState) => {
-                        const updatedQuizData = [...prevState, newQuizData];
+                        const updatedQuizData = [
+                          ...prevState,
+                          { ...newQuizData, type: "True or false" },
+                        ];
                         // setClickedQuizIndex(quizData?.length - 1);
                         // setCurrentQuizData(newQuizData);
                         return updatedQuizData;
@@ -1225,22 +1198,10 @@ function Create() {
                   </div>
                   <div
                     onClick={() => {
-                      const newQuizData = {
-                        id: currentId + 1,
-                        type: "Type answer",
-                        question: "",
-                        text1: "",
-                        text2: "",
-                        text3: "",
-                        text4: "",
-                        answer1Clicked: false,
-                        answer2Clicked: false,
-                        answer3Clicked: false,
-                        answer4Clicked: false,
-                        additionalAnswers: 0,
-                        trueOrFalseAnswer: "",
-                      };
-                      setQuizData((prevState) => [...prevState, newQuizData]);
+                      setQuizData((prevState) => [
+                        ...prevState,
+                        { ...newQuizData, type: "Type answer" },
+                      ]);
                       setCurrentId((prevState) => prevState + 1);
                       scrollToBottom();
                       toggleModalQuestion();
