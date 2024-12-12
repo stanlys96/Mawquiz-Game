@@ -29,6 +29,7 @@ import { MdHexagon } from "react-icons/md";
 import { FaCircle, FaSquareFull } from "react-icons/fa";
 import { FaCircleQuestion, FaGear } from "react-icons/fa6";
 import { useMediaQuery } from "react-responsive";
+import { HiDotsVertical } from "react-icons/hi";
 
 function Create() {
   const defaultQuizData = {
@@ -134,6 +135,15 @@ function Create() {
     if (bottomRef.current) {
       setTimeout(() => {
         bottomRef.current.scrollTop = bottomRef.current.scrollHeight;
+      }, 0);
+    }
+  };
+
+  const scrollToEnd = () => {
+    const element = bottomRef.current;
+    if (element) {
+      setTimeout(() => {
+        element.scrollLeft = element.scrollWidth - element.clientWidth;
       }, 0);
     }
   };
@@ -1075,11 +1085,11 @@ function Create() {
         {isMobileOrTablet && (
           <div className="middle-div-mobile mt-[56px] w-full flex flex-col gap-y-4">
             <div className="question-div">
-              <div className="question-inner-div">
-                <div className="question-sub-inner-div">
-                  <div className="question-1-div">
-                    <div className="question-2-div">
-                      <div className="flex gap-x-2 items-center">
+              <div className="flex gap-x-2 items-center">
+                <div className="question-inner-div">
+                  <div className="question-sub-inner-div">
+                    <div className="question-1-div">
+                      <div className="question-2-div">
                         <input
                           value={quizData?.[clickedQuizIndex]?.question ?? ""}
                           onChange={(e) => {
@@ -1099,6 +1109,9 @@ function Create() {
                       </p>
                     </div>
                   </div>
+                </div>
+                <div className="three-dots-container flex justify-center items-center">
+                  <HiDotsVertical size="24px" color="black" />
                 </div>
               </div>
             </div>
@@ -1403,93 +1416,100 @@ function Create() {
             {currentQuizData?.type === "True or false" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
-                  className={`answer-card bg-red flex gap-x-2 items-center relative`}
+                  className={`answer-card bg-red flex flex-col gap-x-2 items-center relative`}
                 >
-                  <div className="shape-div bg-red">
-                    <IoTriangleSharp
-                      className="mx-[8px]"
-                      size="32px"
-                      color="white"
-                    />
+                  <div className="flex justify-between w-full mt-[8px]">
+                    <div className="shape-div-mobile bg-red p-[3px]">
+                      <MdHexagon className="" size="16px" color="white" />
+                    </div>
+                    <button
+                      onClick={() => {
+                        let quizTemp = [...quizData];
+                        if (
+                          quizTemp[clickedQuizIndex].trueOrFalseAnswer ===
+                          "true"
+                        ) {
+                          quizTemp[clickedQuizIndex].trueOrFalseAnswer =
+                            "false";
+                        } else {
+                          quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
+                        }
+                        setQuizData([...quizTemp]);
+                      }}
+                      onMouseEnter={() => setMouseEnter2(true)}
+                      onMouseLeave={() => setMouseEnter2(false)}
+                      className={`${
+                        quizData[clickedQuizIndex].trueOrFalseAnswer === "true"
+                          ? "check-btn-mobile-clicked"
+                          : `${
+                              !quizData[clickedQuizIndex].trueOrFalseAnswer
+                                ? "check-btn-animation"
+                                : ""
+                            } check-btn-mobile`
+                      }`}
+                    >
+                      <span className={`centang-span-mobile`}>
+                        {quizData[clickedQuizIndex].trueOrFalseAnswer ===
+                          "true" && (
+                          <img
+                            src="centang.svg"
+                            className="centang-img-mobile"
+                          />
+                        )}
+                      </span>
+                    </button>
                   </div>
-                  <p className="text-white w-full outline-none bg-transparent border-none">
+                  <p className="text-white w-full pl-[8px] outline-none bg-transparent border-none">
                     True
                   </p>
-
-                  <button
-                    onClick={() => {
-                      let quizTemp = [...quizData];
-                      if (
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer === "true"
-                      ) {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "false";
-                      } else {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
-                      }
-                      setQuizData([...quizTemp]);
-                    }}
-                    onMouseEnter={() => setMouseEnter1(true)}
-                    onMouseLeave={() => setMouseEnter1(false)}
-                    className={`${
-                      quizData[clickedQuizIndex]?.trueOrFalseAnswer === "true"
-                        ? "check-btn-clicked"
-                        : `${
-                            !quizData[clickedQuizIndex]?.trueOrFalseAnswer
-                              ? "check-btn-animation"
-                              : ""
-                          } check-btn`
-                    }`}
-                  >
-                    <span className={`centang-span`}>
-                      {(mouseEnter1 ||
-                        quizData[clickedQuizIndex].trueOrFalseAnswer ===
-                          "true") && (
-                        <img src="centang.svg" className="centang-img" />
-                      )}
-                    </span>
-                  </button>
                 </div>
                 <div
-                  className={`answer-card bg-blue flex gap-x-2 items-center`}
+                  className={`answer-card bg-blue flex flex-col gap-x-2 items-center relative`}
                 >
-                  <div className="shape-div bg-blue">
-                    <MdHexagon className="mx-[8px]" size="32px" color="white" />
+                  <div className="flex justify-between w-full mt-[8px]">
+                    <div className="shape-div-mobile bg-blue p-[3px]">
+                      <IoTriangleSharp className="" size="16px" color="white" />
+                    </div>
+                    <button
+                      onClick={() => {
+                        let quizTemp = [...quizData];
+                        if (
+                          quizTemp[clickedQuizIndex].trueOrFalseAnswer ===
+                          "false"
+                        ) {
+                          quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
+                        } else {
+                          quizTemp[clickedQuizIndex].trueOrFalseAnswer =
+                            "false";
+                        }
+                        setQuizData([...quizTemp]);
+                      }}
+                      onMouseEnter={() => setMouseEnter2(true)}
+                      onMouseLeave={() => setMouseEnter2(false)}
+                      className={`${
+                        quizData[clickedQuizIndex].trueOrFalseAnswer === "false"
+                          ? "check-btn-mobile-clicked"
+                          : `${
+                              !quizData[clickedQuizIndex].trueOrFalseAnswer
+                                ? "check-btn-animation"
+                                : ""
+                            } check-btn-mobile`
+                      }`}
+                    >
+                      <span className={`centang-span-mobile`}>
+                        {quizData[clickedQuizIndex].trueOrFalseAnswer ===
+                          "false" && (
+                          <img
+                            src="centang.svg"
+                            className="centang-img-mobile"
+                          />
+                        )}
+                      </span>
+                    </button>
                   </div>
-                  <p className="text-white w-full outline-none bg-transparent border-none">
+                  <p className="text-white w-full pl-[8px] outline-none bg-transparent border-none">
                     False
                   </p>
-                  <button
-                    onClick={() => {
-                      let quizTemp = [...quizData];
-                      if (
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer === "false"
-                      ) {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
-                      } else {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "false";
-                      }
-                      setQuizData([...quizTemp]);
-                    }}
-                    onMouseEnter={() => setMouseEnter2(true)}
-                    onMouseLeave={() => setMouseEnter2(false)}
-                    className={`${
-                      quizData[clickedQuizIndex].trueOrFalseAnswer === "false"
-                        ? "check-btn-clicked"
-                        : `${
-                            !quizData[clickedQuizIndex].trueOrFalseAnswer
-                              ? "check-btn-animation"
-                              : ""
-                          } check-btn`
-                    }`}
-                  >
-                    <span className={`centang-span`}>
-                      {(mouseEnter2 ||
-                        quizData[clickedQuizIndex].trueOrFalseAnswer ===
-                          "false") && (
-                        <img src="centang.svg" className="centang-img" />
-                      )}
-                    </span>
-                  </button>
                 </div>
               </div>
             )}
@@ -1980,7 +2000,11 @@ function Create() {
                         { ...newQuizData, type: "Quiz" },
                       ]);
                       setCurrentId((prevState) => prevState + 1);
-                      scrollToBottom();
+                      if (isMobileOrTablet) {
+                        scrollToEnd();
+                      } else {
+                        scrollToBottom();
+                      }
                       toggleModalQuestion();
                     }}
                     className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
@@ -2000,7 +2024,11 @@ function Create() {
                         return updatedQuizData;
                       });
                       setCurrentId((prevState) => prevState + 1);
-                      scrollToBottom();
+                      if (isMobileOrTablet) {
+                        scrollToEnd();
+                      } else {
+                        scrollToBottom();
+                      }
                       toggleModalQuestion();
                     }}
                     className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
@@ -2015,7 +2043,11 @@ function Create() {
                         { ...newQuizData, type: "Type answer" },
                       ]);
                       setCurrentId((prevState) => prevState + 1);
-                      scrollToBottom();
+                      if (isMobileOrTablet) {
+                        scrollToEnd();
+                      } else {
+                        scrollToBottom();
+                      }
                       toggleModalQuestion();
                     }}
                     className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
