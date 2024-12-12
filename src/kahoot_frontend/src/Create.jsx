@@ -1931,8 +1931,35 @@ function Create() {
               </Dropdown>
             </div>
             <div className="right-sidebar-bottom mt-auto flex gap-x-2">
-              <button className="delete-btn">Delete</button>
-              <button className="duplicate-btn">Duplicate</button>
+              {quizData?.length > 1 && (
+                <button
+                  onClick={() => {
+                    if (quizData?.length === 1) return;
+                    toggleModalJiggle();
+                  }}
+                  className="delete-btn"
+                >
+                  Delete
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  let quizTemp = [...quizData];
+                  quizTemp.splice(clickedQuizIndex + 1, 0, {
+                    ...quizData?.[clickedQuizIndex],
+                    id: currentId + 1,
+                  });
+                  setCurrentId((prevState) => prevState + 1);
+                  if (clickedQuizIndex === quizData?.length - 1) {
+                    scrollToEnd();
+                  }
+                  setQuizData([...quizTemp]);
+                  handleOpenChange(false);
+                }}
+                className="duplicate-btn"
+              >
+                Duplicate
+              </button>
             </div>
           </div>
         )}
