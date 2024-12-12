@@ -1517,7 +1517,7 @@ function Create() {
               <div className="flex justify-center flex-col gap-y-2 items-center w-full">
                 <div className="question-div">
                   <div
-                    className={`question-inner-div-answer ${
+                    className={`question-inner-div-answer-mobile ${
                       quizData[clickedQuizIndex]?.text1?.length > 0 && "bg-red"
                     }`}
                   >
@@ -1579,9 +1579,9 @@ function Create() {
                       }`}
                 </button>
                 {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 && (
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col w-full gap-y-4">
                     {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 && (
-                      <div className="question-div">
+                      <div className="question-div w-full">
                         <div
                           className={`question-answer-full ${
                             quizData?.[clickedQuizIndex]?.text2?.length > 0 &&
@@ -1709,20 +1709,23 @@ function Create() {
                         </div>
                       </div>
                     )}
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 &&
-                      quizData?.[clickedQuizIndex]?.additionalAnswers < 3 && (
-                        <button
-                          onClick={() => {
-                            let quizTemp = [...quizData];
-                            quizTemp[clickedQuizIndex].additionalAnswers =
-                              quizTemp[clickedQuizIndex].additionalAnswers + 1;
-                            setQuizData([...quizTemp]);
-                          }}
-                          className="shadow-overlay-button"
-                        >
-                          Add more
-                        </button>
-                      )}
+                    <div className="flex justify-center items-center">
+                      {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 &&
+                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3 && (
+                          <button
+                            onClick={() => {
+                              let quizTemp = [...quizData];
+                              quizTemp[clickedQuizIndex].additionalAnswers =
+                                quizTemp[clickedQuizIndex].additionalAnswers +
+                                1;
+                              setQuizData([...quizTemp]);
+                            }}
+                            className="shadow-overlay-button"
+                          >
+                            Add more
+                          </button>
+                        )}
+                    </div>
                   </div>
                 )}
               </div>
