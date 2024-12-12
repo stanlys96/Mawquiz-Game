@@ -29,6 +29,22 @@ import { FaCircle, FaSquareFull } from "react-icons/fa";
 import { FaCircleQuestion } from "react-icons/fa6";
 
 function Create() {
+  const defaultQuizData = {
+    question: "",
+    text1: "",
+    text2: "",
+    text3: "",
+    text4: "",
+    answer1Clicked: false,
+    answer2Clicked: false,
+    answer3Clicked: false,
+    answer4Clicked: false,
+    additionalAnswers: 0,
+    trueOrFalseAnswer: "",
+    timeLimit: 20,
+    answerOptions: "single",
+    imageUrl: "cdn.svg",
+  };
   const [currentId, setCurrentId] = useState(1);
   const [isOpenExample, setIsOpenExample] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +53,6 @@ function Create() {
   const [mouseEnter2, setMouseEnter2] = useState(false);
   const [mouseEnter3, setMouseEnter3] = useState(false);
   const [mouseEnter4, setMouseEnter4] = useState(false);
-  const [image, setImage] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [mouseEnterUl, setMouseEnterUl] = useState(false);
   const [clickedQuizIndex, setClickedQuizIndex] = useState(0);
@@ -46,25 +61,11 @@ function Create() {
     {
       id: currentId,
       type: "Quiz",
-      question: "",
-      text1: "",
-      text2: "",
-      text3: "",
-      text4: "",
-      answer1Clicked: false,
-      answer2Clicked: false,
-      answer3Clicked: false,
-      answer4Clicked: false,
-      additionalAnswers: 0,
-      trueOrFalseAnswer: "",
-      timeLimit: 20,
-      answerOptions: "single",
-      imageUrl: "cdn.svg",
+      ...defaultQuizData,
     },
   ]);
   const [currentQuizData, setCurrentQuizData] = useState(quizData?.[0]);
 
-  const [value, setValue] = useState(1);
   const handleDragOver = (e) => {
     e.preventDefault(); // Necessary to allow drop
     setDragging(true);
@@ -149,21 +150,7 @@ function Create() {
   };
   const newQuizData = {
     id: currentId + 1,
-    type: "True or false",
-    question: "",
-    text1: "",
-    text2: "",
-    text3: "",
-    text4: "",
-    answer1Clicked: false,
-    answer2Clicked: false,
-    answer3Clicked: false,
-    answer4Clicked: false,
-    additionalAnswers: 0,
-    trueOrFalseAnswer: "",
-    timeLimit: 20,
-    answerOptions: "single",
-    imageUrl: "cdn.svg",
+    ...defaultQuizData,
   };
 
   return (
@@ -963,7 +950,13 @@ function Create() {
             </div>
             <Dropdown
               className="dropdown-sidebar mt-3 w-full text-black"
-              menu={{ items: questionTypeItems }}
+              menu={{
+                items: questionTypeItems((questionType) => {
+                  let quizDataTemp = [...quizData];
+                  quizDataTemp[clickedQuizIndex].type = questionType;
+                  setQuizData([...quizDataTemp]);
+                }),
+              }}
               trigger={["click"]}
             >
               <a
@@ -984,7 +977,13 @@ function Create() {
             </div>
             <Dropdown
               className="dropdown-sidebar mt-3 w-full text-black"
-              menu={{ items: timeLimitItems }}
+              menu={{
+                items: timeLimitItems((timeLimit) => {
+                  let quizDataTemp = [...quizData];
+                  quizDataTemp[clickedQuizIndex].timeLimit = timeLimit;
+                  setQuizData([...quizDataTemp]);
+                }),
+              }}
               trigger={["click"]}
             >
               <a
@@ -1004,7 +1003,13 @@ function Create() {
             </div>
             <Dropdown
               className="dropdown-sidebar mt-3 w-full text-black"
-              menu={{ items: answerOptionsItems }}
+              menu={{
+                items: answerOptionsItems((answerOptions) => {
+                  let quizDataTemp = [...quizData];
+                  quizDataTemp[clickedQuizIndex].answerOptions = answerOptions;
+                  setQuizData([...quizDataTemp]);
+                }),
+              }}
               trigger={["click"]}
             >
               <a
