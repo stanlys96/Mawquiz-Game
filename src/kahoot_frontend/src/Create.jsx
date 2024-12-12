@@ -50,7 +50,7 @@ function Create() {
   };
   const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1024px)" });
   const [currentId, setCurrentId] = useState(1);
-  const [isOpenExample, setIsOpenExample] = useState(false);
+  const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [openModalQuestion, setOpenModalQuestion] = useState(false);
   const [mouseEnter1, setMouseEnter1] = useState(false);
@@ -69,8 +69,8 @@ function Create() {
       ...defaultQuizData,
     },
   ]);
-  const [currentQuizData, setCurrentQuizData] = useState(quizData?.[0]);
   const [open, setOpen] = useState(false);
+  const [flexibleClickedQuizIndex, setFlexibleClickedQuizIndex] = useState(-1);
 
   const hide = () => {
     setOpen(false);
@@ -130,8 +130,8 @@ function Create() {
     setIsOpen(!isOpen);
   };
 
-  const toggleModal = () => {
-    setIsOpenExample(!isOpenExample);
+  const toggleModalJiggle = () => {
+    setIsOpenModalJiggle(!isOpenModalJiggle);
   };
 
   const toggleModalQuestion = () => {
@@ -183,12 +183,15 @@ function Create() {
             <img className="h-[36px]" src="/kahoot-2.png" />
             <div className="kahoot-input-container">
               <button
-                onClick={toggleModal}
+                onClick={toggleModalJiggle}
                 className="kahoot-btn-title font-semibold"
               >
                 Enter kahoot title...
               </button>
-              <button onClick={toggleModal} className="settings-btn-mobile">
+              <button
+                onClick={toggleModalJiggle}
+                className="settings-btn-mobile"
+              >
                 <FaGear size="16px" />
               </button>
             </div>
@@ -208,12 +211,12 @@ function Create() {
             <img className="h-[48px]" src="/kahoot-2.png" />
             <div className="kahoot-input-container">
               <button
-                onClick={toggleModal}
+                onClick={toggleModalJiggle}
                 className="kahoot-btn-title font-semibold"
               >
                 Enter kahoot title...
               </button>
-              <button onClick={toggleModal} className="settings-btn">
+              <button onClick={toggleModalJiggle} className="settings-btn">
                 Settings
               </button>
             </div>
@@ -271,7 +274,6 @@ function Create() {
                       <div
                         onClick={() => {
                           setClickedQuizIndex(index);
-                          setCurrentQuizData(quiz);
                         }}
                         className={`${
                           clickedQuizIndex === index
@@ -378,7 +380,6 @@ function Create() {
                       <div
                         onClick={() => {
                           setClickedQuizIndex(index);
-                          setCurrentQuizData(quiz);
                         }}
                         className={`${
                           clickedQuizIndex === index
@@ -416,8 +417,26 @@ function Create() {
                             />
                           </a>
                         </Tooltip>
-                        <Tooltip placement="right" title={"Delete"}>
-                          <a className="cursor-pointer icon-quiz rounded-full">
+                        <Tooltip
+                          placement="right"
+                          title={
+                            quizData?.length === 1
+                              ? "Can't delete all content"
+                              : "Delete"
+                          }
+                        >
+                          <a
+                            onClick={() => {
+                              if (quizData?.length === 1) return;
+                              setFlexibleClickedQuizIndex(index);
+                              toggleModalJiggle();
+                            }}
+                            className={`${
+                              quizData?.length === 1
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            } icon-quiz rounded-full`}
+                          >
                             <RiDeleteBinLine
                               color="#6E6E6E"
                               height={16}
@@ -527,7 +546,7 @@ function Create() {
                 )}
               </div>
             </div>
-            {currentQuizData?.type === "Quiz" && (
+            {quizData?.[clickedQuizIndex]?.type === "Quiz" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card ${
@@ -783,7 +802,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {currentQuizData?.type === "True or false" && (
+            {quizData?.[clickedQuizIndex]?.type === "True or false" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card bg-red flex gap-x-2 items-center relative`}
@@ -876,7 +895,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {currentQuizData?.type === "Type answer" && (
+            {quizData?.[clickedQuizIndex]?.type === "Type answer" && (
               <div className="flex justify-center flex-col gap-y-2 items-center w-full">
                 <div className="question-div">
                   <div
@@ -1128,6 +1147,7 @@ function Create() {
                         onClick={() => {
                           setOpenModalQuestion(true);
                           setIsChangingQuestionType(true);
+                          handleOpenChange(false);
                         }}
                         className="flex gap-x-2 items-center"
                       >
@@ -1139,9 +1159,20 @@ function Create() {
                       <div className="flex gap-x-2 items-center">
                         <p className="montserrat">Duplicate</p>
                       </div>
-                      <div className="flex gap-x-2 items-center">
-                        <p className="montserrat">Delete</p>
-                      </div>
+                      {quizData?.length > 1 && (
+                        <div
+                          onClick={() => {
+                            if (quizData?.length === 1) {
+                              return;
+                            }
+                            toggleModalJiggle();
+                            handleOpenChange(false);
+                          }}
+                          className="flex gap-x-2 items-center"
+                        >
+                          <p className="montserrat">Delete</p>
+                        </div>
+                      )}
                     </div>
                   }
                   trigger="click"
@@ -1200,7 +1231,7 @@ function Create() {
                 )}
               </div>
             </div>
-            {currentQuizData?.type === "Quiz" && (
+            {quizData?.[clickedQuizIndex]?.type === "Quiz" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card ${
@@ -1452,7 +1483,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {currentQuizData?.type === "True or false" && (
+            {quizData?.[clickedQuizIndex]?.type === "True or false" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card bg-red flex flex-col gap-x-2 items-center relative`}
@@ -1552,7 +1583,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {currentQuizData?.type === "Type answer" && (
+            {quizData?.[clickedQuizIndex]?.type === "Type answer" && (
               <div className="flex justify-center flex-col gap-y-2 items-center w-full">
                 <div className="question-div">
                   <div
@@ -1975,10 +2006,10 @@ function Create() {
           </div>
         )}
       </AnimatePresence>
-      {isOpenExample && (
+      {isOpenModalJiggle && (
         <div
           className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
-          onClick={toggleModal}
+          onClick={toggleModalJiggle}
         >
           <motion.div
             className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
@@ -1997,24 +2028,62 @@ function Create() {
             }}
           >
             <button
-              onClick={toggleModal}
+              onClick={toggleModalJiggle}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
               ✕
             </button>
             <h2 className="text-xl font-semibold mb-4 text-black">
-              Jiggle Modal
+              Delete {quizData?.[flexibleClickedQuizIndex]?.type} question
             </h2>
             <p className="text-gray-600 mb-4">
-              This modal juggles both angular rotation and horizontal movement,
-              creating a playful jiggle effect!
+              Are you sure you want to delete this question? This action can’t
+              be undone.
             </p>
-            <button
-              onClick={toggleModal}
-              className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition"
-            >
-              Close Modal
-            </button>
+            <div className="flex gap-x-2 items-center justify-center">
+              <button onClick={toggleModalJiggle} className="cancel-btn">
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  let quizTemp = [...quizData];
+                  if (flexibleClickedQuizIndex !== -1) {
+                    quizTemp.splice(flexibleClickedQuizIndex, 1);
+                    if (clickedQuizIndex === flexibleClickedQuizIndex) {
+                      setClickedQuizIndex((prevState) => {
+                        setQuizData([...quizTemp]);
+                        if (clickedQuizIndex === 0) {
+                          return prevState;
+                        }
+                        return prevState - 1;
+                      });
+                    } else {
+                      if (clickedQuizIndex < flexibleClickedQuizIndex) {
+                        setQuizData([...quizTemp]);
+                      } else if (clickedQuizIndex > flexibleClickedQuizIndex) {
+                        setClickedQuizIndex((prevState) => {
+                          setQuizData([...quizTemp]);
+                          return prevState - 1;
+                        });
+                      }
+                    }
+                  } else {
+                    quizTemp.splice(clickedQuizIndex, 1);
+                    setClickedQuizIndex((prevState) => {
+                      setQuizData([...quizTemp]);
+                      if (clickedQuizIndex === 0) {
+                        return prevState;
+                      }
+                      return prevState - 1;
+                    });
+                  }
+                  toggleModalJiggle();
+                }}
+                className="delete-modal-btn"
+              >
+                Delete
+              </button>
+            </div>
           </motion.div>
         </div>
       )}
@@ -2035,93 +2104,96 @@ function Create() {
               <div className="mt-[24px]">
                 <p className="text-black mb-[12px]">Choose Question Type:</p>
                 <div className="flex gap-x-4 lg:flex-row flex-col gap-y-4 items-center justify-center w-full">
-                  {isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.type !== "Quiz" && (
-                      <div
-                        onClick={() => {
-                          if (!isChangingQuestionType) {
-                            setQuizData((prevState) => [
-                              ...prevState,
-                              { ...newQuizData, type: "Quiz" },
-                            ]);
-                            setCurrentId((prevState) => prevState + 1);
-                            if (isMobileOrTablet) {
-                              scrollToEnd();
-                            } else {
-                              scrollToBottom();
-                            }
+                  {((isChangingQuestionType &&
+                    quizData?.[clickedQuizIndex]?.type !== "Quiz") ||
+                    !isChangingQuestionType) && (
+                    <div
+                      onClick={() => {
+                        if (!isChangingQuestionType) {
+                          setQuizData((prevState) => [
+                            ...prevState,
+                            { ...newQuizData, type: "Quiz" },
+                          ]);
+                          setCurrentId((prevState) => prevState + 1);
+                          if (isMobileOrTablet) {
+                            scrollToEnd();
                           } else {
-                            let quizTemp = [...quizData];
-                            quizTemp[clickedQuizIndex].type = "Quiz";
-                            setQuizData([...quizTemp]);
+                            scrollToBottom();
                           }
-                          setIsChangingQuestionType(false);
-                          toggleModalQuestion();
-                        }}
-                        className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
-                      >
-                        <MdQuiz color="black" size="30px" />
-                        <p className="text-black">Quiz</p>
-                      </div>
-                    )}
-                  {isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.type !== "True or false" && (
-                      <div
-                        onClick={() => {
-                          if (!isChangingQuestionType) {
-                            setQuizData((prevState) => [
-                              ...prevState,
-                              { ...newQuizData, type: "True or false" },
-                            ]);
-                            setCurrentId((prevState) => prevState + 1);
-                            if (isMobileOrTablet) {
-                              scrollToEnd();
-                            } else {
-                              scrollToBottom();
-                            }
+                        } else {
+                          let quizTemp = [...quizData];
+                          quizTemp[clickedQuizIndex].type = "Quiz";
+                          setQuizData([...quizTemp]);
+                        }
+                        setIsChangingQuestionType(false);
+                        toggleModalQuestion();
+                      }}
+                      className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
+                    >
+                      <MdQuiz color="black" size="30px" />
+                      <p className="text-black">Quiz</p>
+                    </div>
+                  )}
+                  {((isChangingQuestionType &&
+                    quizData?.[clickedQuizIndex]?.type !== "True or false") ||
+                    !isChangingQuestionType) && (
+                    <div
+                      onClick={() => {
+                        if (!isChangingQuestionType) {
+                          setQuizData((prevState) => [
+                            ...prevState,
+                            { ...newQuizData, type: "True or false" },
+                          ]);
+                          setCurrentId((prevState) => prevState + 1);
+                          if (isMobileOrTablet) {
+                            scrollToEnd();
                           } else {
-                            let quizTemp = [...quizData];
-                            quizTemp[clickedQuizIndex].type = "True or false";
-                            setQuizData([...quizTemp]);
+                            scrollToBottom();
                           }
-                          setIsChangingQuestionType(false);
-                          toggleModalQuestion();
-                        }}
-                        className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
-                      >
-                        <VscSymbolBoolean color="black" size="30px" />
-                        <p className="text-black">True or false</p>
-                      </div>
-                    )}
-                  {isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.type !== "Type answer" && (
-                      <div
-                        onClick={() => {
-                          if (!isChangingQuestionType) {
-                            setQuizData((prevState) => [
-                              ...prevState,
-                              { ...newQuizData, type: "Type answer" },
-                            ]);
-                            setCurrentId((prevState) => prevState + 1);
-                            if (isMobileOrTablet) {
-                              scrollToEnd();
-                            } else {
-                              scrollToBottom();
-                            }
+                        } else {
+                          let quizTemp = [...quizData];
+                          quizTemp[clickedQuizIndex].type = "True or false";
+                          setQuizData([...quizTemp]);
+                        }
+                        setIsChangingQuestionType(false);
+                        toggleModalQuestion();
+                      }}
+                      className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
+                    >
+                      <VscSymbolBoolean color="black" size="30px" />
+                      <p className="text-black">True or false</p>
+                    </div>
+                  )}
+                  {((isChangingQuestionType &&
+                    quizData?.[clickedQuizIndex]?.type !== "Type answer") ||
+                    !isChangingQuestionType) && (
+                    <div
+                      onClick={() => {
+                        if (!isChangingQuestionType) {
+                          setQuizData((prevState) => [
+                            ...prevState,
+                            { ...newQuizData, type: "Type answer" },
+                          ]);
+                          setCurrentId((prevState) => prevState + 1);
+                          if (isMobileOrTablet) {
+                            scrollToEnd();
                           } else {
-                            let quizTemp = [...quizData];
-                            quizTemp[clickedQuizIndex].type = "Type answer";
-                            setQuizData([...quizTemp]);
+                            scrollToBottom();
                           }
-                          setIsChangingQuestionType(false);
-                          toggleModalQuestion();
-                        }}
-                        className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
-                      >
-                        <TiMessageTyping color="black" size="30px" />
-                        <p className="text-black">Type answer</p>
-                      </div>
-                    )}
+                        } else {
+                          let quizTemp = [...quizData];
+                          quizTemp[clickedQuizIndex].type = "Type answer";
+                          setQuizData([...quizTemp]);
+                        }
+                        setIsChangingQuestionType(false);
+                        toggleModalQuestion();
+                      }}
+                      className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
+                    >
+                      <TiMessageTyping color="black" size="30px" />
+                      <p className="text-black">Type answer</p>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="close-toggle-button">
