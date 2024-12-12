@@ -186,3 +186,22 @@ export const answerOptionsItems = (callback) => [
     key: "2",
   },
 ];
+
+export const convertSecondsToMinutes = (seconds) => {
+  if (seconds < 0 || !Number.isInteger(seconds)) {
+    return `0 seconds`;
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (minutes === 0) {
+    return `${seconds} seconds`;
+  } else if (remainingSeconds === 0) {
+    return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+  } else {
+    return `${minutes} minute${
+      minutes > 1 ? "s" : ""
+    } ${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
+  }
+};

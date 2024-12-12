@@ -22,6 +22,7 @@ import {
   questionTypeItems,
   timeLimitItems,
   answerOptionsItems,
+  convertSecondsToMinutes,
 } from "./helper/helper";
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
@@ -964,8 +965,16 @@ function Create() {
                 onClick={(e) => e.preventDefault()}
               >
                 <div className="flex items-center gap-x-2">
-                  <MdQuiz />
-                  <p className="text-black">Quiz</p>
+                  {quizData?.[clickedQuizIndex]?.type === "Quiz" ? (
+                    <MdQuiz />
+                  ) : quizData?.[clickedQuizIndex]?.type === "True or false" ? (
+                    <VscSymbolBoolean />
+                  ) : (
+                    <TiMessageTyping />
+                  )}
+                  <p className="text-black">
+                    {quizData?.[clickedQuizIndex]?.type}
+                  </p>
                 </div>
                 <DownOutlined />
               </a>
@@ -990,7 +999,11 @@ function Create() {
                 className="flex justify-between items-center px-[10px]"
                 onClick={(e) => e.preventDefault()}
               >
-                <div className="flex items-center gap-x-2">20 seconds</div>
+                <div className="flex items-center gap-x-2">
+                  {convertSecondsToMinutes(
+                    quizData?.[clickedQuizIndex]?.timeLimit
+                  )}
+                </div>
                 <DownOutlined />
               </a>
             </Dropdown>
@@ -1016,7 +1029,13 @@ function Create() {
                 className="flex justify-between items-center px-[10px]"
                 onClick={(e) => e.preventDefault()}
               >
-                <div className="flex items-center gap-x-2">Single select</div>
+                <div className="flex items-center gap-x-2">
+                  {quizData?.[
+                    clickedQuizIndex
+                  ]?.answerOptions?.[0]?.toUpperCase() +
+                    quizData?.[clickedQuizIndex]?.answerOptions?.slice(1)}{" "}
+                  select
+                </div>
                 <DownOutlined />
               </a>
             </Dropdown>
