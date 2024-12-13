@@ -3004,6 +3004,14 @@ html {
   min-width: 120px;
 }
 
+.main-profile > * {
+  z-index: 100;
+}
+
+.img-home {
+  z-index: 0 !important;
+}
+
 @media (pointer: fine) {
   .question-btn:hover::after {
     content: "";

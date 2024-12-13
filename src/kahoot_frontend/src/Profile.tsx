@@ -13,9 +13,7 @@ function Profile() {
   const [category, setCategory] = useState("kahoot");
   return (
     <main className="background flex justify-center items-center">
-      <div className="circle-bg" />
-      <div className="square-bg" />
-      <div className="flex flex-col profile justify-center items-center gap-y-3">
+      <div className="flex main-profile flex-col justify-center items-center gap-y-3">
         <div className="absolute top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
           <IoPersonCircle className="w-[32px] h-[32px] purple-bg rounded-full" />
           <p className="dark-text">{principal?.slice(0, 25) + "..."}</p>
@@ -103,6 +101,8 @@ function Profile() {
           </div>
         </div>
       </div>
+      <div className="circle-bg" />
+      <div className="square-bg" />
     </main>
   );
 }
