@@ -2890,6 +2890,29 @@ html {
   cursor: pointer;
 }
 
+.cancel-red-btn {
+  background-color: rgb(226, 27, 60);
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 120px;
+  min-height: 42px;
+  padding: 0px 16px 4px;
+  position: relative;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  cursor: pointer;
+}
+
 .delete-modal-btn {
   /* width: 100%; */
   margin: 0px;
@@ -2955,6 +2978,30 @@ html {
   resize: none;
   overflow: auto;
   padding: 0.75rem 3rem 0.75rem 1rem;
+}
+
+.exit-kahoot-btn {
+  /* width: 100%; */
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
+  background: rgb(19, 104, 206);
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-height: 42px;
+  padding: 0px 16px 4px;
+  position: relative;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  cursor: pointer;
+  min-width: 120px;
 }
 
 @media (pointer: fine) {

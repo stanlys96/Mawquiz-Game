@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setPrincipal } from "../stores/user-slice";
+import { useDispatch, useSelector } from "react-redux";
+import { settingPrincipal } from "../stores/user-slice";
 import { IoPersonCircle } from "react-icons/io5";
+import { Principal } from "@dfinity/principal";
 import IC from "./utils/IC";
 
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [backend, setBackend] = useState();
   const [loading, setLoading] = useState(false);
   const [identity, setIdentity] = useState("");
+  const { principal } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    IC.getBackend((result) => {
+      setBackend(result);
+    });
+  }, []);
   return (
     <main className="background flex justify-center items-center">
       <div className="circle-bg" />
@@ -59,13 +68,17 @@ function Home() {
                 IC.getAuth(async (authClient) => {
                   authClient.login({
                     ...IC.defaultAuthOption,
-                    onSuccess: () => {
+                    onSuccess: async () => {
+                      await backend.addNewUser(
+                        authClient?.getIdentity()?.getPrincipal(),
+                        ""
+                      );
                       const principalText = authClient
                         ?.getIdentity()
                         ?.getPrincipal()
                         ?.toText();
                       setIdentity(principalText);
-                      dispatch(setPrincipal(principalText));
+                      dispatch(settingPrincipal(principalText));
                       setLoading(false);
                     },
                     onError: () => {
@@ -85,7 +98,14 @@ function Home() {
             <p className="text-center">
               Create your own kahoot for FREE{" "}
               <a
-                onClick={() => navigate("/profile")}
+                onClick={async () => {
+                  // backend?.updateNickname(identity, "WALAO EH");
+                  // console.log(
+                  //   await backend?.getUser(Principal.fromText(identity)),
+                  //   "<<< ???"
+                  // );
+                  navigate("/profile");
+                }}
                 className="underline cursor-pointer"
               >
                 here

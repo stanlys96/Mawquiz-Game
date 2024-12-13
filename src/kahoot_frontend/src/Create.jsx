@@ -53,6 +53,7 @@ function Create() {
   const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1024px)" });
   const [currentId, setCurrentId] = useState(1);
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
+  const [isOpenExitKahootModal, setIsOpenExitKahootModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [openModalQuestion, setOpenModalQuestion] = useState(false);
   const [mouseEnter1, setMouseEnter1] = useState(false);
@@ -150,6 +151,10 @@ function Create() {
 
   const toggleModalTitle = () => {
     setIsOpenModalTitle((prevState) => !prevState);
+  };
+
+  const toggleModalExitKahoot = () => {
+    setIsOpenExitKahootModal((prevState) => !prevState);
   };
 
   const dropdownRef = useRef(null);
@@ -260,7 +265,9 @@ function Create() {
           </div> */}
 
             <button
-              onClick={() => navigate("/profile")}
+              onClick={() => {
+                toggleModalExitKahoot();
+              }}
               className="exit-button mr-4"
             >
               Exit
@@ -2352,6 +2359,58 @@ function Create() {
           </div>
         )}
       </AnimatePresence>
+      {isOpenExitKahootModal && (
+        <div
+          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+          onClick={toggleModalExitKahoot}
+        >
+          <motion.div
+            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              rotate: [0, -5, 5, -3, 3, 0],
+              x: [0, -10, 10, -5, 5, 0],
+            }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{
+              duration: 0.6,
+              ease: "easeInOut",
+            }}
+          >
+            <button
+              onClick={toggleModalExitKahoot}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-semibold mb-4 text-black">Exit</h2>
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to exit? Do you want to save your changes?
+            </p>
+            <div className="flex gap-x-2 items-center justify-center">
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                }}
+                className="cancel-red-btn"
+              >
+                Exit without saving
+              </button>
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                }}
+                className="exit-kahoot-btn"
+              >
+                Save and exit
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </main>
   );
 }
