@@ -30,8 +30,10 @@ import { FaCircle, FaSquareFull } from "react-icons/fa";
 import { FaCircleQuestion, FaGear } from "react-icons/fa6";
 import { useMediaQuery } from "react-responsive";
 import { HiDotsVertical } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 function Create() {
+  const navigate = useNavigate();
   const defaultQuizData = {
     question: "",
     text1: "",
@@ -62,6 +64,14 @@ function Create() {
   const [mouseEnterUl, setMouseEnterUl] = useState(false);
   const [clickedQuizIndex, setClickedQuizIndex] = useState(0);
   const [hoveredQuizIndex, setHoveredQuizIndex] = useState(-1);
+  const [isOpenModalTitle, setIsOpenModalTitle] = useState(false);
+  const [previousKahootTitle, setPreviousKahootTitle] = useState("");
+  const [kahootTitle, setKahootTitle] = useState("");
+  const [kahootTitleTemp, setKahootTitleTemp] = useState("");
+  const [previousKahootDescription, setPreviousKahootDescription] =
+    useState("");
+  const [kahootDescription, setKahootDescription] = useState("");
+  const [kahootDescriptionTemp, setKahootDescriptionTemp] = useState("");
   const [quizData, setQuizData] = useState([
     {
       id: currentId,
@@ -138,6 +148,10 @@ function Create() {
     setOpenModalQuestion((prevState) => !prevState);
   };
 
+  const toggleModalTitle = () => {
+    setIsOpenModalTitle((prevState) => !prevState);
+  };
+
   const dropdownRef = useRef(null);
   const bottomRef = useRef(null);
 
@@ -182,10 +196,24 @@ function Create() {
           <div className="flex gap-x-6 items-center w-full">
             <img className="h-[36px]" src="/kahoot-2.png" />
             <div className="kahoot-input-container">
-              <button className="kahoot-btn-title font-semibold">
-                Enter kahoot title...
+              <button
+                onClick={() => {
+                  toggleModalTitle();
+                  setPreviousKahootTitle(kahootTitleTemp);
+                  setPreviousKahootDescription(kahootDescriptionTemp);
+                }}
+                className="kahoot-btn-title font-semibold"
+              >
+                {!kahootTitle ? "Enter kahoot title..." : kahootTitle}
               </button>
-              <button className="settings-btn-mobile">
+              <button
+                onClick={() => {
+                  toggleModalTitle();
+                  setPreviousKahootTitle(kahootTitleTemp);
+                  setPreviousKahootDescription(kahootDescriptionTemp);
+                }}
+                className="settings-btn-mobile"
+              >
                 <FaGear size="16px" />
               </button>
             </div>
@@ -204,10 +232,26 @@ function Create() {
           <div className="flex gap-x-6 items-center w-full">
             <img className="h-[48px]" src="/kahoot-2.png" />
             <div className="kahoot-input-container">
-              <button className="kahoot-btn-title font-semibold">
-                Enter kahoot title...
+              <button
+                onClick={() => {
+                  toggleModalTitle();
+                  setPreviousKahootTitle(kahootTitleTemp);
+                  setPreviousKahootDescription(kahootDescriptionTemp);
+                }}
+                className="kahoot-btn-title font-semibold"
+              >
+                {!kahootTitle ? "Enter kahoot title..." : kahootTitle}
               </button>
-              <button className="settings-btn">Settings</button>
+              <button
+                onClick={() => {
+                  toggleModalTitle();
+                  setPreviousKahootTitle(kahootTitleTemp);
+                  setPreviousKahootDescription(kahootDescriptionTemp);
+                }}
+                className="settings-btn"
+              >
+                Settings
+              </button>
             </div>
           </div>
           <div className="flex items-center">
@@ -215,7 +259,12 @@ function Create() {
             <div className="vertical-rule" />
           </div> */}
 
-            <button className="exit-button mr-4">Exit</button>
+            <button
+              onClick={() => navigate("/profile")}
+              className="exit-button mr-4"
+            >
+              Exit
+            </button>
             <button className="save-button">Save</button>
           </div>
         </nav>
@@ -480,9 +529,9 @@ function Create() {
                   <div className="question-1-div">
                     <div className="question-2-div">
                       <input
+                        maxLength={120}
                         value={quizData?.[clickedQuizIndex]?.question ?? ""}
                         onChange={(e) => {
-                          if (e.target.value.length > 120) return;
                           let quizDataTemp = [...quizData];
                           quizDataTemp[clickedQuizIndex].question =
                             e.target.value;
@@ -508,7 +557,7 @@ function Create() {
                 onClick={() => setIsOpen(true)}
                 className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
               >
-                {!quizData?.[clickedQuizIndex]?.imageUrl ? (
+                {quizData?.[clickedQuizIndex]?.imageUrl === "cdn.svg" ? (
                   <div className="flex flex-col gap-y-[16px] justify-center items-center">
                     <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
                     <div className="btn-upload-div">
@@ -529,9 +578,8 @@ function Create() {
                   </div>
                 ) : (
                   <img
-                    src={quizData?.[clickedQuizIndex]?.imageUrl ?? "cdn.svg"}
-                    alt="Uploaded"
-                    className="h-[200px] w-[200px]"
+                    src={quizData?.[clickedQuizIndex]?.imageUrl}
+                    className="w-[200px h-[200px]"
                   />
                 )}
                 {dragging && (
@@ -561,10 +609,9 @@ function Create() {
                     />
                   </div>
                   <input
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text1?.length > 75)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text1 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -621,10 +668,9 @@ function Create() {
                     <MdHexagon className="mx-[8px]" size="32px" color="white" />
                   </div>
                   <input
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text2}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text2?.length > 75)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text2 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -683,10 +729,9 @@ function Create() {
                     <FaCircle className="mx-[8px]" size="32px" color="white" />
                   </div>
                   <input
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text3}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text3?.length > 75)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text3 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -749,10 +794,9 @@ function Create() {
                     />
                   </div>
                   <input
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text4}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text4?.length > 75)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text4 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -907,12 +951,9 @@ function Create() {
                       <div className="question-1-div-answer">
                         <div className="question-2-div">
                           <input
+                            maxLength={20}
                             value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
                             onChange={(e) => {
-                              if (
-                                quizData?.[clickedQuizIndex]?.text1?.length > 20
-                              )
-                                return;
                               let quizTemp = [...quizData];
                               quizTemp[clickedQuizIndex].text1 = e.target.value;
                               setQuizData([...quizTemp]);
@@ -974,13 +1015,9 @@ function Create() {
                             <div className="question-1-div-answer">
                               <div className="question-2-div">
                                 <input
+                                  maxLength={20}
                                   value={quizData?.[clickedQuizIndex]?.text2}
                                   onChange={(e) => {
-                                    if (
-                                      quizData?.[clickedQuizIndex]?.text2
-                                        ?.length > 20
-                                    )
-                                      return;
                                     let quizTemp = [...quizData];
                                     quizTemp[clickedQuizIndex].text2 =
                                       e.target.value;
@@ -1017,13 +1054,9 @@ function Create() {
                             <div className="question-1-div-answer">
                               <div className="question-2-div">
                                 <input
+                                  maxLength={20}
                                   value={quizData?.[clickedQuizIndex]?.text3}
                                   onChange={(e) => {
-                                    if (
-                                      quizData?.[clickedQuizIndex]?.text3
-                                        ?.length > 20
-                                    )
-                                      return;
                                     let quizTemp = [...quizData];
                                     quizTemp[clickedQuizIndex].text3 =
                                       e.target.value;
@@ -1060,13 +1093,9 @@ function Create() {
                             <div className="question-1-div-answer">
                               <div className="question-2-div">
                                 <input
+                                  maxLength={20}
                                   value={quizData?.[clickedQuizIndex]?.text4}
                                   onChange={(e) => {
-                                    if (
-                                      quizData?.[clickedQuizIndex]?.text4
-                                        ?.length > 20
-                                    )
-                                      return;
                                     let quizTemp = [...quizData];
                                     quizTemp[clickedQuizIndex].text4 =
                                       e.target.value;
@@ -1112,7 +1141,7 @@ function Create() {
           </div>
         )}
         {isMobileOrTablet && (
-          <div className="middle-div-mobile mt-[56px] w-full flex flex-col gap-y-4">
+          <div className="middle-div-mobile min-h-[100vh] w-[100vw] mt-[56px] w-full flex flex-col gap-y-4">
             <div className="question-div-main-question">
               <div className="flex gap-x-2 items-center">
                 <div className="question-inner-div">
@@ -1120,9 +1149,9 @@ function Create() {
                     <div className="question-1-div">
                       <div className="question-2-div">
                         <input
+                          maxLength={120}
                           value={quizData?.[clickedQuizIndex]?.question ?? ""}
                           onChange={(e) => {
-                            if (e.target.value.length > 120) return;
                             let quizDataTemp = [...quizData];
                             quizDataTemp[clickedQuizIndex].question =
                               e.target.value;
@@ -1208,7 +1237,7 @@ function Create() {
                 onClick={() => setIsOpen(true)}
                 className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
               >
-                {!quizData?.[clickedQuizIndex]?.imageUrl ? (
+                {quizData?.[clickedQuizIndex]?.imageUrl === "cdn.svg" ? (
                   <div className="flex flex-col gap-y-[16px] justify-center items-center">
                     <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
                     <div className="btn-upload-div">
@@ -1222,16 +1251,14 @@ function Create() {
                       <p className="text-black">
                         <span className="text-gray font-semibold underline">
                           Upload file
-                        </span>{" "}
-                        or drag here to upload
+                        </span>
                       </p>
                     </div>
                   </div>
                 ) : (
                   <img
-                    src={quizData?.[clickedQuizIndex]?.imageUrl ?? "cdn.svg"}
-                    alt="Uploaded"
                     className="h-[200px] w-[200px]"
+                    src={quizData?.[clickedQuizIndex]?.imageUrl}
                   />
                 )}
                 {dragging && (
@@ -1289,10 +1316,9 @@ function Create() {
                     )}
                   </div>
                   <textarea
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text1?.length >= 74)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text1 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -1350,10 +1376,9 @@ function Create() {
                     )}
                   </div>
                   <textarea
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text2 ?? ""}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text2?.length >= 74)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text2 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -1413,10 +1438,9 @@ function Create() {
                     )}
                   </div>
                   <textarea
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text3 ?? ""}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text3?.length >= 74)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text3 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -1476,10 +1500,9 @@ function Create() {
                     )}
                   </div>
                   <textarea
+                    maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text4 ?? ""}
                     onChange={(e) => {
-                      if (quizData?.[clickedQuizIndex]?.text4?.length >= 74)
-                        return;
                       let quizTemp = [...quizData];
                       quizTemp[clickedQuizIndex].text4 = e.target.value;
                       setQuizData([...quizTemp]);
@@ -1610,12 +1633,9 @@ function Create() {
                       <div className="question-1-div-answer">
                         <div className="question-2-div">
                           <input
+                            maxLength={20}
                             value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
                             onChange={(e) => {
-                              if (
-                                quizData?.[clickedQuizIndex]?.text1?.length > 20
-                              )
-                                return;
                               let quizTemp = [...quizData];
                               quizTemp[clickedQuizIndex].text1 = e.target.value;
                               setQuizData([...quizTemp]);
@@ -1677,13 +1697,9 @@ function Create() {
                             <div className="question-1-div-answer">
                               <div className="question-2-div">
                                 <input
+                                  maxLength={20}
                                   value={quizData?.[clickedQuizIndex]?.text2}
                                   onChange={(e) => {
-                                    if (
-                                      quizData?.[clickedQuizIndex]?.text2
-                                        ?.length > 20
-                                    )
-                                      return;
                                     let quizTemp = [...quizData];
                                     quizTemp[clickedQuizIndex].text2 =
                                       e.target.value;
@@ -1720,13 +1736,9 @@ function Create() {
                             <div className="question-1-div-answer">
                               <div className="question-2-div">
                                 <input
+                                  maxLength={20}
                                   value={quizData?.[clickedQuizIndex]?.text3}
                                   onChange={(e) => {
-                                    if (
-                                      quizData?.[clickedQuizIndex]?.text3
-                                        ?.length > 20
-                                    )
-                                      return;
                                     let quizTemp = [...quizData];
                                     quizTemp[clickedQuizIndex].text3 =
                                       e.target.value;
@@ -1763,13 +1775,9 @@ function Create() {
                             <div className="question-1-div-answer">
                               <div className="question-2-div">
                                 <input
+                                  maxLength={20}
                                   value={quizData?.[clickedQuizIndex]?.text4}
                                   onChange={(e) => {
-                                    if (
-                                      quizData?.[clickedQuizIndex]?.text4
-                                        ?.length > 20
-                                    )
-                                      return;
                                     let quizTemp = [...quizData];
                                     quizTemp[clickedQuizIndex].text4 =
                                       e.target.value;
@@ -2247,6 +2255,97 @@ function Create() {
                   className="duplicate-btn"
                 >
                   Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isOpenModalTitle && (
+          <div
+            onClick={() => toggleModalTitle()}
+            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] md:w-[600px]"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <div className="mt-[24px]">
+                <p className="text-gray mb-[12px] font-semibold text-left">
+                  Title
+                </p>
+                <p className="text-black text-left">
+                  Enter a title for your kahoot.
+                </p>
+                <div className="relative">
+                  <input
+                    value={kahootTitleTemp}
+                    onChange={(e) => {
+                      setKahootTitleTemp(e.target.value);
+                    }}
+                    className="mt-[12px] title-input outline-none w-full"
+                    type="text"
+                    maxLength={95}
+                  />
+                  <p className="absolute top-[40%] text-[#6E6E6E] right-2">
+                    {95 - (kahootTitleTemp?.length ?? 0)}
+                  </p>
+                </div>
+                <p className="text-gray mb-[12px] mt-[20px] font-semibold text-left">
+                  Description{" "}
+                  <span className="text-[#6E6E6E] font-normal">(optional)</span>
+                </p>
+                <p className="text-black text-left">
+                  Provide a short description for your kahoot to increase
+                  visibility.
+                </p>
+                <div className="relative">
+                  <textarea
+                    value={kahootDescriptionTemp}
+                    onChange={(e) => setKahootDescriptionTemp(e.target.value)}
+                    rows={5}
+                    className="mt-[12px] textarea-input outline-none w-full"
+                    type="text"
+                    maxLength={500}
+                  />
+                  <p className="absolute top-[20%] text-[#6E6E6E] right-2">
+                    {500 - (kahootDescriptionTemp?.length ?? 0)}
+                  </p>
+                </div>
+              </div>
+              <div className="close-toggle-button gap-x-2">
+                <button
+                  onClick={() => {
+                    toggleModalTitle();
+                    setKahootTitleTemp(previousKahootTitle);
+                    setKahootDescriptionTemp(previousKahootDescription);
+                  }}
+                  className="exit-button"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    toggleModalTitle();
+                    setKahootTitleTemp((prevState) => {
+                      setKahootTitle(prevState.trim());
+                      setPreviousKahootTitle(prevState.trim());
+                      return prevState.trim();
+                    });
+                    setKahootDescriptionTemp((prevState) => {
+                      setKahootDescription(prevState.trim());
+                      setPreviousKahootDescription(prevState.trim());
+                      return prevState.trim();
+                    });
+                  }}
+                  className="save-button"
+                >
+                  Submit
                 </button>
               </div>
             </motion.div>
