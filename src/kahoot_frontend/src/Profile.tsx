@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 function Profile() {
   const navigate = useNavigate();
-  const { principal } = useSelector((state) => state.user);
+  const { principal } = useSelector((state: any) => state.user);
   const [isHoveredKahoot, setIsHoveredKahoot] = useState(false);
   const [isHoveredDraft, setIsHoveredDraft] = useState(false);
   const [category, setCategory] = useState("kahoot");

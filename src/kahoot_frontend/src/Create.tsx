@@ -87,11 +87,11 @@ function Create() {
     setOpen(false);
   };
 
-  const handleOpenChange = (newOpen) => {
+  const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: any) => {
     e.preventDefault(); // Necessary to allow drop
     setDragging(true);
   };
@@ -100,7 +100,7 @@ function Create() {
     setDragging(false);
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (event: any) => {
     const file = event.target.files[0];
     if (file) {
       setDragging(false);
@@ -108,14 +108,14 @@ function Create() {
       const reader = new FileReader();
       reader.onload = (e) => {
         let quizTemp = [...quizData];
-        quizTemp[clickedQuizIndex].imageUrl = e.target.result;
+        quizTemp[clickedQuizIndex].imageUrl = e?.target?.result as any;
         setQuizData([...quizTemp]);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: any) => {
     e.preventDefault();
     setDragging(false);
     setIsOpen(false);
@@ -128,7 +128,7 @@ function Create() {
       const reader = new FileReader();
       reader.onload = () => {
         let quizTemp = [...quizData];
-        quizTemp[clickedQuizIndex].imageUrl = reader.result;
+        quizTemp[clickedQuizIndex].imageUrl = reader.result as any;
         setQuizData([...quizTemp]);
       };
       reader.readAsDataURL(file);
@@ -157,13 +157,15 @@ function Create() {
     setIsOpenExitKahootModal((prevState) => !prevState);
   };
 
-  const dropdownRef = useRef(null);
-  const bottomRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLUListElement>(null);
 
   const scrollToBottom = () => {
     if (bottomRef.current) {
       setTimeout(() => {
-        bottomRef.current.scrollTop = bottomRef.current.scrollHeight;
+        if (bottomRef.current) {
+          bottomRef.current.scrollTop = bottomRef?.current?.scrollHeight;
+        }
       }, 0);
     }
   };
@@ -172,7 +174,7 @@ function Create() {
     const element = bottomRef.current;
     if (element) {
       setTimeout(() => {
-        element.scrollLeft = element.scrollWidth - element.clientWidth;
+        element.scrollLeft = element?.scrollWidth - element?.clientWidth;
       }, 0);
     }
   };
@@ -1848,7 +1850,7 @@ function Create() {
               <Dropdown
                 className="dropdown-sidebar mt-3 w-full text-black"
                 menu={{
-                  items: questionTypeItems((questionType) => {
+                  items: questionTypeItems((questionType: string) => {
                     let quizDataTemp = [...quizData];
                     quizDataTemp[clickedQuizIndex].type = questionType;
                     setQuizData([...quizDataTemp]);
@@ -1884,7 +1886,7 @@ function Create() {
               <Dropdown
                 className="dropdown-sidebar mt-3 w-full text-black"
                 menu={{
-                  items: timeLimitItems((timeLimit) => {
+                  items: timeLimitItems((timeLimit: number) => {
                     let quizDataTemp = [...quizData];
                     quizDataTemp[clickedQuizIndex].timeLimit = timeLimit;
                     setQuizData([...quizDataTemp]);
@@ -1914,7 +1916,7 @@ function Create() {
               <Dropdown
                 className="dropdown-sidebar mt-3 w-full text-black"
                 menu={{
-                  items: answerOptionsItems((answerOptions) => {
+                  items: answerOptionsItems((answerOptions: string) => {
                     let quizDataTemp = [...quizData];
                     quizDataTemp[clickedQuizIndex].answerOptions =
                       answerOptions;
@@ -2317,7 +2319,6 @@ function Create() {
                     onChange={(e) => setKahootDescriptionTemp(e.target.value)}
                     rows={5}
                     className="mt-[12px] textarea-input outline-none w-full"
-                    type="text"
                     maxLength={500}
                   />
                   <p className="absolute top-[20%] text-[#6E6E6E] right-2">

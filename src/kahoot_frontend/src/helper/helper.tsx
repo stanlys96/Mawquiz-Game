@@ -2,7 +2,7 @@ import { MdQuiz } from "react-icons/md";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
 
-export const questionTypeItems = (callback) => [
+export const questionTypeItems = (callback: (arg: string) => void) => [
   {
     label: (
       <div
@@ -41,7 +41,7 @@ export const questionTypeItems = (callback) => [
   },
 ];
 
-export const timeLimitItems = (callback) => [
+export const timeLimitItems = (callback: (arg: number) => void) => [
   {
     label: (
       <p
@@ -154,7 +154,7 @@ export const timeLimitItems = (callback) => [
   },
 ];
 
-export const answerOptionsItems = (callback) => [
+export const answerOptionsItems = (callback: (arg: string) => void) => [
   {
     label: (
       <div
@@ -187,7 +187,7 @@ export const answerOptionsItems = (callback) => [
   },
 ];
 
-export const convertSecondsToMinutes = (seconds) => {
+export const convertSecondsToMinutes = (seconds: number) => {
   if (seconds < 0 || !Number.isInteger(seconds)) {
     return `0 seconds`;
   }

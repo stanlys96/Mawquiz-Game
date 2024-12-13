@@ -5,17 +5,18 @@ import { settingPrincipal } from "../stores/user-slice";
 import { IoPersonCircle } from "react-icons/io5";
 import { Principal } from "@dfinity/principal";
 import IC from "./utils/IC";
+import { _SERVICE } from "../../declarations/kahoot_backend/kahoot_backend.did";
 
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [backend, setBackend] = useState();
+  const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [identity, setIdentity] = useState("");
-  const { principal } = useSelector((state) => state.user);
+  const { principal } = useSelector((state: any) => state.user);
 
   useEffect(() => {
-    IC.getBackend((result) => {
+    IC.getBackend((result: any) => {
       setBackend(result);
     });
   }, []);
@@ -25,7 +26,7 @@ function Home() {
       <div className="square-bg" />
       {loading && (
         <div className="relative kahoot-container">
-          <div class="kahoot-spinner">
+          <div className="kahoot-spinner">
             <div />
             <div />
             <div />
@@ -69,7 +70,7 @@ function Home() {
                   authClient.login({
                     ...IC.defaultAuthOption,
                     onSuccess: async () => {
-                      await backend.addNewUser(
+                      await backend?.addNewUser(
                         authClient?.getIdentity()?.getPrincipal(),
                         ""
                       );
