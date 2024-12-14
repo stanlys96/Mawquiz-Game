@@ -1,4 +1,4 @@
-import { useState, useEffect, CSSProperties, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { settingPrincipal } from "../stores/user-slice";
@@ -10,12 +10,8 @@ import { FiEdit } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
 import BeatLoader from "react-spinners/BeatLoader";
 import { notification } from "antd";
-
-const override: CSSProperties = {
-  display: "block",
-  margin: "0 auto",
-  borderColor: "red",
-};
+import { modalVariants, override } from "./helper/helper";
+import { RiLogoutCircleLine } from "react-icons/ri";
 
 function Home() {
   const dispatch = useDispatch();
@@ -27,20 +23,12 @@ function Home() {
   const [isOpenModalNickname, setIsOpenModalNickname] = useState(false);
   const [nickname, setNickname] = useState("");
   const [currentUser, setCurrentUser] = useState<any>();
+  const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
 
   const { principal } = useSelector((state: any) => state.user);
-  const modalVariants = {
-    hidden: { scale: 0.5, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        type: "spring", // Spring for bouncy effect
-        stiffness: 500, // Control bounciness
-        damping: 20,
-      },
-    },
-    exit: { scale: 0.5, opacity: 0 },
+
+  const toggleModalJiggle = () => {
+    setIsOpenModalJiggle((prevState) => !prevState);
   };
 
   useEffect(() => {
@@ -48,11 +36,24 @@ function Home() {
       setBackend(result);
     });
   }, []);
+
+  useEffect(() => {
+    if (principal && backend) {
+      backend
+        ?.getUser(Principal.fromText(principal))
+        ?.then((result) => {
+          setCurrentUser(result?.[0]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [principal, backend]);
   return (
     <main className="background flex justify-center items-center">
       <div className="circle-bg" />
       <div className="square-bg" />
-      {loading && (
+      {(loading || !principal) && (
         <div className="relative kahoot-container">
           <div className="kahoot-spinner">
             <div />
@@ -68,115 +69,83 @@ function Home() {
       <div className="flex flex-col justify-center items-center gap-y-2 main-profile">
         <img className="w-[200px] mx-auto img-home" src="logo.png" />
         <div className="main-container">
-          {identity ? (
-            <div className="flex flex-col justify-center items-center gap-y-2">
-              <div className="flex gap-x-2 items-center">
-                <div
-                  onClick={() => {
-                    setNickname(currentUser?.nickname ?? "");
-                    setIsOpenModalNickname(true);
-                  }}
-                  className="cursor-pointer p-[8px] flex lg:hidden bg-dark-green rounded-full flex items-center justify-center"
-                >
-                  <FiEdit color="white" />
-                </div>
-                <IoPersonCircle className="w-[32px] h-[32px] purple-bg rounded-full" />
-              </div>
-              <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 items-center">
-                <div
-                  onClick={() => {
-                    setNickname(currentUser?.nickname ?? "");
-                    setIsOpenModalNickname(true);
-                  }}
-                  className="cursor-pointer p-[8px] bg-dark-green rounded-full hidden lg:flex items-center justify-center"
-                >
-                  <FiEdit color="white" />
-                </div>
-                <p className="text-black text-center">
-                  {currentUser?.nickname
-                    ? currentUser?.nickname?.length > 20
-                      ? currentUser?.nickname?.slice(0, 20) + "..."
-                      : currentUser?.nickname
-                    : currentUser?.owner?.slice(0, 20) + "..."}
-                </p>
-              </div>
-              <input
-                className="game-pin-input mt-[10px] w-[100px]"
-                placeholder="Game Pin"
-              />
-              <button
+          <div className="flex flex-col justify-center items-center gap-y-2">
+            <div className="flex gap-x-2 items-center">
+              <div
                 onClick={() => {
-                  setLoading(true);
-                  setTimeout(() => {
-                    setLoading(false);
-                  }, 2000);
+                  setNickname(currentUser?.nickname ?? "");
+                  setIsOpenModalNickname(true);
                 }}
-                className="custom-button w-full"
+                className="cursor-pointer p-[8px] flex lg:hidden bg-dark-green rounded-full flex items-center justify-center"
               >
-                Enter
-              </button>
+                <FiEdit color="white" />
+              </div>
+              <div
+                onClick={toggleModalJiggle}
+                className="cursor-pointer p-[8px] purple-bg rounded-full flex items-center justify-center"
+              >
+                <RiLogoutCircleLine color="white" />
+              </div>
             </div>
-          ) : (
+            <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 items-center">
+              <div
+                onClick={() => {
+                  setNickname(currentUser?.nickname ?? "");
+                  setIsOpenModalNickname(true);
+                }}
+                className="cursor-pointer p-[8px] bg-dark-green rounded-full hidden lg:flex items-center justify-center"
+              >
+                <FiEdit color="white" />
+              </div>
+              <p
+                onClick={() => {
+                  setNickname(currentUser?.nickname ?? "");
+                  setIsOpenModalNickname(true);
+                }}
+                className="cursor-pointer text-black text-center"
+              >
+                {currentUser?.nickname
+                  ? currentUser?.nickname?.length > 20
+                    ? currentUser?.nickname?.slice(0, 20) + "..."
+                    : currentUser?.nickname ?? ""
+                  : currentUser?.owner?.slice(0, 20) + "..."}
+              </p>
+            </div>
+            <input
+              className="game-pin-input mt-[10px] w-[100px]"
+              placeholder="Game Pin"
+            />
             <button
               onClick={() => {
                 setLoading(true);
-                IC.getAuth(async (authClient) => {
-                  authClient.login({
-                    ...IC.defaultAuthOption,
-                    onSuccess: async () => {
-                      await backend?.addNewUser(
-                        authClient?.getIdentity()?.getPrincipal(),
-                        ""
-                      );
-                      const principalText = authClient
-                        ?.getIdentity()
-                        ?.getPrincipal()
-                        ?.toText();
-                      const theUser = await backend?.getUser(
-                        Principal.fromText(principalText)
-                      );
-                      setCurrentUser(theUser?.[0]);
-                      setIdentity(principalText);
-                      dispatch(settingPrincipal(principalText));
-                      setLoading(false);
-                    },
-                    onError: () => {
-                      setLoading(false);
-                    },
-                  });
-                });
+                setTimeout(() => {
+                  setLoading(false);
+                }, 2000);
               }}
-              className="custom-button"
+              className="custom-button w-full"
             >
-              Connect Wallet
+              Enter
             </button>
-          )}
-        </div>
-        {identity && (
-          <div className="mt-[40px]">
-            <p className="text-center">
-              Create your own kahoot for FREE{" "}
-              <a
-                onClick={async () => {
-                  // backend?.updateNickname(identity, "WALAO EH");
-                  // console.log(
-                  //   await backend?.getUser(Principal.fromText(identity)),
-                  //   "<<< ???"
-                  // );
-                  navigate("/profile");
-                }}
-                className="underline cursor-pointer"
-              >
-                here
-              </a>
-            </p>
           </div>
-        )}
-        {/* <div className="error-notification">
-          <p className="error-text">
-            We didn't recognize that game PIN. Please check and try again.
+        </div>
+        <div className="mt-[40px]">
+          <p className="text-center">
+            Create your own kahoot for FREE{" "}
+            <a
+              onClick={async () => {
+                // backend?.updateNickname(identity, "WALAO EH");
+                // console.log(
+                //   await backend?.getUser(Principal.fromText(identity)),
+                //   "<<< ???"
+                // );
+                navigate("/profile");
+              }}
+              className="underline cursor-pointer"
+            >
+              here
+            </a>
           </p>
-        </div> */}
+        </div>
       </div>
       <AnimatePresence>
         {isOpenModalNickname && (
@@ -274,6 +243,55 @@ function Home() {
           </div>
         )}
       </AnimatePresence>
+      {isOpenModalJiggle && (
+        <div
+          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+          onClick={toggleModalJiggle}
+        >
+          <motion.div
+            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              rotate: [0, -5, 5, -3, 3, 0],
+              x: [0, -10, 10, -5, 5, 0],
+            }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{
+              duration: 0.6,
+              ease: "easeInOut",
+            }}
+          >
+            <button
+              onClick={toggleModalJiggle}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-semibold mb-4 text-black">Logout</h2>
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to logout?
+            </p>
+            <div className="flex gap-x-2 items-center justify-center">
+              <button onClick={toggleModalJiggle} className="cancel-btn">
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  dispatch(settingPrincipal(""));
+                  setIdentity("");
+                  toggleModalJiggle();
+                }}
+                className="delete-modal-btn"
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </main>
   );
 }

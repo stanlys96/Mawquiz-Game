@@ -1,6 +1,7 @@
 import { MdQuiz } from "react-icons/md";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
+import { CSSProperties } from "react";
 
 export const questionTypeItems = (callback: (arg: string) => void) => [
   {
@@ -204,4 +205,24 @@ export const convertSecondsToMinutes = (seconds: number) => {
       minutes > 1 ? "s" : ""
     } ${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
   }
+};
+
+export const modalVariants = {
+  hidden: { scale: 0.5, opacity: 0 },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: "spring", // Spring for bouncy effect
+      stiffness: 500, // Control bounciness
+      damping: 20,
+    },
+  },
+  exit: { scale: 0.5, opacity: 0 },
+};
+
+export const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
 };

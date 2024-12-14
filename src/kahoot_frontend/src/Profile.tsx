@@ -1,22 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IC from "./utils/IC";
 import { FaPlus } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IoPersonCircle } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { _SERVICE } from "../../declarations/kahoot_backend/kahoot_backend.did";
+import { Principal } from "@dfinity/principal";
+import { FiEdit } from "react-icons/fi";
+import { AnimatePresence, motion } from "framer-motion";
+import { modalVariants, override } from "./helper/helper";
+import { BeatLoader } from "react-spinners";
+import { notification } from "antd";
+import { settingPrincipal } from "../stores/user-slice";
+import { FaHome } from "react-icons/fa";
+import { RiLogoutCircleLine } from "react-icons/ri";
 
 function Profile() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { principal } = useSelector((state: any) => state.user);
   const [isHoveredKahoot, setIsHoveredKahoot] = useState(false);
   const [isHoveredDraft, setIsHoveredDraft] = useState(false);
   const [category, setCategory] = useState("kahoot");
+  const [backend, setBackend] = useState<_SERVICE>();
+  const [currentUser, setCurrentUser] = useState<any>();
+  const [nicknameLoading, setNicknameLoading] = useState(false);
+  const [isOpenModalNickname, setIsOpenModalNickname] = useState(false);
+  const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
+  const [nickname, setNickname] = useState("");
+
+  const toggleModalJiggle = () => {
+    setIsOpenModalJiggle((prevState) => !prevState);
+  };
+
+  useEffect(() => {
+    IC.getBackend(async (result: any) => {
+      setBackend(result);
+    });
+  }, [principal]);
+
+  useEffect(() => {
+    if (principal && backend) {
+      backend
+        ?.getUser(Principal.fromText(principal))
+        ?.then((result) => {
+          setCurrentUser(result?.[0]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [principal, backend]);
   return (
     <main className="background flex justify-center items-center">
       <div className="flex main-profile flex-col justify-center items-center gap-y-3">
         <div className="absolute top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
-          <IoPersonCircle className="w-[32px] h-[32px] purple-bg rounded-full" />
-          <p className="dark-text">{principal?.slice(0, 25) + "..."}</p>
+          <div
+            onClick={() => {
+              navigate("/home");
+            }}
+            className="cursor-pointer p-[8px] bg-blue rounded-full flex items-center justify-center"
+          >
+            <FaHome color="white" />
+          </div>
+          <div
+            onClick={toggleModalJiggle}
+            className="cursor-pointer p-[8px] purple-bg rounded-full flex items-center justify-center"
+          >
+            <RiLogoutCircleLine color="white" />
+          </div>
+          <div
+            onClick={() => {
+              setNickname(currentUser?.nickname ?? "");
+              setIsOpenModalNickname(true);
+            }}
+            className="flex gap-x-2 items-center cursor-pointer"
+          >
+            <p className="dark-text">
+              {currentUser?.nickname
+                ? currentUser?.nickname?.length > 20
+                  ? currentUser?.nickname?.slice(0, 20) + "..."
+                  : currentUser?.nickname ?? ""
+                : currentUser?.owner?.slice(0, 20) + "..."}
+            </p>
+          </div>
+          <div
+            onClick={() => {
+              setNickname(currentUser?.nickname ?? "");
+              setIsOpenModalNickname(true);
+            }}
+            className="cursor-pointer p-[8px] bg-dark-green rounded-full flex items-center justify-center"
+          >
+            <FiEdit color="white" />
+          </div>
         </div>
         <div className="flex gap-x-4 md:flex-row flex-col gap-y-4 items-center md:items-start">
           <div className="your-kahoots h-fit">
@@ -33,18 +109,6 @@ function Profile() {
                   } cursor-pointer font-semibold kahoot-text`}
                 >
                   Your kahoots
-                </p>
-                <p
-                  onClick={() => setCategory("draft")}
-                  onMouseEnter={() => setIsHoveredDraft(true)}
-                  onMouseLeave={() => setIsHoveredDraft(false)}
-                  className={`text-[#6E6E6E] ${
-                    category === "draft" || isHoveredDraft
-                      ? "text-container"
-                      : "text-ordinary"
-                  } cursor-pointer font-semibold kahoot-text`}
-                >
-                  Your drafts
                 </p>
               </div>
             </div>
@@ -103,6 +167,150 @@ function Profile() {
       </div>
       <div className="circle-bg" />
       <div className="square-bg" />
+      <AnimatePresence>
+        {isOpenModalNickname && (
+          <div
+            onClick={() => {
+              if (nicknameLoading) return;
+              setIsOpenModalNickname(false);
+            }}
+            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] lg:w-[50vw]"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <div className="mt-[24px]">
+                <p className="text-gray mb-[12px] font-semibold text-center">
+                  Nickname
+                </p>
+                <p className="text-black text-center">
+                  Enter a nickname for your profile.
+                </p>
+                <div className="relative">
+                  <input
+                    value={nickname}
+                    onChange={(e) => {
+                      setNickname(e.target.value);
+                    }}
+                    className="mt-[12px] text-center title-input outline-none w-full"
+                    type="text"
+                    maxLength={35}
+                  />
+                  <p className="absolute top-[40%] text-[#6E6E6E] right-2">
+                    {35 - (nickname?.length ?? 0)}
+                  </p>
+                </div>
+              </div>
+              {nicknameLoading ? (
+                <div className="py-[20px]">
+                  <BeatLoader
+                    color={"#97E8D4"}
+                    loading={nicknameLoading}
+                    cssOverride={override}
+                    size={35}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
+                </div>
+              ) : (
+                <div className="close-toggle-button gap-x-2">
+                  <button
+                    onClick={() => {
+                      setIsOpenModalNickname(false);
+                      setNickname("");
+                    }}
+                    className="exit-button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (nickname?.trim()?.length === 0) return;
+                      setNicknameLoading(true);
+                      backend
+                        ?.updateNickname(principal, nickname)
+                        ?.then(async (result) => {
+                          const theUser = await backend?.getUser(
+                            Principal.fromText(principal)
+                          );
+                          setCurrentUser(theUser?.[0]);
+                          setIsOpenModalNickname(false);
+                          setNicknameLoading(false);
+                          notification.success({
+                            message: "Success!",
+                            description:
+                              "You have successfully updated your nickname!",
+                          });
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          setIsOpenModalNickname(false);
+                          setNicknameLoading(false);
+                        });
+                    }}
+                    className="save-button"
+                  >
+                    Submit
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      {isOpenModalJiggle && (
+        <div
+          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+          onClick={toggleModalJiggle}
+        >
+          <motion.div
+            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              rotate: [0, -5, 5, -3, 3, 0],
+              x: [0, -10, 10, -5, 5, 0],
+            }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{
+              duration: 0.6,
+              ease: "easeInOut",
+            }}
+          >
+            <button
+              onClick={toggleModalJiggle}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-semibold mb-4 text-black">Logout</h2>
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to logout?
+            </p>
+            <div className="flex gap-x-2 items-center justify-center">
+              <button onClick={toggleModalJiggle} className="cancel-btn">
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  dispatch(settingPrincipal(""));
+                  navigate("/");
+                }}
+                className="delete-modal-btn"
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </main>
   );
 }

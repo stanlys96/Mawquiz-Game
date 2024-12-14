@@ -3,6 +3,8 @@ import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
 import Error "mo:base/Error";
 import Iter "mo:base/Iter";
+import Int "mo:base/Int";
+
 actor {
   public type GameInterface = {
     question: Text;
@@ -35,6 +37,7 @@ actor {
   };
 
   var userHashMap: HashMap.HashMap<Principal, User> = HashMap.HashMap<Principal, User>(10, Principal.equal, Principal.hash);
+  var gameHashMap: HashMap.HashMap<Int, Game> = HashMap.HashMap<Int, Game>(10, Int.equal, Int.hash);
 
   public func addNewUser(user: Principal, nickname: Text) {
     if (Principal.isAnonymous(user)) {
