@@ -20,7 +20,6 @@ function Profile() {
   const navigate = useNavigate();
   const { principal } = useSelector((state: any) => state.user);
   const [isHoveredKahoot, setIsHoveredKahoot] = useState(false);
-  const [isHoveredDraft, setIsHoveredDraft] = useState(false);
   const [category, setCategory] = useState("kahoot");
   const [backend, setBackend] = useState<_SERVICE>();
   const [currentUser, setCurrentUser] = useState<any>();
@@ -71,6 +70,7 @@ function Profile() {
           </div>
           <div
             onClick={() => {
+              if (!currentUser?.nickname) return;
               setNickname(currentUser?.nickname ?? "");
               setIsOpenModalNickname(true);
             }}
@@ -86,6 +86,7 @@ function Profile() {
           </div>
           <div
             onClick={() => {
+              if (!currentUser?.nickname) return;
               setNickname(currentUser?.nickname ?? "");
               setIsOpenModalNickname(true);
             }}

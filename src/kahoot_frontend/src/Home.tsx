@@ -19,7 +19,6 @@ function Home() {
   const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [nicknameLoading, setNicknameLoading] = useState(false);
-  const [identity, setIdentity] = useState("");
   const [isOpenModalNickname, setIsOpenModalNickname] = useState(false);
   const [nickname, setNickname] = useState("");
   const [currentUser, setCurrentUser] = useState<any>();
@@ -53,7 +52,7 @@ function Home() {
     <main className="background flex justify-center items-center">
       <div className="circle-bg" />
       <div className="square-bg" />
-      {(loading || !principal) && (
+      {loading && (
         <div className="relative kahoot-container">
           <div className="kahoot-spinner">
             <div />
@@ -73,6 +72,7 @@ function Home() {
             <div className="flex gap-x-2 items-center">
               <div
                 onClick={() => {
+                  if (!currentUser?.nickname) return;
                   setNickname(currentUser?.nickname ?? "");
                   setIsOpenModalNickname(true);
                 }}
@@ -90,6 +90,7 @@ function Home() {
             <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 items-center">
               <div
                 onClick={() => {
+                  if (!currentUser?.nickname) return;
                   setNickname(currentUser?.nickname ?? "");
                   setIsOpenModalNickname(true);
                 }}
@@ -99,6 +100,7 @@ function Home() {
               </div>
               <p
                 onClick={() => {
+                  if (!currentUser?.nickname) return;
                   setNickname(currentUser?.nickname ?? "");
                   setIsOpenModalNickname(true);
                 }}
@@ -210,13 +212,14 @@ function Home() {
                   </button>
                   <button
                     onClick={() => {
+                      if (!principal) return;
                       if (nickname?.trim()?.length === 0) return;
                       setNicknameLoading(true);
                       backend
-                        ?.updateNickname(identity, nickname)
+                        ?.updateNickname(principal, nickname)
                         ?.then(async (result) => {
                           const theUser = await backend?.getUser(
-                            Principal.fromText(identity)
+                            Principal.fromText(principal)
                           );
                           setCurrentUser(theUser?.[0]);
                           setIsOpenModalNickname(false);
@@ -281,7 +284,6 @@ function Home() {
               <button
                 onClick={() => {
                   dispatch(settingPrincipal(""));
-                  setIdentity("");
                   toggleModalJiggle();
                 }}
                 className="delete-modal-btn"
