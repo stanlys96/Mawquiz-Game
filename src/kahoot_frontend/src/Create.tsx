@@ -38,6 +38,7 @@ import {
 } from "../../declarations/kahoot_backend/kahoot_backend.did";
 import IC from "./utils/IC";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 function Create() {
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ function Create() {
   const [quizChecked, setQuizChecked] =
     useState<{ index: number; messages: string[] }[]>();
   const [isOpenModalTimeLimit, setIsOpenModalTimeLimit] = useState(false);
+  const [fromSaving, setFromSaving] = useState(false);
   const [quizData, setQuizData] = useState<Question[]>([
     {
       id: currentId,
@@ -95,7 +97,9 @@ function Create() {
     },
   ]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [flexibleClickedQuizIndex, setFlexibleClickedQuizIndex] = useState(-1);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [currentTimeLimit, setCurrentTimeLimit] = useState(
     quizData?.[clickedQuizIndex]?.timeLimit ?? 20
   );
@@ -229,6 +233,19 @@ function Create() {
   }, []);
   return (
     <main className="background" ref={dropdownRef}>
+      {loading && (
+        <div className="kahoot-container z-moreinfinite h-[100%] w-[100vw]">
+          <div className="kahoot-spinner">
+            <div />
+            <div />
+            <div />
+            <div />
+          </div>
+          <p className="montserrat medium text-[28px] leading-[0px]">
+            Saving game...
+          </p>
+        </div>
+      )}
       {isMobileOrTablet && (
         <nav className="navbar z-infinite fixed top-0 w-full">
           <div className="flex gap-x-6 items-center w-full">
@@ -263,16 +280,39 @@ function Create() {
                 if (checkingQuiz?.length > 0) {
                   setQuizChecked(checkingQuiz);
                   toggleModalValidate();
+                } else if (!kahootTitle) {
+                  setFromSaving(true);
+                  toggleModalTitle();
+                } else {
+                  setLoading(true);
+                  const gamePin = generateRandomString();
+                  backend
+                    ?.addGame(
+                      gamePin,
+                      principal,
+                      kahootTitle,
+                      kahootDescription,
+                      quizData
+                    )
+                    ?.then((result) => {
+                      setLoading(false);
+                      Swal.fire({
+                        title: "Success!",
+                        text: "You have successfully saved your quiz!",
+                        icon: "success",
+                      })
+                        .then((res) => {
+                          navigate("/profile");
+                        })
+                        .catch((thisErr) => {
+                          console.log(thisErr);
+                        });
+                    })
+                    ?.catch((error) => {
+                      setLoading(false);
+                      console.log(error);
+                    });
                 }
-                // const gamePin = generateRandomString();
-                // console.log(gamePin, "<<< GAME PIN");
-                // backend?.addGame(
-                //   gamePin,
-                //   principal,
-                //   kahootTitle,
-                //   kahootDescription,
-                //   quizData
-                // );
               }}
               className="save-button"
             >
@@ -323,16 +363,39 @@ function Create() {
                 if (checkingQuiz?.length > 0) {
                   setQuizChecked(checkingQuiz);
                   toggleModalValidate();
+                } else if (!kahootTitle) {
+                  setFromSaving(true);
+                  toggleModalTitle();
+                } else {
+                  setLoading(true);
+                  const gamePin = generateRandomString();
+                  backend
+                    ?.addGame(
+                      gamePin,
+                      principal,
+                      kahootTitle,
+                      kahootDescription,
+                      quizData
+                    )
+                    ?.then((result) => {
+                      setLoading(false);
+                      Swal.fire({
+                        title: "Success!",
+                        text: "You have successfully saved your quiz!",
+                        icon: "success",
+                      })
+                        .then((res) => {
+                          navigate("/profile");
+                        })
+                        .catch((thisErr) => {
+                          console.log(thisErr);
+                        });
+                    })
+                    ?.catch((error) => {
+                      setLoading(false);
+                      console.log(error);
+                    });
                 }
-                // const gamePin = generateRandomString();
-                // console.log(gamePin, "<<< GAME PIN");
-                // backend?.addGame(
-                //   gamePin,
-                //   principal,
-                //   kahootTitle,
-                //   kahootDescription,
-                //   quizData
-                // );
               }}
               className="save-button"
             >
@@ -383,6 +446,7 @@ function Create() {
                       <p className="text-sidebar">{index + 1}</p>
                       <div
                         onClick={() => {
+                          if (loading) return;
                           setClickedQuizIndex(index);
                         }}
                         className={`${
@@ -424,6 +488,7 @@ function Create() {
                 <span>
                   <button
                     onClick={() => {
+                      if (loading) return;
                       setOpenModalQuestion(true);
                     }}
                     className="question-btn"
@@ -2315,7 +2380,10 @@ function Create() {
       <AnimatePresence>
         {isOpenModalTitle && (
           <div
-            onClick={() => toggleModalTitle()}
+            onClick={() => {
+              setFromSaving(false);
+              toggleModalTitle();
+            }}
             className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
           >
             <motion.div
@@ -2371,6 +2439,7 @@ function Create() {
               <div className="close-toggle-button gap-x-2">
                 <button
                   onClick={() => {
+                    setFromSaving(false);
                     toggleModalTitle();
                     setKahootTitleTemp(previousKahootTitle);
                     setKahootDescriptionTemp(previousKahootDescription);
@@ -2381,7 +2450,9 @@ function Create() {
                 </button>
                 <button
                   onClick={() => {
-                    toggleModalTitle();
+                    if (fromSaving) {
+                      if (!kahootTitleTemp) return;
+                    }
                     setKahootTitleTemp((prevState) => {
                       setKahootTitle(prevState.trim());
                       setPreviousKahootTitle(prevState.trim());
@@ -2392,6 +2463,37 @@ function Create() {
                       setPreviousKahootDescription(prevState.trim());
                       return prevState.trim();
                     });
+                    toggleModalTitle();
+                    if (fromSaving) {
+                      setLoading(true);
+                      const gamePin = generateRandomString();
+                      backend
+                        ?.addGame(
+                          gamePin,
+                          principal,
+                          kahootTitle,
+                          kahootDescription,
+                          quizData
+                        )
+                        ?.then((result) => {
+                          setLoading(false);
+                          Swal.fire({
+                            title: "Success!",
+                            text: "You have successfully saved your quiz!",
+                            icon: "success",
+                          })
+                            .then((res) => {
+                              navigate("/profile");
+                            })
+                            .catch((thisErr) => {
+                              console.log(thisErr);
+                            });
+                        })
+                        ?.catch((error) => {
+                          setLoading(false);
+                          console.log(error);
+                        });
+                    }
                   }}
                   className="save-button"
                 >
@@ -2431,7 +2533,7 @@ function Create() {
             </button>
             <h2 className="text-xl font-semibold mb-4 text-black">Exit</h2>
             <p className="text-gray-600 mb-4">
-              Are you sure you want to exit? Do you want to save your changes?
+              Are you sure you want to exit? Your changes will not be saved.
             </p>
             <div className="flex gap-x-2 items-center justify-center">
               <button
@@ -2440,15 +2542,15 @@ function Create() {
                 }}
                 className="cancel-red-btn"
               >
-                Exit without saving
+                Exit
               </button>
               <button
                 onClick={() => {
-                  navigate("/profile");
+                  toggleModalExitKahoot();
                 }}
                 className="exit-kahoot-btn"
               >
-                Save and exit
+                Keep Editing
               </button>
             </div>
           </motion.div>
