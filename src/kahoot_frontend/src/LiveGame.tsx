@@ -1,17 +1,45 @@
 import { useLocation } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 import { useMediaQuery } from "react-responsive";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaUnlock, FaLock } from "react-icons/fa";
+import { io } from "socket.io-client";
+import axios from "axios";
+
+interface Player {
+  nickname: string;
+  owner: string;
+}
+
+const socket = io("http://localhost:3001");
 
 function LiveGame() {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const [players, setPlayers] = useState<any>([]);
   const [locked, setLocked] = useState(false);
   const { search } = useLocation();
+  const [uniquePlayers, setUniquePlayers] = useState<any>([]);
+  const [uniqueOwners, setUniqueOwners] = useState<any>([]);
   const queryParams = new URLSearchParams(search);
 
   const gamePin = queryParams.get("gameId");
+
+  useEffect(() => {
+    socket.emit("join_game", { gamePin: gamePin });
+
+    // Listen for the player_joined event
+    socket.on("player_joined", (data) => {
+      console.log(data, "<<< DATA");
+      if (!uniquePlayers?.includes(data?.thePlayer?.owner)) {
+        setUniquePlayers((prevState: any) => [
+          ...prevState,
+          data?.thePlayer?.owner,
+        ]);
+        setUniqueOwners((prevState: any) => [...prevState, data?.thePlayer]);
+      }
+    });
+  }, []);
+
   return (
     <div className="live-game">
       <div className="h-[15vh] lg:hidden bg-white flex justify-center items-center flex-col gap-y-1">
@@ -74,7 +102,8 @@ function LiveGame() {
               {locked ? <FaLock size="20px" /> : <FaUnlock size="20px" />}
             </button>
             <button
-              disabled={players?.length <= 0}
+              onClick={() => {}}
+              disabled={uniquePlayers?.length <= 0}
               className="lock-btn font-bold"
             >
               Start
@@ -82,15 +111,17 @@ function LiveGame() {
           </div>
         </div>
         <div className="h-[65vh] md:h-[58vh] overflow-auto">
-          <div className="flex flex-wrap w-full items-center justify-center h-full">
-            {players?.length > 0 ? (
-              players?.map((player: any) => (
+          <div className="flex flex-wrap w-full items-start h-full">
+            {uniqueOwners?.length > 0 ? (
+              uniqueOwners?.map((owner: any) => (
                 <div className="mt-4 flex items-center flex-wrap relative user-container overflow-y-auto">
                   <button className="user-button">
                     <div className="user-avatar">
                       <IoPersonCircle size={isMobile ? "25px" : "45px"} />
                     </div>
-                    <span className="hover:line-through">{player}</span>
+                    <span className="hover:line-through">
+                      {owner?.nickname}
+                    </span>
                   </button>
                 </div>
               ))
@@ -114,7 +145,9 @@ function LiveGame() {
       </div>
       <div className="player-absolute absolute bottom-2 right-2 flex gap-x-2">
         <IoPersonCircle size="32px" className="ml-2" />
-        <p className="player-absolute-text mr-5">{players?.length ?? 0}</p>
+        <p className="player-absolute-text mr-5">
+          {uniquePlayers?.length ?? 0}
+        </p>
       </div>
     </div>
   );

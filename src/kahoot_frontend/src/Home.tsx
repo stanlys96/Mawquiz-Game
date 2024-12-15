@@ -12,6 +12,10 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { notification } from "antd";
 import { modalVariants, override } from "./helper/helper";
 import { RiLogoutCircleLine } from "react-icons/ri";
+import { io } from "socket.io-client";
+import Swal from "sweetalert2";
+
+const socket = io("http://localhost:3001"); // Connect to backend
 
 function Home() {
   const dispatch = useDispatch();
@@ -24,6 +28,7 @@ function Home() {
   const [currentUser, setCurrentUser] = useState<any>();
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [gamePin, setGamePin] = useState("");
 
   const { principal } = useSelector((state: any) => state.user);
 
@@ -127,15 +132,28 @@ function Home() {
               </p>
             </div>
             <input
+              value={gamePin}
+              onChange={(e) => setGamePin(e.target.value)}
               className="game-pin-input mt-[10px] w-[100px]"
               placeholder="Game Pin"
             />
             <button
-              onClick={() => {
+              onClick={async () => {
+                if (!gamePin) return;
+                if (!currentUser?.owner) return;
                 setLoading(true);
-                setTimeout(() => {
+                socket.emit("join_game", { gamePin, thePlayer: currentUser });
+                socket.on("error", (err) => {
+                  Swal.fire({
+                    title: "Info!",
+                    text: err.message,
+                    icon: "info",
+                  });
                   setLoading(false);
-                }, 2000);
+                });
+                socket.on("success", (data) => {
+                  navigate("/profile");
+                });
               }}
               className="custom-button w-full"
             >

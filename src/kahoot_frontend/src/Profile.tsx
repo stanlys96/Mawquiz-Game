@@ -17,6 +17,7 @@ import { settingPrincipal } from "../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
+import axios from "axios";
 
 function Profile() {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -415,10 +416,24 @@ function Profile() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    navigate(
-                      `/live-game?gameId=${currentPickedKahoot?.gamePin}`
-                    );
+                  onClick={async () => {
+                    try {
+                      const createGame = await axios.post(
+                        "http://localhost:3001/games",
+                        {
+                          gamePin: currentPickedKahoot?.gamePin,
+                          questions: currentPickedKahoot?.questions,
+                        }
+                      );
+                      console.log(createGame);
+                      if (createGame?.data?.message !== "error") {
+                        navigate(
+                          `/live-game?gameId=${currentPickedKahoot?.gamePin}`
+                        );
+                      }
+                    } catch (e) {
+                      console.log(e, "<< E");
+                    }
                   }}
                   className="done-button"
                 >
