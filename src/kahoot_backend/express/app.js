@@ -8,13 +8,16 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
+    origin: "*",
   },
 });
 const corsOptions = {
   origin: [
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
     "http://localhost:3000",
+    "https://identity.ic0.app",
+    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
+    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/",
   ], // Add your URL here
   methods: ["GET", "POST", "PUT", "DELETE"], // Define the allowed HTTP methods
 };
@@ -28,14 +31,23 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/"],
+      connectSrc: [
+        "'self'",
+        "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
+        "https://identity.ic0.app",
+        "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
+        "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/",
+      ],
     },
   })
 );
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Origin",
-    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/"
+    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
+    "https://identity.ic0.app",
+    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
+    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/"
   );
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
