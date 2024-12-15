@@ -24,6 +24,7 @@ function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { principal } = useSelector((state: any) => state.user);
+  const [loading, setLoading] = useState(false);
   const [isHoveredKahoot, setIsHoveredKahoot] = useState(false);
   const [category, setCategory] = useState("kahoot");
   const [backend, setBackend] = useState<_SERVICE>();
@@ -76,6 +77,19 @@ function Profile() {
   }, [principal, backend]);
   return (
     <main className="background flex justify-center items-center">
+      {loading && (
+        <div className="relative kahoot-container">
+          <div className="kahoot-spinner">
+            <div />
+            <div />
+            <div />
+            <div />
+          </div>
+          <p className="montserrat medium text-[28px] leading-[0px]">
+            Creating game room!
+          </p>
+        </div>
+      )}
       <div className="flex main-profile flex-col justify-center items-center gap-y-3">
         <div className="absolute z-infinite top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
           <div
@@ -418,20 +432,23 @@ function Profile() {
                 <button
                   onClick={async () => {
                     try {
+                      setLoading(true);
+                      setIsOpenModalKahoot(false);
                       const createGame = await axios.post(
-                        "http://localhost:3001/games",
+                        "https://mawquiz-backend-production.up.railway.app/games",
                         {
                           gamePin: currentPickedKahoot?.gamePin,
                           questions: currentPickedKahoot?.questions,
                         }
                       );
-                      console.log(createGame);
                       if (createGame?.data?.message !== "error") {
                         navigate(
                           `/live-game?gameId=${currentPickedKahoot?.gamePin}`
                         );
                       }
+                      setLoading(false);
                     } catch (e) {
+                      setLoading(false);
                       console.log(e, "<< E");
                     }
                   }}

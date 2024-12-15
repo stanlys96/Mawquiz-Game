@@ -16,7 +16,7 @@ import { io } from "socket.io-client";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const socket = io("http://localhost:3001"); // Connect to backend
+const socket = io("https://mawquiz-backend-production.up.railway.app/"); // Connect to backend
 
 function Home() {
   const dispatch = useDispatch();
@@ -149,7 +149,7 @@ function Home() {
                 try {
                   setLoading(true);
                   const result = await axios.post(
-                    `http://localhost:3001/joinGame/${gamePin}`,
+                    `https://mawquiz-backend-production.up.railway.app/joinGame/${gamePin}`,
                     {
                       player: currentUser,
                     }

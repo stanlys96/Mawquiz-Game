@@ -12,7 +12,7 @@ interface Player {
   owner: string;
 }
 
-const socket = io("http://localhost:3001");
+const socket = io("https://mawquiz-backend-production.up.railway.app/");
 
 function Waiting() {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
