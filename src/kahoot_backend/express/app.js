@@ -10,6 +10,7 @@ const io = new Server(server, {
     origin: "*",
   },
 });
+let globalSocket;
 
 app.use(cors());
 app.use(express.json());
@@ -43,13 +44,9 @@ app.get("/quizzes/:id", (req, res) => {
 
 // Start a new game session
 app.post("/games", (req, res) => {
-  console.log(req.body);
   try {
     const { gamePin, questions } = req.body;
     games[gamePin] = { players: {}, questions };
-    console.log(gamePin);
-    console.log(questions);
-    console.log(games);
     res.json({ gamePin, message: "Game started successfully" });
   } catch (e) {
     console.log(e, "<< E");
@@ -69,21 +66,21 @@ app.get("/games/:gamePin", (req, res) => {
 
 app.post("/joinGame/:gamePin", (req, res) => {
   const game = games[req.params.gamePin];
-  const thePlayer = games[req.params.player];
+  const thePlayer = req.body.player;
   for (const key in game.players) {
     for (const secondKey in game.players[key]) {
       if (
         secondKey === "principal" &&
         game.players[key][secondKey] === thePlayer?.owner
       ) {
-        res
+        return res
           .status(400)
           .json({ message: "You have already joined this game!", status: 400 });
       }
     }
   }
-  game.players[socket.id] = {
-    socketId: socket.id,
+  game.players[globalSocket.id] = {
+    socketId: globalSocket.id,
     name: thePlayer?.nickname,
     principal: thePlayer?.owner,
     score: 0,
@@ -98,42 +95,10 @@ app.get("/playersJoined/:gamePin", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  // socket.on("join_game", ({ gamePin, thePlayer }) => {
-  //   try {
-  //     const game = games[gamePin];
-  //     if (!game) {
-  //       socket.emit("error", { message: "Game not found" });
-  //       return;
-  //     }
-
-  //     for (const key in game.players) {
-  //       for (const secondKey in game.players[key]) {
-  //         if (
-  //           secondKey === "principal" &&
-  //           game.players[key][secondKey] === thePlayer?.owner
-  //         ) {
-  //           socket.emit("error", { message: "You have joined the game!" });
-  //           return;
-  //         }
-  //       }
-  //     }
-
-  //     game.players[socket.id] = {
-  //       socketId: socket.id,
-  //       name: thePlayer?.nickname,
-  //       principal: thePlayer?.owner,
-  //       score: 0,
-  //     };
-  //     socket.join(gamePin);
-  //     io.to(gamePin).emit("player_joined", { thePlayer });
-  //     console.log(`${thePlayer?.owner} joined game ${gamePin}`);
-  //     socket.emit("success", {
-  //       message: "You have successfully joined the game!",
-  //     });
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // });
+  globalSocket = socket;
+  socket.on("join_game", ({ gamePin, thePlayer }) => {
+    socket.join(gamePin);
+  });
 
   // Submit an answer
   socket.on("submit_answer", ({ pin, answer }) => {
@@ -161,6 +126,12 @@ io.on("connection", (socket) => {
 
   // Disconnect
   socket.on("disconnect", () => {
-    console.log("A user disconnected:", socket.id);
+    for (const theGame in games) {
+      for (const thePlayerKey in games?.[theGame]?.players) {
+        if (thePlayerKey === socket.id) {
+          delete games?.[theGame]?.players[socket.id];
+        }
+      }
+    }
   });
 });

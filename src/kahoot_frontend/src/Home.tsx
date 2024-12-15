@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { settingPrincipal } from "../stores/user-slice";
+import { settingNickname, settingPrincipal } from "../stores/user-slice";
 import { IoPersonCircle } from "react-icons/io5";
 import { Principal } from "@dfinity/principal";
 import IC from "./utils/IC";
@@ -14,6 +14,7 @@ import { modalVariants, override } from "./helper/helper";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { io } from "socket.io-client";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const socket = io("http://localhost:3001"); // Connect to backend
 
@@ -48,6 +49,7 @@ function Home() {
         ?.getUser(Principal.fromText(principal))
         ?.then((result) => {
           setCurrentUser(result?.[0]);
+          dispatch(settingNickname(result?.[0]?.nickname));
         })
         .catch((err) => {
           console.log(err);
@@ -83,6 +85,7 @@ function Home() {
                     setNickname("");
                   } else {
                     setNickname(currentUser?.nickname ?? "");
+                    dispatch(settingNickname(currentUser?.nickname ?? ""));
                   }
                   setIsOpenModalNickname(true);
                 }}
@@ -105,6 +108,7 @@ function Home() {
                     setNickname("");
                   } else {
                     setNickname(currentUser?.nickname ?? "");
+                    dispatch(settingNickname(currentUser?.nickname ?? ""));
                   }
                   setIsOpenModalNickname(true);
                 }}
@@ -119,6 +123,7 @@ function Home() {
                     setNickname("");
                   } else {
                     setNickname(currentUser?.nickname ?? "");
+                    dispatch(settingNickname(currentUser?.nickname ?? ""));
                   }
                   setIsOpenModalNickname(true);
                 }}
@@ -141,19 +146,23 @@ function Home() {
               onClick={async () => {
                 if (!gamePin) return;
                 if (!currentUser?.owner) return;
-                setLoading(true);
-                socket.emit("join_game", { gamePin, thePlayer: currentUser });
-                socket.on("error", (err) => {
-                  Swal.fire({
-                    title: "Info!",
-                    text: err.message,
-                    icon: "info",
-                  });
+                try {
+                  setLoading(true);
+                  const result = await axios.post(
+                    `http://localhost:3001/joinGame/${gamePin}`,
+                    {
+                      player: currentUser,
+                    }
+                  );
+                  const status = result?.data?.status;
+                  if (status === 200) {
+                    navigate("/waiting");
+                  }
                   setLoading(false);
-                });
-                socket.on("success", (data) => {
-                  navigate("/profile");
-                });
+                } catch (e: any) {
+                  console.log(e?.status);
+                  setLoading(false);
+                }
               }}
               className="custom-button w-full"
             >
@@ -329,6 +338,7 @@ function Home() {
               <button
                 onClick={() => {
                   dispatch(settingPrincipal(""));
+                  dispatch(settingNickname(""));
                   toggleModalJiggle();
                   navigate("/");
                 }}
