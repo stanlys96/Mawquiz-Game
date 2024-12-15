@@ -3357,6 +3357,111 @@ html {
   vertical-align: baseline;
 }
 
+.lock-btn {
+  padding: 0px 1rem 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -0.25rem 0px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px 2px 4px;
+  font-size: 1.2rem;
+  line-height: normal;
+  min-height: 2.5rem;
+  height: 4vmin;
+  font-size: 1.67vmin;
+  margin: 0px 0px 8px 8px;
+  border-radius: 4px;
+  padding: 0px 1.6vmin 0.4vmin;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -0.4vmin 0px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px 2px 4px;
+  width: initial;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  background: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
+.lock-btn-lock {
+  padding: 0px 1rem 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -0.25rem 0px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px 2px 4px;
+  font-size: 1.2rem;
+  line-height: normal;
+  min-height: 2.5rem;
+  height: 4vmin;
+  font-size: 1.67vmin;
+  margin: 0px 0px 8px 8px;
+  border-radius: 4px;
+  padding: 0px 1.6vmin 0.4vmin;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px -0.4vmin 0px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px 2px 4px;
+  width: initial;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  background: #333333;
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
+.lock-btn:disabled {
+  background-color: rgb(204, 204, 204);
+  color: rgb(0, 0, 0);
+  cursor: not-allowed;
+}
+
+.the-dark-bg {
+  background: #333333;
+}
+
+.player-absolute {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  padding: 4px;
+  margin: 0px 8px 8px 0px;
+  height: calc(8px + 2.5rem);
+  box-sizing: border-box;
+}
+
+.player-absolute-text {
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+}
+
 @media (pointer: fine) {
   .question-btn:hover::after {
     content: "";
