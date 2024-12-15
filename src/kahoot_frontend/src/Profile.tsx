@@ -439,6 +439,11 @@ function Profile() {
                         {
                           gamePin: currentPickedKahoot?.gamePin,
                           questions: currentPickedKahoot?.questions,
+                        },
+                        {
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
                         }
                       );
                       if (createGame?.data?.message !== "error") {
