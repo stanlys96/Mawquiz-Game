@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/"],
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -27,23 +27,29 @@ const corsOptions = {
 let globalSocket: any = null;
 
 app.use(cors(corsOptions));
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         connectSrc: [
-//           "'self'",
-//           "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
-//           "https://mawquiz-backend-production.up.railway.app",
-//           "wss://mawquiz-backend-production.up.railway.app",
-//         ],
-//       },
-//     },
-//   })
-// );
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      connectSrc: [
+        "'self'",
+        "http://localhost:*",
+        "https://icp0.io",
+        "https://*.icp0.io",
+        "https://icp-api.io",
+        "wss://mawquiz-backend-production.up.railway.app",
+      ],
+    },
+  })
+);
 // app.options("*", cors(corsOptions));
 app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "connect-src 'self' http://localhost:* https://icp0.io https://*.icp0.io https://icp-api.io wss://mawquiz-backend-production.up.railway.app;"
+  );
+  next();
+});
 // app.use((req: any, res: any, next: any) => {
 //   res.header(
 //     "Access-Control-Allow-Origin",
@@ -130,6 +136,7 @@ app.post("/joinGame/:gamePin", (req: any, res: any) => {
     name: thePlayer?.nickname,
     principal: thePlayer?.owner,
     score: 0,
+    admin: thePlayer?.admin,
   };
   res.json({ message: "Successfully joined", status: 200 });
   io.to(req.params.gamePin).emit("player_joined", { thePlayer });
@@ -141,6 +148,7 @@ app.get("/playersJoined/:gamePin", (req: any, res: any) => {
 });
 
 io.on("connection", (socket: any) => {
+  console.log(`Someone just connected: ${socket.id}`);
   globalSocket = socket;
   socket.on("join_game", ({ gamePin, thePlayer }: any) => {
     socket.join(gamePin);
@@ -179,9 +187,30 @@ io.on("connection", (socket: any) => {
     for (const theGame in games) {
       for (const thePlayerKey in games?.[theGame]?.players) {
         if (thePlayerKey === socket.id) {
+          const currentPlayer = games?.[theGame]?.players?.[thePlayerKey];
+          if (currentPlayer?.admin) {
+            io.to(theGame).emit(
+              "admin_has_left",
+              games?.[theGame]?.players[thePlayerKey]
+            );
+          } else {
+            io.to(theGame).emit(
+              "player_left",
+              games?.[theGame]?.players[thePlayerKey]
+            );
+          }
           delete games?.[theGame]?.players[socket.id];
         }
       }
     }
+  });
+
+  socket.on("admin_left", ({ gamePin }: any) => {
+    delete games?.[gamePin];
+    io.to(gamePin).emit("admin_has_left");
+  });
+
+  socket.on("game_start", ({ gamePin }: any) => {
+    io.to(gamePin).emit("game_start");
   });
 });

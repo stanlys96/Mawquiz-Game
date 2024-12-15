@@ -7,6 +7,17 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 
 export default defineConfig({
+  html: {
+    inject: {
+      injectMeta: {
+        "http-equiv": "Content-Security-Policy",
+        content: "connect-src 'self' *;",
+      },
+    },
+  },
+  define: {
+    __VITE_CSP: JSON.stringify("connect-src 'self' *;"),
+  },
   build: {
     emptyOutDir: true,
   },

@@ -2,12 +2,14 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 
 function Waiting() {
+  const navigate = useNavigate();
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const { principal, nickname } = useSelector((state: any) => state.user);
@@ -16,6 +18,9 @@ function Waiting() {
 
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
+    socket.on("admin_has_left", () => {
+      navigate("/home");
+    });
   }, []);
 
   return (

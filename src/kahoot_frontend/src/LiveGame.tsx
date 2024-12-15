@@ -5,25 +5,26 @@ import { useEffect, useState } from "react";
 import { FaUnlock, FaLock } from "react-icons/fa";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { Principal } from "@dfinity/principal";
+import { useSelector } from "react-redux";
 
 interface Player {
   nickname: string;
   owner: string;
 }
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 
 function LiveGame() {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
-  const [players, setPlayers] = useState<any>([]);
   const [locked, setLocked] = useState(false);
   const { search } = useLocation();
   const [uniquePlayers, setUniquePlayers] = useState<Set<any>>(new Set());
   const [uniqueOwners, setUniqueOwners] = useState<Set<any>>(new Set());
   const queryParams = new URLSearchParams(search);
-
+  const { principal, nickname } = useSelector((state: any) => state.user);
   const gamePin = queryParams.get("gameId");
 
   useEffect(() => {
@@ -44,6 +45,31 @@ function LiveGame() {
         return updatedSet;
       });
     });
+    socket.on("player_left", (data) => {
+      let uniquePlayersTemp = Array.from(uniquePlayers);
+      let uniqueOwnersTemp = Array.from(uniqueOwners);
+      const thePlayerIndex = uniquePlayersTemp?.findIndex(
+        (player) => player === data?.principal
+      );
+      const theOwnerIndex = uniquePlayersTemp?.findIndex(
+        (player) => player?.owner === data?.principal
+      );
+      uniquePlayersTemp?.splice(thePlayerIndex, 1);
+      uniqueOwnersTemp?.splice(theOwnerIndex, 1);
+      setUniquePlayers(new Set(uniquePlayersTemp));
+      setUniqueOwners(new Set(uniqueOwnersTemp));
+    });
+
+    const handleBeforeUnload = (event: any) => {
+      socket.emit("admin_left", { gamePin: gamePin });
+    };
+
+    // Add the event listener for beforeunload
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   return (
@@ -108,7 +134,9 @@ function LiveGame() {
               {locked ? <FaLock size="20px" /> : <FaUnlock size="20px" />}
             </button>
             <button
-              onClick={() => {}}
+              onClick={() => {
+                socket.emit("game_start", { gamePin: gamePin });
+              }}
               disabled={uniqueOwners?.size <= 0}
               className="lock-btn font-bold"
             >

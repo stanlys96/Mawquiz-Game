@@ -11,7 +11,7 @@ interface Player {
   owner: string;
 }
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 
@@ -28,7 +28,6 @@ function GamePlay() {
 
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
-
     // Listen for the player_joined event
     socket.on("player_joined", (data) => {
       setUniquePlayers((prevSet) => {

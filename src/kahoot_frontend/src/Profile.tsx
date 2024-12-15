@@ -18,6 +18,11 @@ import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import axios from "axios";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3001/", {
+  transports: ["websocket", "polling"],
+});
 
 function Profile() {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -435,7 +440,7 @@ function Profile() {
                       setLoading(true);
                       setIsOpenModalKahoot(false);
                       const theData = await fetch(
-                        "https://mawquiz-backend-production.up.railway.app/games",
+                        "http://localhost:3001/games",
                         {
                           method: "POST",
                           headers: {
@@ -447,6 +452,7 @@ function Profile() {
                           }),
                         }
                       );
+
                       const createGame = await theData?.json();
                       if (createGame?.message !== "error") {
                         navigate(
