@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import IC from "./utils/IC";
 import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { IoPersonCircle } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import {
   _SERVICE,
@@ -34,6 +33,8 @@ function Profile() {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [nickname, setNickname] = useState("");
   const [userGames, setUserGames] = useState<Game[]>([]);
+  const [isOpenModalKahoot, setIsOpenModalKahoot] = useState<boolean>(false);
+  const [currentPickedKahoot, setCurrentPickedKahoot] = useState<any>();
 
   const toggleModalJiggle = () => {
     setIsOpenModalJiggle((prevState) => !prevState);
@@ -75,7 +76,7 @@ function Profile() {
   return (
     <main className="background flex justify-center items-center">
       <div className="flex main-profile flex-col justify-center items-center gap-y-3">
-        <div className="absolute top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
+        <div className="absolute z-infinite top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
           <div
             onClick={() => {
               navigate("/home");
@@ -149,7 +150,13 @@ function Profile() {
             <div className="game-card-container">
               {userGames?.length > 0 ? (
                 userGames?.map((userGame) => (
-                  <div className="game-card">
+                  <div
+                    onClick={() => {
+                      setIsOpenModalKahoot(true);
+                      setCurrentPickedKahoot(userGame);
+                    }}
+                    className="game-card"
+                  >
                     <div className="game-card-inner cursor-pointer">
                       <div className="relative">
                         <img
@@ -299,6 +306,7 @@ function Profile() {
                               message: "Success!",
                               description:
                                 "You have successfully updated your nickname!",
+                              placement: isMobile ? "bottomLeft" : "topLeft",
                             });
                           } else {
                             setNicknameLoading(false);
@@ -372,6 +380,55 @@ function Profile() {
           </motion.div>
         </div>
       )}
+      <AnimatePresence>
+        {isOpenModalKahoot && (
+          <div
+            onClick={() => {
+              if (nicknameLoading) return;
+              setIsOpenModalKahoot(false);
+            }}
+            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] lg:w-[50vw]"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <div className="mt-[24px]">
+                <p className="text-gray mb-[12px] font-semibold text-center">
+                  Play the game!
+                </p>
+                <p className="text-black text-center">
+                  Do you want to play {currentPickedKahoot?.title}?
+                </p>
+              </div>
+              <div className="close-toggle-button gap-x-2">
+                <button
+                  onClick={() => {
+                    setIsOpenModalKahoot(false);
+                  }}
+                  className="exit-button"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    navigate(
+                      `/live-game?gameId=${currentPickedKahoot?.gamePin}`
+                    );
+                  }}
+                  className="done-button"
+                >
+                  Host Game Live
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

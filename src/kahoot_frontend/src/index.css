@@ -3157,6 +3157,206 @@ html {
   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px;
 }
 
+.live-game {
+  height: 100vh;
+  width: 100vw;
+  background: url("kahooty.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+.gamepin-container {
+  position: relative;
+  min-height: calc(7.625rem - 1.5vmin);
+  padding: 2.5vmin calc(2.5rem + 5vmin);
+  transition: 0.2s;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  flex: 0 0 auto;
+  z-index: 4;
+  background-color: transparent;
+}
+
+.gamepin-subcontainer {
+  position: relative;
+  z-index: 141;
+  text-align: center;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 200ms;
+}
+
+.gamepin-innercontainer {
+  display: flex;
+  flex-direction: column;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.gamepin-3 {
+  display: flex;
+  flex: 1 0 auto;
+  -webkit-box-pack: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  min-height: 100%;
+}
+
+.gamepin-4 {
+  display: flex;
+  margin: 0px auto;
+}
+
+.gamepin-left {
+  display: flex;
+  filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 2px 4px);
+  background-color: rgb(255, 255, 255);
+  color: rgb(51, 51, 51);
+  padding: 1.7vmin 2.5vmin 1.7vmin 2.8vmin;
+  border-radius: 0.5vmin 0px 0px 0.5vmin;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  margin: 0px -1vmin 0px 0px;
+  clip-path: polygon(
+    calc(100% - 2.5vmin) 0px,
+    100% 50%,
+    calc(100% - 2.5vmin) 100%,
+    0px 100%,
+    0px 0px
+  );
+}
+
+.gamepin-left-inner {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 2.5vmin;
+  line-height: 3vmin;
+  text-align: start;
+  gap: 5px;
+}
+
+.gamepin-right {
+  filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 2px 4px);
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  font-size: 8.5vmin;
+  font-weight: 900;
+  line-height: normal;
+  letter-spacing: 0.286vmin;
+  background-color: rgb(255, 255, 255);
+  color: rgb(51, 51, 51);
+  border-radius: 0px 0.5vmin 0.5vmin 0px;
+  padding: 1.1vmin 2.8vmin 1.1vmin 3.5vmin;
+  margin: 0px 0px 0px -1vmin;
+  clip-path: polygon(0px 0%, 100% 0px, 100% 100%, 0px 100%, 2.5vmin 50%);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+}
+
+.gamepin-text-right {
+  font-size: 2.34vmin;
+  line-height: 3vmin;
+  letter-spacing: normal;
+  font-weight: bold;
+  margin-bottom: -1.5vmin;
+  text-align: start;
+}
+
+.the-pin {
+  border: none;
+  background: transparent;
+  font-style: inherit;
+  font-variant: inherit;
+  font-weight: inherit;
+  font-stretch: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  font-optical-sizing: inherit;
+  font-size-adjust: inherit;
+  font-kerning: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  line-height: normal;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  color: inherit;
+  padding: 0px 0.8vmin;
+}
+
+.user-container {
+  color: rgb(255, 255, 255);
+  fill: rgb(255, 255, 255);
+  margin: 1vmin 1.5vmin;
+  padding: 4vmin 3vmin;
+  line-height: 0.225vmin;
+  text-align: center;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 1 auto;
+  background-color: rgb(70, 23, 143);
+  border-radius: 0.4vmin;
+  animation: 1s ease 0s 1 normal none running rBqQd;
+}
+
+.user-button {
+  font-size: 3.5vmin;
+  font-family: inherit;
+  -webkit-box-align: center;
+  align-items: center;
+  font-weight: 600;
+  border-radius: 0.125rem 0px;
+  padding: 0px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  position: relative;
+}
+
+.user-avatar {
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  border-radius: 0.25rem;
+  flex-direction: row;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  width: 11.5vmin;
+  padding: 0.5vmin;
+  height: 12vmin;
+  margin-inline: -3vmin 1.5vmin;
+  margin-top: -4vmin;
+  margin-bottom: -4vmin;
+}
+
+.user-span {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  font: inherit;
+  vertical-align: baseline;
+}
+
 @media (pointer: fine) {
   .question-btn:hover::after {
     content: "";

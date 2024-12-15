@@ -2454,7 +2454,7 @@ function Create() {
                 <button
                   onClick={() => {
                     if (fromSaving) {
-                      if (!kahootTitleTemp) return;
+                      if (!kahootTitleTemp?.trim()) return;
                     }
                     setKahootTitleTemp((prevState) => {
                       setKahootTitle(prevState.trim());

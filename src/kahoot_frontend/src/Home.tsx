@@ -62,12 +62,12 @@ function Home() {
             <div />
           </div>
           <p className="montserrat medium text-[28px] leading-[0px]">
-            Connecting to Kahoot!
+            Connecting to Mawquiz!
           </p>
         </div>
       )}
       <div className="flex flex-col justify-center items-center gap-y-2 main-profile">
-        <img className="w-[200px] mx-auto img-home" src="logo.png" />
+        <img className="w-[200px] mx-auto img-home bg-white" src="logo.png" />
         <div className="main-container">
           <div className="flex flex-col justify-center items-center gap-y-2">
             <div className="flex gap-x-2 items-center">
