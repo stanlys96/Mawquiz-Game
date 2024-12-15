@@ -4,7 +4,10 @@ import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { IoPersonCircle } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { _SERVICE } from "../../declarations/kahoot_backend/kahoot_backend.did";
+import {
+  _SERVICE,
+  Game,
+} from "../../declarations/kahoot_backend/kahoot_backend.did";
 import { Principal } from "@dfinity/principal";
 import { FiEdit } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
@@ -28,6 +31,7 @@ function Profile() {
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [nickname, setNickname] = useState("");
+  const [userGames, setUserGames] = useState<Game[]>([]);
 
   const toggleModalJiggle = () => {
     setIsOpenModalJiggle((prevState) => !prevState);
@@ -45,6 +49,14 @@ function Profile() {
         ?.getUser(Principal.fromText(principal))
         ?.then((result) => {
           setCurrentUser(result?.[0]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      backend
+        ?.getGamesByPrincipal(principal)
+        ?.then(async (res) => {
+          setUserGames(res);
         })
         .catch((err) => {
           console.log(err);
@@ -105,7 +117,7 @@ function Profile() {
             <FiEdit color="white" />
           </div>
         </div>
-        <div className="flex gap-x-4 md:flex-row flex-col gap-y-4 items-center md:items-start">
+        <div className="flex gap-x-4 md:pt-0 pt-[250px] md:flex-row flex-col-reverse gap-y-4 items-center md:items-start">
           <div className="your-kahoots h-fit">
             <div className="your-kahoots-top">
               <div className="flex gap-x-4">
@@ -124,34 +136,47 @@ function Profile() {
               </div>
             </div>
             <div className="game-card-container">
-              <div className="game-card">
-                <div className="game-card-inner cursor-pointer">
-                  <div className="relative">
-                    <img
-                      src="logo.png"
-                      className="h-[74px] rounded-l-[4px] w-[109px]"
-                    />
-                    <div className="question-card">
-                      <p className="text-white question-card-text">
-                        1&nbsp;Questions
-                      </p>
+              {userGames?.length > 0 ? (
+                userGames?.map((userGame) => (
+                  <div className="game-card">
+                    <div className="game-card-inner cursor-pointer">
+                      <div className="relative">
+                        <img
+                          src="logo.png"
+                          className="h-[74px] rounded-l-[4px] w-[109px]"
+                        />
+                        <div className="question-card">
+                          <p className="text-white question-card-text">
+                            {userGame?.questions?.length}&nbsp;Questions
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col justify-between w-[200px]">
+                        <p className="py-[8px] px-[12px] text-black font-semibold">
+                          {userGame?.title?.length > 15
+                            ? (userGame?.title?.slice(0, 15) ?? "") + "..."
+                            : userGame?.title ?? ""}
+                        </p>
+                        <div className="px-[12px] py-[2px] bottom-game-card flex justify-between items-center gap-x-[50px]">
+                          <p className="dark-text font-semibold">
+                            {userGame?.played} plays
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-between">
-                    <p className="py-[8px] px-[12px] text-black font-semibold">
-                      US President
-                    </p>
-                    <div className="px-[12px] py-[2px] bottom-game-card flex justify-between items-center gap-x-[50px]">
-                      <p className="dark-text">stanlys96</p>
-                      <p className="dark-text font-semibold">0 plays</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p className="text-see-all text-center font-bold cursor-pointer mt-[16px] underline">
-                See all (1)
-              </p>
+                ))
+              ) : (
+                <p className="text-black text-center">
+                  You have not created any games...
+                </p>
+              )}
             </div>
+            {userGames?.length > 0 && (
+              <p className="text-see-all text-center font-bold cursor-pointer my-[16px] underline">
+                See all ({userGames?.length})
+              </p>
+            )}
           </div>
           <div
             onClick={() => navigate("/create")}

@@ -29,9 +29,12 @@ actor {
   public type Game = {
     owner: Text;
     title: Text;
+    timestamp: Text;
     description: Text;
     played: Nat32;
+    isLive: Bool;
     questions: [Question];
+    gamePin: Text;
   };
 
   public type User = {
@@ -90,7 +93,7 @@ actor {
     return userHashMap.get(user);
   };
 
-  public func addGame(gamePin: Text, owner: Text, title: Text, description: Text, questions: [Question]): async Bool {
+  public func addGame(gamePin: Text, owner: Text, title: Text, description: Text, questions: [Question], timestamp: Text): async Bool {
     switch (gameHashMap.get(gamePin)) {
       case (?_exists) {
         return false;
@@ -102,6 +105,9 @@ actor {
           description = description;
           played = 0;
           questions = questions;
+          timestamp = timestamp;
+          isLive = false;
+          gamePin = gamePin;
         };
         gameHashMap.put(gamePin, result);
         return true;
@@ -111,5 +117,23 @@ actor {
 
   public func getGame(gamePin: Text): async ?Game {
     gameHashMap.get(gamePin);
+  };
+
+  public func getGamesByPrincipal(owner: Text): async [Game] {
+    var result: [Game] = [];
+    for ((key, value) in gameHashMap.entries()) {
+      if (value.owner == owner) {
+        result := Array.append(result, [value]);
+      }
+    };
+    return result;
+  };
+
+  public func getUserNickname(user: Text): async Text {
+    let currentUser = userHashMap.get(Principal.fromText(user));
+    switch (currentUser) {
+      case (?value) { return value.nickname; };
+      case null { return user; };
+    };
   };
 };

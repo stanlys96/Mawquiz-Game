@@ -24,6 +24,7 @@ import {
   convertSecondsToMinutes,
   generateRandomString,
   checkQuizData,
+  getCurrentFormattedDateTime,
 } from "./helper/helper";
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
@@ -292,7 +293,8 @@ function Create() {
                       principal,
                       kahootTitle,
                       kahootDescription,
-                      quizData
+                      quizData,
+                      getCurrentFormattedDateTime()
                     )
                     ?.then((result) => {
                       setLoading(false);
@@ -375,7 +377,8 @@ function Create() {
                       principal,
                       kahootTitle,
                       kahootDescription,
-                      quizData
+                      quizData,
+                      getCurrentFormattedDateTime()
                     )
                     ?.then((result) => {
                       setLoading(false);
@@ -2471,9 +2474,10 @@ function Create() {
                         ?.addGame(
                           gamePin,
                           principal,
-                          kahootTitle,
-                          kahootDescription,
-                          quizData
+                          kahootTitleTemp,
+                          kahootDescriptionTemp,
+                          quizData,
+                          getCurrentFormattedDateTime()
                         )
                         ?.then((result) => {
                           setLoading(false);
