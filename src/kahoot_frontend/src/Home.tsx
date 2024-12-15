@@ -271,6 +271,7 @@ function Home() {
                             setCurrentUser(theUser?.[0]);
                             setIsOpenModalNickname(false);
                             setNicknameLoading(false);
+                            dispatch(settingNickname(nickname));
                             notification.success({
                               message: "Success!",
                               description:

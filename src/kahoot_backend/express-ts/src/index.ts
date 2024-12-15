@@ -1,8 +1,9 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-const helmet = require("helmet");
+import express, { Request, Application } from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import { Server } from "socket.io";
+import http from "http";
+import helmet from "helmet";
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +23,7 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"], // Define the allowed HTTP methods
 };
 
-let globalSocket;
+let globalSocket: any = null;
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
@@ -41,7 +42,7 @@ app.use(
     },
   })
 );
-app.use((req, res, next) => {
+app.use((req: any, res: any, next: any) => {
   res.header(
     "Access-Control-Allow-Origin",
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
@@ -62,11 +63,11 @@ server.listen(PORT, () => {
 });
 
 // Sample in-memory database
-const quizzes = {}; // Store quizzes
-const games = {}; // Store ongoing game sessions
+const quizzes: any = {}; // Store quizzes
+const games: any = {}; // Store ongoing game sessions
 
 // Create a new quiz
-app.post("/quizzes", (req, res) => {
+app.post("/quizzes", (req: any, res: any) => {
   const { title, questions } = req.body;
   const quizId = Date.now().toString();
   quizzes[quizId] = { title, questions };
@@ -74,7 +75,7 @@ app.post("/quizzes", (req, res) => {
 });
 
 // Get a specific quiz
-app.get("/quizzes/:id", (req, res) => {
+app.get("/quizzes/:id", (req: any, res: any) => {
   const quiz = quizzes[req.params.id];
   if (quiz) {
     res.json(quiz);
@@ -84,7 +85,7 @@ app.get("/quizzes/:id", (req, res) => {
 });
 
 // Start a new game session
-app.post("/games", (req, res) => {
+app.post("/games", (req: any, res: any) => {
   try {
     const { gamePin, questions } = req.body;
     games[gamePin] = { players: {}, questions };
@@ -96,7 +97,7 @@ app.post("/games", (req, res) => {
 });
 
 // Join a game session
-app.get("/games/:gamePin", (req, res) => {
+app.get("/games/:gamePin", (req: any, res: any) => {
   const game = games[req.params.gamePin];
   if (game) {
     res.json(game);
@@ -105,7 +106,7 @@ app.get("/games/:gamePin", (req, res) => {
   }
 });
 
-app.post("/joinGame/:gamePin", (req, res) => {
+app.post("/joinGame/:gamePin", (req: any, res: any) => {
   const game = games[req.params.gamePin];
   const thePlayer = req.body.player;
   for (const key in game.players) {
@@ -130,19 +131,19 @@ app.post("/joinGame/:gamePin", (req, res) => {
   io.to(req.params.gamePin).emit("player_joined", { thePlayer });
 });
 
-app.get("/playersJoined/:gamePin", (req, res) => {
+app.get("/playersJoined/:gamePin", (req: any, res: any) => {
   const game = games[req.params.gamePin];
   res.json({ message: "success", players: game.players });
 });
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: any) => {
   globalSocket = socket;
-  socket.on("join_game", ({ gamePin, thePlayer }) => {
+  socket.on("join_game", ({ gamePin, thePlayer }: any) => {
     socket.join(gamePin);
   });
 
   // Submit an answer
-  socket.on("submit_answer", ({ pin, answer }) => {
+  socket.on("submit_answer", ({ pin, answer }: any) => {
     const game = games[pin];
     if (!game) return;
 
@@ -157,12 +158,16 @@ io.on("connection", (socket) => {
       }
 
       // Broadcast the updated leaderboard
-      const leaderboard = Object.values(game.players).map((p) => ({
+      const leaderboard = Object.values(game.players).map((p: any) => ({
         name: p.name,
         score: p.score,
       }));
       io.to(pin).emit("leaderboard_update", leaderboard);
     }
+  });
+
+  socket.on("startGame", ({ gamePin }: any) => {
+    io.to(gamePin).emit("gameStarted");
   });
 
   // Disconnect
