@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import IC from "./utils/IC";
 import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,8 +17,10 @@ import { notification } from "antd";
 import { settingPrincipal } from "../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
+import { useMediaQuery } from "react-responsive";
 
 function Profile() {
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { principal } = useSelector((state: any) => state.user);
@@ -36,6 +38,13 @@ function Profile() {
   const toggleModalJiggle = () => {
     setIsOpenModalJiggle((prevState) => !prevState);
   };
+
+  const getPaddingTop = useCallback(() => {
+    if (userGames?.length > 4) {
+      return 240;
+    }
+    return userGames?.length * 60; // Fallback to 0 if userGames is undefined
+  }, [userGames]);
 
   useEffect(() => {
     IC.getBackend(async (result: any) => {
@@ -63,7 +72,6 @@ function Profile() {
         });
     }
   }, [principal, backend]);
-
   return (
     <main className="background flex justify-center items-center">
       <div className="flex main-profile flex-col justify-center items-center gap-y-3">
@@ -117,7 +125,10 @@ function Profile() {
             <FiEdit color="white" />
           </div>
         </div>
-        <div className="flex gap-x-4 md:pt-0 pt-[250px] md:flex-row flex-col-reverse gap-y-4 items-center md:items-start">
+        <div
+          className={`flex gap-x-4 md:pt-0 md:flex-row flex-col-reverse gap-y-4 items-center md:items-start`}
+          style={isMobile ? { paddingTop: `${getPaddingTop()}px` } : {}}
+        >
           <div className="your-kahoots h-fit">
             <div className="your-kahoots-top">
               <div className="flex gap-x-4">
