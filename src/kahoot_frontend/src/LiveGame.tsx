@@ -11,7 +11,9 @@ interface Player {
   owner: string;
 }
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/");
+const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+  transports: ["websocket", "polling"],
+});
 
 function LiveGame() {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });

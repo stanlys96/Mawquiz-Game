@@ -434,19 +434,21 @@ function Profile() {
                     try {
                       setLoading(true);
                       setIsOpenModalKahoot(false);
-                      const createGame = await axios.post(
+                      const theData = await fetch(
                         "https://mawquiz-backend-production.up.railway.app/games",
                         {
-                          gamePin: currentPickedKahoot?.gamePin,
-                          questions: currentPickedKahoot?.questions,
-                        },
-                        {
+                          method: "POST",
                           headers: {
                             "Content-Type": "application/json",
                           },
+                          body: JSON.stringify({
+                            gamePin: currentPickedKahoot?.gamePin,
+                            questions: currentPickedKahoot?.questions,
+                          }),
                         }
                       );
-                      if (createGame?.data?.message !== "error") {
+                      const createGame = await theData?.json();
+                      if (createGame?.message !== "error") {
                         navigate(
                           `/live-game?gameId=${currentPickedKahoot?.gamePin}`
                         );

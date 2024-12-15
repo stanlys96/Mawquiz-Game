@@ -1,5 +1,4 @@
 import express, { Request, Application } from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
@@ -9,16 +8,18 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/"],
+    methods: ["GET", "POST"],
   },
 });
 const corsOptions = {
   origin: [
-    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
+    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
     "http://localhost:3000",
     "https://identity.ic0.app",
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
-    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/",
+    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
+    "https://mawquiz-backend-production.up.railway.app",
   ], // Add your URL here
   methods: ["GET", "POST", "PUT", "DELETE"], // Define the allowed HTTP methods
 };
@@ -26,35 +27,38 @@ const corsOptions = {
 let globalSocket: any = null;
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         connectSrc: [
+//           "'self'",
+//           "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
+//           "https://mawquiz-backend-production.up.railway.app",
+//           "wss://mawquiz-backend-production.up.railway.app",
+//         ],
+//       },
+//     },
+//   })
+// );
+// app.options("*", cors(corsOptions));
 app.use(express.json());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      connectSrc: [
-        "'self'",
-        "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
-        "https://identity.ic0.app",
-        "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
-        "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/",
-      ],
-    },
-  })
-);
-app.use((req: any, res: any, next: any) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io/",
-    "https://identity.ic0.app",
-    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
-    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
+// app.use((req: any, res: any, next: any) => {
+//   res.header(
+//     "Access-Control-Allow-Origin",
+//     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
+//     "https://identity.ic0.app",
+//     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
+//     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
+//     "https://mawquiz-backend-production.up.railway.app",
+//     "https://icp0.io"
+//   );
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   next();
+// });
 
 const PORT = process.env.PORT || 3001;
 

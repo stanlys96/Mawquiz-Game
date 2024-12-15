@@ -6,6 +6,7 @@ import Create from "./Create";
 import ConnectWallet from "./ConnectWallet";
 import LiveGame from "./LiveGame";
 import Waiting from "./Waiting";
+import GamePlay from "./GamePlay";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/create" element={<Create />} />
         <Route path="/live-game/:gameId?" element={<LiveGame />} />
-        <Route path="/waiting" element={<Waiting />} />
+        <Route path="/waiting/:gameId?" element={<Waiting />} />
+        <Route path="/game-play/:gameId?" element={<GamePlay />} />
       </Routes>
     </Router>
   );

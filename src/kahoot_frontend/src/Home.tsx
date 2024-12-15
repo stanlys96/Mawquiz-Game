@@ -16,7 +16,9 @@ import { io } from "socket.io-client";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/"); // Connect to backend
+const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+  transports: ["websocket", "polling"],
+}); // Connect to backend
 
 function Home() {
   const dispatch = useDispatch();
@@ -156,7 +158,7 @@ function Home() {
                   );
                   const status = result?.data?.status;
                   if (status === 200) {
-                    navigate("/waiting");
+                    navigate(`/waiting?gameId=${gamePin}`);
                   }
                   setLoading(false);
                 } catch (e: any) {
