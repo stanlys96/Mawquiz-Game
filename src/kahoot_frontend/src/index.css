@@ -1780,6 +1780,58 @@ html {
   position: relative;
 }
 
+.done-button {
+  margin-right: 0.5rem;
+  display: block;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  flex-shrink: 0;
+  width: initial;
+  border: 0px;
+  cursor: pointer;
+  vertical-align: bottom;
+  background: #26890c;
+  color: white;
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
+.exit-button-blue {
+  margin-right: 0.5rem;
+  display: block;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  flex-shrink: 0;
+  width: initial;
+  border: 0px;
+  cursor: pointer;
+  vertical-align: bottom;
+  background: rgb(19, 104, 206);
+  color: white;
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
 .save-button:hover {
   background-color: rgb(18, 96, 190);
 }
@@ -1834,6 +1886,10 @@ html {
 
 .text-semigray {
   color: rgb(110, 110, 110);
+}
+
+.text-red {
+  color: rgb(226, 27, 60);
 }
 
 .text-gray {
@@ -2094,6 +2150,15 @@ html {
   border: 2px solid rgb(255, 255, 255);
   text-align: center;
   animation: 0.5s ease 0.5s 1 normal forwards running hkhMOZ;
+}
+
+.exclamation-ordinary {
+  height: 24px;
+  width: 24px;
+  background: rgb(70, 23, 143);
+  border-radius: 50%;
+  border: 2px solid rgb(255, 255, 255);
+  text-align: center;
 }
 
 .right-sidebar {
@@ -3010,6 +3075,74 @@ html {
 
 .img-home {
   z-index: 0 !important;
+}
+
+.validate-div {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 0px;
+  overflow-y: auto;
+  max-height: 100vh;
+  scroll-behavior: smooth;
+}
+
+.validate-subdiv {
+  min-height: 16rem;
+  justify-content: space-around;
+  overflow: visible;
+  padding: 1.5rem;
+  background-color: rgb(242, 242, 242);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 2px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px -1px 2px 0px inset;
+}
+
+.validate-card {
+  background-color: white;
+  border-radius: 5px;
+  width: 100%;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 2px 0px;
+  margin-bottom: 0.8rem;
+  list-style: none;
+}
+
+.validate-li {
+  background-color: white;
+  border-radius: 5px;
+  width: 100%;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 2px 0px;
+  margin-bottom: 0.8rem;
+  list-style: none;
+}
+
+.top-part {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: row;
+  align-content: center;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.bottom-part {
+  border-top: 1px solid rgb(242, 242, 242);
+  display: flex;
+  flex: 1 1 0%;
+  /* padding: 0.3rem; */
+}
+
+.dashed-part {
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 6rem;
+  height: 4.2rem;
+  background-size: cover;
+  border: 0.5px dashed rgb(178, 178, 178);
+  margin: 2px;
+  border-radius: 2px;
+}
+
+.the-box-shadow {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px;
 }
 
 @media (pointer: fine) {

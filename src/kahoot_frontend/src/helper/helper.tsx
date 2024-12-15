@@ -2,6 +2,7 @@ import { MdQuiz } from "react-icons/md";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
 import { CSSProperties } from "react";
+import { Question } from "../../../declarations/kahoot_backend/kahoot_backend.did";
 
 export const questionTypeItems = (callback: (arg: string) => void) => [
   {
@@ -225,4 +226,60 @@ export const override: CSSProperties = {
   display: "block",
   margin: "0 auto",
   borderColor: "red",
+};
+
+export function generateRandomString(length: number = 8): string {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
+}
+
+export const checkQuizData = (
+  quizData: Question[]
+): { index: number; messages: string[] }[] => {
+  const result = [];
+  for (let i = 0; i < quizData?.length; i++) {
+    const quiz = quizData[i];
+    const messages = [];
+    if (!quiz?.question?.trim()) {
+      messages.push("Question missing");
+    }
+    if (quiz?.questionType === "Quiz") {
+      let numberMissing = 0;
+      if (!quiz?.text1?.trim()) {
+        numberMissing++;
+      }
+      if (!quiz?.text2?.trim()) {
+        numberMissing++;
+      }
+      if (numberMissing > 0) {
+        messages.push(`${numberMissing} answers missing`);
+      }
+      if (
+        !quiz?.answer1Clicked &&
+        !quiz?.answer2Clicked &&
+        !quiz?.answer3Clicked &&
+        !quiz?.answer4Clicked
+      ) {
+        messages.push("Correct answer not selected");
+      }
+    } else if (quiz?.questionType === "True or false") {
+      if (!quiz?.trueOrFalseAnswer) {
+        messages.push("Correct answer not selected");
+      }
+    } else if (quiz?.questionType === "Type answer") {
+      if (!quiz?.text1) {
+        messages.push("1 answer missing");
+      }
+    }
+    if (messages.length > 0) {
+      result.push({ index: i, messages });
+    }
+  }
+  return result;
 };

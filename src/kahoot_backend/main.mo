@@ -4,9 +4,12 @@ import HashMap "mo:base/HashMap";
 import Error "mo:base/Error";
 import Iter "mo:base/Iter";
 import Int "mo:base/Int";
+import Text "mo:base/Text";
 
 actor {
-  public type GameInterface = {
+  public type Question = {
+    id: Nat32;
+    questionType: Text;
     question: Text;
     text1: Text;
     text2: Text;
@@ -16,30 +19,31 @@ actor {
     answer2Clicked: Bool;
     answer3Clicked: Bool;
     answer4Clicked: Bool;
-    additionalAnswers: Int;
+    additionalAnswers: Nat32;
     trueOrFalseAnswer: Text;
-    timeLimit: Int;
+    timeLimit: Nat32;
     answerOptions: Text;
     imageUrl: Text;
   };
 
   public type Game = {
+    owner: Text;
     title: Text;
     description: Text;
-    gamePin: Text;
-    games: [GameInterface];
+    played: Nat32;
+    questions: [Question];
   };
 
   public type User = {
     owner: Text;
     nickname: Text;
-    games: [Game];
   };
 
   var userHashMap: HashMap.HashMap<Principal, User> = HashMap.HashMap<Principal, User>(10, Principal.equal, Principal.hash);
-  var gameHashMap: HashMap.HashMap<Int, Game> = HashMap.HashMap<Int, Game>(10, Int.equal, Int.hash);
+  var nicknameMap: HashMap.HashMap<Text, Text> = HashMap.HashMap<Text, Text>(10, Text.equal, Text.hash);
+  var gameHashMap: HashMap.HashMap<Text, Game> = HashMap.HashMap<Text, Game>(10, Text.equal, Text.hash);
 
-  public func addNewUser(user: Principal, nickname: Text) {
+  public func addNewUser(user: Principal) {
     if (Principal.isAnonymous(user)) {
       throw Error.reject("Anonymous principal not allowed");
     };
@@ -52,29 +56,60 @@ actor {
 
     var newUser: User = {
       owner = Principal.toText(user);
-      nickname = nickname;
+      nickname = Principal.toText(user);
       games = [];
     };
 
     userHashMap.put(user, newUser);
   };
 
-  public func updateNickname(user: Text, newNickname: Text) {
+  public func updateNickname(user: Text, newNickname: Text): async Bool {
+    for (nickname in nicknameMap.keys()) {
+      if (nickname == newNickname) {
+        return false;
+      };
+    };
+
     for ((key, value) in userHashMap.entries()) {
       if (value.owner == user) {
         var updatedUser: User = {
           owner = value.owner;
           nickname = newNickname;
-          games = value.games;
         };
-        
+        ignore nicknameMap.remove(value.nickname);
         userHashMap.put(key, updatedUser);
-        return;
+        nicknameMap.put(newNickname, user);
+        return true;
       };
     };
+
+    return false;
   };
 
   public shared func getUser(user: Principal): async ?User {
     return userHashMap.get(user);
+  };
+
+  public func addGame(gamePin: Text, owner: Text, title: Text, description: Text, questions: [Question]): async Bool {
+    switch (gameHashMap.get(gamePin)) {
+      case (?_exists) {
+        return false;
+      };
+      case null {
+        var result: Game = {
+          owner = owner;
+          title = title;
+          description = description;
+          played = 0;
+          questions = questions;
+        };
+        gameHashMap.put(gamePin, result);
+        return true;
+      };
+    }
+  };
+
+  public func getGame(gamePin: Text): async ?Game {
+    gameHashMap.get(gamePin);
   };
 };

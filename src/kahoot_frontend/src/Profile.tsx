@@ -26,6 +26,7 @@ function Profile() {
   const [nicknameLoading, setNicknameLoading] = useState(false);
   const [isOpenModalNickname, setIsOpenModalNickname] = useState(false);
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [nickname, setNickname] = useState("");
 
   const toggleModalJiggle = () => {
@@ -36,7 +37,7 @@ function Profile() {
     IC.getBackend(async (result: any) => {
       setBackend(result);
     });
-  }, [principal]);
+  }, []);
 
   useEffect(() => {
     if (principal && backend) {
@@ -50,6 +51,7 @@ function Profile() {
         });
     }
   }, [principal, backend]);
+
   return (
     <main className="background flex justify-center items-center">
       <div className="flex main-profile flex-col justify-center items-center gap-y-3">
@@ -71,7 +73,11 @@ function Profile() {
           <div
             onClick={() => {
               if (!currentUser?.nickname) return;
-              setNickname(currentUser?.nickname ?? "");
+              if (currentUser?.nickname?.length > 35) {
+                setNickname("");
+              } else {
+                setNickname(currentUser?.nickname ?? "");
+              }
               setIsOpenModalNickname(true);
             }}
             className="flex gap-x-2 items-center cursor-pointer"
@@ -87,7 +93,11 @@ function Profile() {
           <div
             onClick={() => {
               if (!currentUser?.nickname) return;
-              setNickname(currentUser?.nickname ?? "");
+              if (currentUser?.nickname?.length > 35) {
+                setNickname("");
+              } else {
+                setNickname(currentUser?.nickname ?? "");
+              }
               setIsOpenModalNickname(true);
             }}
             className="cursor-pointer p-[8px] bg-dark-green rounded-full flex items-center justify-center"
@@ -206,6 +216,11 @@ function Profile() {
                     {35 - (nickname?.length ?? 0)}
                   </p>
                 </div>
+                {showErrorMessage && (
+                  <p className="text-red font-medium mt-2">
+                    Nickname is already picked
+                  </p>
+                )}
               </div>
               {nicknameLoading ? (
                 <div className="py-[20px]">
@@ -232,21 +247,30 @@ function Profile() {
                   <button
                     onClick={() => {
                       if (nickname?.trim()?.length === 0) return;
+                      if (nickname === currentUser?.nickname) return;
                       setNicknameLoading(true);
                       backend
                         ?.updateNickname(principal, nickname)
                         ?.then(async (result) => {
-                          const theUser = await backend?.getUser(
-                            Principal.fromText(principal)
-                          );
-                          setCurrentUser(theUser?.[0]);
-                          setIsOpenModalNickname(false);
-                          setNicknameLoading(false);
-                          notification.success({
-                            message: "Success!",
-                            description:
-                              "You have successfully updated your nickname!",
-                          });
+                          if (result) {
+                            const theUser = await backend?.getUser(
+                              Principal.fromText(principal)
+                            );
+                            setCurrentUser(theUser?.[0]);
+                            setIsOpenModalNickname(false);
+                            setNicknameLoading(false);
+                            notification.success({
+                              message: "Success!",
+                              description:
+                                "You have successfully updated your nickname!",
+                            });
+                          } else {
+                            setNicknameLoading(false);
+                            setShowErrorMessage(true);
+                            setTimeout(() => {
+                              setShowErrorMessage(false);
+                            }, 2500);
+                          }
                         })
                         .catch((error) => {
                           console.log(error);

@@ -44,8 +44,7 @@ function ConnectWallet() {
                   ...IC.defaultAuthOption,
                   onSuccess: async () => {
                     await backend?.addNewUser(
-                      authClient?.getIdentity()?.getPrincipal(),
-                      ""
+                      authClient?.getIdentity()?.getPrincipal()
                     );
                     const principalText = authClient
                       ?.getIdentity()

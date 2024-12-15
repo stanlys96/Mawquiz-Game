@@ -23,6 +23,7 @@ function Home() {
   const [nickname, setNickname] = useState("");
   const [currentUser, setCurrentUser] = useState<any>();
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const { principal } = useSelector((state: any) => state.user);
 
@@ -73,7 +74,11 @@ function Home() {
               <div
                 onClick={() => {
                   if (!currentUser?.nickname) return;
-                  setNickname(currentUser?.nickname ?? "");
+                  if (currentUser?.nickname?.length > 35) {
+                    setNickname("");
+                  } else {
+                    setNickname(currentUser?.nickname ?? "");
+                  }
                   setIsOpenModalNickname(true);
                 }}
                 className="cursor-pointer p-[8px] flex lg:hidden bg-dark-green rounded-full flex items-center justify-center"
@@ -91,7 +96,11 @@ function Home() {
               <div
                 onClick={() => {
                   if (!currentUser?.nickname) return;
-                  setNickname(currentUser?.nickname ?? "");
+                  if (currentUser?.nickname?.length > 35) {
+                    setNickname("");
+                  } else {
+                    setNickname(currentUser?.nickname ?? "");
+                  }
                   setIsOpenModalNickname(true);
                 }}
                 className="cursor-pointer p-[8px] bg-dark-green rounded-full hidden lg:flex items-center justify-center"
@@ -101,7 +110,11 @@ function Home() {
               <p
                 onClick={() => {
                   if (!currentUser?.nickname) return;
-                  setNickname(currentUser?.nickname ?? "");
+                  if (currentUser?.nickname?.length > 35) {
+                    setNickname("");
+                  } else {
+                    setNickname(currentUser?.nickname ?? "");
+                  }
                   setIsOpenModalNickname(true);
                 }}
                 className="cursor-pointer text-black text-center"
@@ -187,6 +200,11 @@ function Home() {
                     {35 - (nickname?.length ?? 0)}
                   </p>
                 </div>
+                {showErrorMessage && (
+                  <p className="text-red font-medium mt-2">
+                    Nickname is already picked
+                  </p>
+                )}
               </div>
               {nicknameLoading ? (
                 <div className="py-[20px]">
@@ -213,22 +231,31 @@ function Home() {
                   <button
                     onClick={() => {
                       if (!principal) return;
+                      if (nickname === currentUser?.nickname) return;
                       if (nickname?.trim()?.length === 0) return;
                       setNicknameLoading(true);
                       backend
                         ?.updateNickname(principal, nickname)
                         ?.then(async (result) => {
-                          const theUser = await backend?.getUser(
-                            Principal.fromText(principal)
-                          );
-                          setCurrentUser(theUser?.[0]);
-                          setIsOpenModalNickname(false);
-                          setNicknameLoading(false);
-                          notification.success({
-                            message: "Success!",
-                            description:
-                              "You have successfully updated your nickname!",
-                          });
+                          if (result) {
+                            const theUser = await backend?.getUser(
+                              Principal.fromText(principal)
+                            );
+                            setCurrentUser(theUser?.[0]);
+                            setIsOpenModalNickname(false);
+                            setNicknameLoading(false);
+                            notification.success({
+                              message: "Success!",
+                              description:
+                                "You have successfully updated your nickname!",
+                            });
+                          } else {
+                            setNicknameLoading(false);
+                            setShowErrorMessage(true);
+                            setTimeout(() => {
+                              setShowErrorMessage(false);
+                            }, 2500);
+                          }
                         })
                         .catch((error) => {
                           console.log(error);
@@ -285,6 +312,7 @@ function Home() {
                 onClick={() => {
                   dispatch(settingPrincipal(""));
                   toggleModalJiggle();
+                  navigate("/");
                 }}
                 className="delete-modal-btn"
               >

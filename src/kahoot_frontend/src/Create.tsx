@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaArrowRight,
@@ -21,8 +21,9 @@ import { FaPlus, FaRegImage } from "react-icons/fa6";
 import {
   questionTypeItems,
   timeLimitItems,
-  answerOptionsItems,
   convertSecondsToMinutes,
+  generateRandomString,
+  checkQuizData,
 } from "./helper/helper";
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
@@ -31,6 +32,12 @@ import { FaCircleQuestion, FaGear } from "react-icons/fa6";
 import { useMediaQuery } from "react-responsive";
 import { HiDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import {
+  _SERVICE,
+  Question,
+} from "../../declarations/kahoot_backend/kahoot_backend.did";
+import IC from "./utils/IC";
+import { useSelector } from "react-redux";
 
 function Create() {
   const navigate = useNavigate();
@@ -50,6 +57,8 @@ function Create() {
     answerOptions: "single",
     imageUrl: "cdn.svg",
   };
+  const timeLimitData = [5, 10, 20, 30, 45, 60, 90, 120, 180, 240];
+  const { principal } = useSelector((state: any) => state.user);
   const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1024px)" });
   const [currentId, setCurrentId] = useState(1);
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
@@ -73,15 +82,23 @@ function Create() {
     useState("");
   const [kahootDescription, setKahootDescription] = useState("");
   const [kahootDescriptionTemp, setKahootDescriptionTemp] = useState("");
-  const [quizData, setQuizData] = useState([
+  const [backend, setBackend] = useState<_SERVICE>();
+  const [isOpenModalValidate, setIsOpenModalValidate] = useState(false);
+  const [quizChecked, setQuizChecked] =
+    useState<{ index: number; messages: string[] }[]>();
+  const [isOpenModalTimeLimit, setIsOpenModalTimeLimit] = useState(false);
+  const [quizData, setQuizData] = useState<Question[]>([
     {
       id: currentId,
-      type: "Quiz",
+      questionType: "Quiz",
       ...defaultQuizData,
     },
   ]);
   const [open, setOpen] = useState(false);
   const [flexibleClickedQuizIndex, setFlexibleClickedQuizIndex] = useState(-1);
+  const [currentTimeLimit, setCurrentTimeLimit] = useState(
+    quizData?.[clickedQuizIndex]?.timeLimit ?? 20
+  );
 
   const hide = () => {
     setOpen(false);
@@ -157,6 +174,14 @@ function Create() {
     setIsOpenExitKahootModal((prevState) => !prevState);
   };
 
+  const toggleModalValidate = () => {
+    setIsOpenModalValidate((prevState) => !prevState);
+  };
+
+  const toggleModalTimeLimit = () => {
+    setIsOpenModalTimeLimit((prevState) => !prevState);
+  };
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLUListElement>(null);
 
@@ -196,6 +221,12 @@ function Create() {
     id: currentId + 1,
     ...defaultQuizData,
   };
+
+  useEffect(() => {
+    IC.getBackend(async (result: any) => {
+      setBackend(result);
+    });
+  }, []);
   return (
     <main className="background" ref={dropdownRef}>
       {isMobileOrTablet && (
@@ -226,11 +257,27 @@ function Create() {
             </div>
           </div>
           <div className="flex items-center">
-            {/* <div className="vr-container">
-            <div className="vertical-rule" />
-          </div> */}
-
-            <button className="save-button">Save</button>
+            <button
+              onClick={() => {
+                const checkingQuiz = checkQuizData(quizData);
+                if (checkingQuiz?.length > 0) {
+                  setQuizChecked(checkingQuiz);
+                  toggleModalValidate();
+                }
+                // const gamePin = generateRandomString();
+                // console.log(gamePin, "<<< GAME PIN");
+                // backend?.addGame(
+                //   gamePin,
+                //   principal,
+                //   kahootTitle,
+                //   kahootDescription,
+                //   quizData
+                // );
+              }}
+              className="save-button"
+            >
+              Save
+            </button>
           </div>
         </nav>
       )}
@@ -262,10 +309,6 @@ function Create() {
             </div>
           </div>
           <div className="flex items-center">
-            {/* <div className="vr-container">
-            <div className="vertical-rule" />
-          </div> */}
-
             <button
               onClick={() => {
                 toggleModalExitKahoot();
@@ -274,7 +317,27 @@ function Create() {
             >
               Exit
             </button>
-            <button className="save-button">Save</button>
+            <button
+              onClick={async () => {
+                const checkingQuiz = checkQuizData(quizData);
+                if (checkingQuiz?.length > 0) {
+                  setQuizChecked(checkingQuiz);
+                  toggleModalValidate();
+                }
+                // const gamePin = generateRandomString();
+                // console.log(gamePin, "<<< GAME PIN");
+                // backend?.addGame(
+                //   gamePin,
+                //   principal,
+                //   kahootTitle,
+                //   kahootDescription,
+                //   quizData
+                // );
+              }}
+              className="save-button"
+            >
+              Save
+            </button>
           </div>
         </nav>
       )}
@@ -422,7 +485,7 @@ function Create() {
                     <div>
                       <div className="flex gap-x-2">
                         <p className="ml-[32px] text-sidebar">{index + 1}</p>
-                        <p className="text-sidebar">{quiz?.type}</p>
+                        <p className="text-sidebar">{quiz?.questionType}</p>
                       </div>
                       <div
                         onClick={() => {
@@ -603,7 +666,7 @@ function Create() {
                 )}
               </div>
             </div>
-            {quizData?.[clickedQuizIndex]?.type === "Quiz" && (
+            {quizData?.[clickedQuizIndex]?.questionType === "Quiz" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card ${
@@ -855,7 +918,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {quizData?.[clickedQuizIndex]?.type === "True or false" && (
+            {quizData?.[clickedQuizIndex]?.questionType === "True or false" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card bg-red flex gap-x-2 items-center relative`}
@@ -948,7 +1011,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {quizData?.[clickedQuizIndex]?.type === "Type answer" && (
+            {quizData?.[clickedQuizIndex]?.questionType === "Type answer" && (
               <div className="flex justify-center flex-col gap-y-2 items-center w-full">
                 <div className="question-div">
                   <div
@@ -1191,7 +1254,16 @@ function Create() {
                       >
                         <p className="montserrat">Change question type</p>
                       </div>
-                      <div className="flex gap-x-2 items-center">
+                      <div
+                        onClick={() => {
+                          setCurrentTimeLimit(
+                            quizData?.[clickedQuizIndex]?.timeLimit
+                          );
+                          handleOpenChange(false);
+                          toggleModalTimeLimit();
+                        }}
+                        className="flex gap-x-2 items-center"
+                      >
                         <p className="montserrat">Set time limit</p>
                       </div>
                       <div
@@ -1282,7 +1354,7 @@ function Create() {
                 )}
               </div>
             </div>
-            {quizData?.[clickedQuizIndex]?.type === "Quiz" && (
+            {quizData?.[clickedQuizIndex]?.questionType === "Quiz" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card ${
@@ -1530,7 +1602,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {quizData?.[clickedQuizIndex]?.type === "True or false" && (
+            {quizData?.[clickedQuizIndex]?.questionType === "True or false" && (
               <div className="grid grid-cols-2 gap-[8px]">
                 <div
                   className={`answer-card bg-red flex flex-col gap-x-2 items-center relative`}
@@ -1630,7 +1702,7 @@ function Create() {
                 </div>
               </div>
             )}
-            {quizData?.[clickedQuizIndex]?.type === "Type answer" && (
+            {quizData?.[clickedQuizIndex]?.questionType === "Type answer" && (
               <div className="flex justify-center flex-col gap-y-2 items-center w-full">
                 <div className="question-div">
                   <div
@@ -1852,7 +1924,7 @@ function Create() {
                 menu={{
                   items: questionTypeItems((questionType: string) => {
                     let quizDataTemp = [...quizData];
-                    quizDataTemp[clickedQuizIndex].type = questionType;
+                    quizDataTemp[clickedQuizIndex].questionType = questionType;
                     setQuizData([...quizDataTemp]);
                   }),
                 }}
@@ -1863,16 +1935,16 @@ function Create() {
                   onClick={(e) => e.preventDefault()}
                 >
                   <div className="flex items-center gap-x-2">
-                    {quizData?.[clickedQuizIndex]?.type === "Quiz" ? (
+                    {quizData?.[clickedQuizIndex]?.questionType === "Quiz" ? (
                       <MdQuiz />
-                    ) : quizData?.[clickedQuizIndex]?.type ===
+                    ) : quizData?.[clickedQuizIndex]?.questionType ===
                       "True or false" ? (
                       <VscSymbolBoolean />
                     ) : (
                       <TiMessageTyping />
                     )}
                     <p className="text-black">
-                      {quizData?.[clickedQuizIndex]?.type}
+                      {quizData?.[clickedQuizIndex]?.questionType}
                     </p>
                   </div>
                   <DownOutlined />
@@ -1902,41 +1974,6 @@ function Create() {
                     {convertSecondsToMinutes(
                       quizData?.[clickedQuizIndex]?.timeLimit
                     )}
-                  </div>
-                  <DownOutlined />
-                </a>
-              </Dropdown>
-              <div className="flex gap-x-2 items-center mt-[16px]">
-                <MdOutlineQuestionAnswer
-                  className="w-[24px] h-[24px]"
-                  color="black"
-                />
-                <p className="text-[#333333] font-semibold">Answer Options</p>
-              </div>
-              <Dropdown
-                className="dropdown-sidebar mt-3 w-full text-black"
-                menu={{
-                  items: answerOptionsItems((answerOptions: string) => {
-                    let quizDataTemp = [...quizData];
-                    quizDataTemp[clickedQuizIndex].answerOptions =
-                      answerOptions;
-                    setQuizData([...quizDataTemp]);
-                  }),
-                }}
-                trigger={["click"]}
-              >
-                <a
-                  className="flex justify-between items-center px-[10px]"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <div className="flex items-center gap-x-2">
-                    {quizData?.[
-                      clickedQuizIndex
-                    ]?.answerOptions?.[0]?.toUpperCase() +
-                      quizData?.[clickedQuizIndex]?.answerOptions?.slice(
-                        1
-                      )}{" "}
-                    select
                   </div>
                   <DownOutlined />
                 </a>
@@ -2093,7 +2130,8 @@ function Create() {
               ✕
             </button>
             <h2 className="text-xl font-semibold mb-4 text-black">
-              Delete {quizData?.[flexibleClickedQuizIndex]?.type} question
+              Delete {quizData?.[flexibleClickedQuizIndex]?.questionType}{" "}
+              question
             </h2>
             <p className="text-gray-600 mb-4">
               Are you sure you want to delete this question? This action can’t
@@ -2164,14 +2202,14 @@ function Create() {
                 <p className="text-black mb-[12px]">Choose Question Type:</p>
                 <div className="flex gap-x-4 lg:flex-row flex-col gap-y-4 items-center justify-center w-full">
                   {((isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.type !== "Quiz") ||
+                    quizData?.[clickedQuizIndex]?.questionType !== "Quiz") ||
                     !isChangingQuestionType) && (
                     <div
                       onClick={() => {
                         if (!isChangingQuestionType) {
                           setQuizData((prevState) => [
                             ...prevState,
-                            { ...newQuizData, type: "Quiz" },
+                            { ...newQuizData, questionType: "Quiz" },
                           ]);
                           setCurrentId((prevState) => prevState + 1);
                           if (isMobileOrTablet) {
@@ -2181,7 +2219,7 @@ function Create() {
                           }
                         } else {
                           let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].type = "Quiz";
+                          quizTemp[clickedQuizIndex].questionType = "Quiz";
                           setQuizData([...quizTemp]);
                         }
                         setIsChangingQuestionType(false);
@@ -2194,14 +2232,15 @@ function Create() {
                     </div>
                   )}
                   {((isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.type !== "True or false") ||
+                    quizData?.[clickedQuizIndex]?.questionType !==
+                      "True or false") ||
                     !isChangingQuestionType) && (
                     <div
                       onClick={() => {
                         if (!isChangingQuestionType) {
                           setQuizData((prevState) => [
                             ...prevState,
-                            { ...newQuizData, type: "True or false" },
+                            { ...newQuizData, questionType: "True or false" },
                           ]);
                           setCurrentId((prevState) => prevState + 1);
                           if (isMobileOrTablet) {
@@ -2211,7 +2250,8 @@ function Create() {
                           }
                         } else {
                           let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].type = "True or false";
+                          quizTemp[clickedQuizIndex].questionType =
+                            "True or false";
                           setQuizData([...quizTemp]);
                         }
                         setIsChangingQuestionType(false);
@@ -2224,14 +2264,15 @@ function Create() {
                     </div>
                   )}
                   {((isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.type !== "Type answer") ||
+                    quizData?.[clickedQuizIndex]?.questionType !==
+                      "Type answer") ||
                     !isChangingQuestionType) && (
                     <div
                       onClick={() => {
                         if (!isChangingQuestionType) {
                           setQuizData((prevState) => [
                             ...prevState,
-                            { ...newQuizData, type: "Type answer" },
+                            { ...newQuizData, questionType: "Type answer" },
                           ]);
                           setCurrentId((prevState) => prevState + 1);
                           if (isMobileOrTablet) {
@@ -2241,7 +2282,8 @@ function Create() {
                           }
                         } else {
                           let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].type = "Type answer";
+                          quizTemp[clickedQuizIndex].questionType =
+                            "Type answer";
                           setQuizData([...quizTemp]);
                         }
                         setIsChangingQuestionType(false);
@@ -2412,6 +2454,167 @@ function Create() {
           </motion.div>
         </div>
       )}
+      <AnimatePresence>
+        {isOpenModalValidate && (
+          <div
+            onClick={() => toggleModalValidate()}
+            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg shadow-lg text-center h-full md:h-[95vh] flex flex-col gap-y-4 w-[100vw] md:w-[640px]"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <div className="mt-[24px] px-[16px] md:px-[32px]">
+                <p className="text-gray mb-[12px] text-[24px] font-bold text-left">
+                  This kahoot can't be played
+                </p>
+                <p className="text-black text-left">
+                  All questions need to be completed before you can start
+                  playing.
+                </p>
+              </div>
+              <div className="validate-div mt-[24px] h-full">
+                <ul className="validate-subdiv">
+                  {quizChecked?.map((theData) => (
+                    <li className="validate-li">
+                      <div className="top-part flex gap-x-2 items-center p-[2px]">
+                        <div className="dashed-part flex justify-center items-center">
+                          {quizData?.[theData?.index]?.imageUrl ===
+                          "cdn.svg" ? (
+                            <FaRegImage color="gray" size="30px" />
+                          ) : (
+                            <img
+                              className="w-[75px] h-[60px]"
+                              src={quizData?.[theData?.index]?.imageUrl ?? ""}
+                            />
+                          )}
+                        </div>
+                        <div className="flex flex-col items-start flex-1">
+                          <p className="text-black text-[14px]">
+                            {theData?.index + 1} -{" "}
+                            {quizData?.[theData?.index]?.questionType}
+                          </p>
+                          <p className="text-black font-bold text-[13px]">
+                            {quizData?.[theData?.index]?.question?.length > 12
+                              ? (quizData?.[theData?.index]?.question?.slice(
+                                  0,
+                                  12
+                                ) ?? "") + "..."
+                              : quizData?.[theData?.index]?.question ?? ""}
+                          </p>
+                        </div>
+                        <div className="mr-[10px]">
+                          <button
+                            onClick={() => {
+                              setClickedQuizIndex(theData?.index);
+                              toggleModalValidate();
+                            }}
+                            className="save-button"
+                          >
+                            Fix
+                          </button>
+                        </div>
+                      </div>
+                      <div className="bottom-part flex flex-col items-start">
+                        {theData?.messages?.map((value, index) => (
+                          <div
+                            className={`flex gap-x-2 py-[5px] px-[10px] ${
+                              index !== 0 && "border-t border-t-[#F2F2F2]"
+                            } w-full items-center`}
+                          >
+                            <img
+                              className="exclamation-ordinary"
+                              src="/exclamation.svg"
+                            />
+                            <p className="text-black text-[14px]">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="close-toggle-button gap-x-2">
+                <button
+                  onClick={() => {
+                    toggleModalValidate();
+                  }}
+                  className="exit-button"
+                >
+                  Back to Edit
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isOpenModalTimeLimit && (
+          <div
+            onClick={() => toggleModalTimeLimit()}
+            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg shadow-lg text-center md:h-[95vh] flex flex-col gap-y-4 w-[90vw] md:w-[640px]"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <div className="mt-[24px] px-[16px] md:px-[32px] the-box-shadow pb-[32px]">
+                <p className="text-gray mb-[12px] text-[24px] font-bold text-left">
+                  Time limit
+                </p>
+                <div className="flex gap-3 justify-center items-center flex-wrap">
+                  {timeLimitData?.map((theData) => (
+                    <button
+                      onClick={() => {
+                        setCurrentTimeLimit(theData);
+                      }}
+                      className={`${
+                        currentTimeLimit === theData
+                          ? "exit-button-blue"
+                          : "exit-button"
+                      }`}
+                    >
+                      {theData}&nbsp;sec
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="close-toggle-button gap-x-2">
+                <button
+                  onClick={() => {
+                    setCurrentTimeLimit(
+                      quizData?.[clickedQuizIndex]?.timeLimit
+                    );
+                    toggleModalTimeLimit();
+                  }}
+                  className="exit-button"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    let quizTemp = [...quizData];
+                    quizTemp[clickedQuizIndex].timeLimit = currentTimeLimit;
+                    setQuizData([...quizTemp]);
+                    toggleModalTimeLimit();
+                  }}
+                  className="done-button"
+                >
+                  Done
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
