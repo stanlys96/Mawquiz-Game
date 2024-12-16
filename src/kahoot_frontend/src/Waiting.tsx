@@ -21,6 +21,17 @@ function Waiting() {
     socket.on("admin_has_left", () => {
       navigate("/home");
     });
+
+    const handleBeforeUnload = (event: any) => {
+      socket.emit("player_left", { gamePin: gamePin, principal, nickname });
+    };
+
+    // Add the event listener for beforeunload
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   return (

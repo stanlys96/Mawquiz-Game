@@ -72,11 +72,9 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Sample in-memory database
-const quizzes: any = {}; // Store quizzes
-const games: any = {}; // Store ongoing game sessions
+const quizzes: any = {};
+const games: any = {};
 
-// Create a new quiz
 app.post("/quizzes", (req: any, res: any) => {
   const { title, questions } = req.body;
   const quizId = Date.now().toString();
@@ -84,7 +82,6 @@ app.post("/quizzes", (req: any, res: any) => {
   res.json({ quizId, message: "Quiz created successfully" });
 });
 
-// Get a specific quiz
 app.get("/quizzes/:id", (req: any, res: any) => {
   const quiz = quizzes[req.params.id];
   if (quiz) {
@@ -94,7 +91,6 @@ app.get("/quizzes/:id", (req: any, res: any) => {
   }
 });
 
-// Start a new game session
 app.post("/games", (req: any, res: any) => {
   try {
     const { gamePin, questions } = req.body;
@@ -106,7 +102,6 @@ app.post("/games", (req: any, res: any) => {
   }
 });
 
-// Join a game session
 app.get("/games/:gamePin", (req: any, res: any) => {
   const game = games[req.params.gamePin];
   if (game) {
@@ -154,7 +149,6 @@ io.on("connection", (socket: any) => {
     socket.join(gamePin);
   });
 
-  // Submit an answer
   socket.on("submit_answer", ({ pin, answer }: any) => {
     const game = games[pin];
     if (!game) return;
@@ -162,14 +156,12 @@ io.on("connection", (socket: any) => {
     const currentQuestion = game.quiz.questions[game.currentQuestion];
     const correctAnswer = currentQuestion.correctAnswer;
 
-    // Validate the answer
     const player = game.players[socket.id];
     if (player) {
       if (answer === correctAnswer) {
-        player.score += 10; // Add points for a correct answer
+        player.score += 10;
       }
 
-      // Broadcast the updated leaderboard
       const leaderboard = Object.values(game.players).map((p: any) => ({
         name: p.name,
         score: p.score,
@@ -182,27 +174,11 @@ io.on("connection", (socket: any) => {
     io.to(gamePin).emit("gameStarted");
   });
 
-  // Disconnect
-  socket.on("disconnect", () => {
-    for (const theGame in games) {
-      for (const thePlayerKey in games?.[theGame]?.players) {
-        if (thePlayerKey === socket.id) {
-          const currentPlayer = games?.[theGame]?.players?.[thePlayerKey];
-          if (currentPlayer?.admin) {
-            io.to(theGame).emit(
-              "admin_has_left",
-              games?.[theGame]?.players[thePlayerKey]
-            );
-          } else {
-            io.to(theGame).emit(
-              "player_left",
-              games?.[theGame]?.players[thePlayerKey]
-            );
-          }
-          delete games?.[theGame]?.players[socket.id];
-        }
-      }
-    }
+  socket.on("disconnect", () => {});
+
+  socket.on("player_left", ({ gamePin, principal, nickname }: any) => {
+    delete games?.[gamePin]?.players[socket.id];
+    io.to(gamePin).emit("player_left", { principal, nickname });
   });
 
   socket.on("admin_left", ({ gamePin }: any) => {
