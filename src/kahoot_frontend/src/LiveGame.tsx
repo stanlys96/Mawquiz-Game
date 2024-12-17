@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 import { useMediaQuery } from "react-responsive";
 import { useEffect, useState } from "react";
@@ -6,7 +6,8 @@ import { FaUnlock, FaLock } from "react-icons/fa";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { Principal } from "@dfinity/principal";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { settingUniquePlayers } from "../stores/user-slice";
 
 interface Player {
   nickname: string;
@@ -18,14 +19,16 @@ const socket = io("http://localhost:3001/", {
 });
 
 function LiveGame() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const [locked, setLocked] = useState(false);
   const { search } = useLocation();
   const [uniquePlayers, setUniquePlayers] = useState<Set<any>>(new Set());
   const [uniqueOwners, setUniqueOwners] = useState<Set<any>>(new Set());
   const queryParams = new URLSearchParams(search);
-  const { principal, nickname } = useSelector((state: any) => state.user);
   const gamePin = queryParams.get("gameId");
+  const { principal, nickname } = useSelector((state: any) => state.user);
 
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
@@ -135,7 +138,9 @@ function LiveGame() {
             </button>
             <button
               onClick={() => {
+                dispatch(settingUniquePlayers([...uniqueOwners]));
                 socket.emit("game_start", { gamePin: gamePin });
+                navigate(`/show-quiz-title?gamePin=${gamePin}`);
               }}
               disabled={uniqueOwners?.size <= 0}
               className="lock-btn font-bold"

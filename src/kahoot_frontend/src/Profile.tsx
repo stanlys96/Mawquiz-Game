@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { modalVariants, override } from "./helper/helper";
 import { BeatLoader } from "react-spinners";
 import { notification } from "antd";
-import { settingPrincipal } from "../stores/user-slice";
+import { settingKahoot, settingPrincipal } from "../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
@@ -455,6 +455,7 @@ function Profile() {
 
                       const createGame = await theData?.json();
                       if (createGame?.message !== "error") {
+                        dispatch(settingKahoot(currentPickedKahoot));
                         navigate(
                           `/live-game?gameId=${currentPickedKahoot?.gamePin}`
                         );
