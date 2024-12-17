@@ -1758,6 +1758,36 @@ html {
   position: relative;
 }
 
+.custom-button-small {
+  width: fit-content;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
+  background: #fff;
+  color: rgb(0, 0, 0);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0px 16px 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+}
+
+.custom-button-small:hover {
+  min-height: 46px;
+  margin-top: 2px;
+  padding-bottom: 2px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -2px inset;
+}
+
 .exit-button {
   margin-right: 0.5rem;
   display: block;
@@ -3570,6 +3600,347 @@ html {
   height: 100%;
   transform: translate3d(0px, 0px, 0px);
   content-visibility: visible;
+}
+
+.countdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh; Full screen */
+  width: 300px;
+  height: 30vh;
+  background-color: #47178f;
+  overflow: hidden;
+}
+
+.countdown-number {
+  font-size: 10rem;
+  font-weight: bold;
+  color: white;
+  animation: fadeScale 1s ease-in-out;
+}
+
+.dark-purple-bg {
+  background-color: #47178f;
+}
+
+.answer-div {
+  position: relative;
+  overflow: visible;
+  flex-direction: row;
+  -webkit-box-pack: start;
+  /* justify-content: flex-start; */
+  /* -webkit-box-align: center; */
+  /* align-items: center; */
+  width: calc(50% - 3rem);
+  padding: 0px 8px 6px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px -6px 0px 0px inset;
+  border-top: 2px solid rgba(0, 0, 0, 0.2);
+  border-left: 2px solid rgba(0, 0, 0, 0.2);
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 0 auto;
+  -webkit-box-align: center;
+  /* align-items: center; */
+  -webkit-box-pack: center;
+  /* justify-content: center; */
+  position: relative;
+  color: rgb(255, 255, 255);
+  fill: rgb(255, 255, 255);
+  transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
+  border-radius: 4px;
+  min-height: 3.2cqmin;
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  transition: background-image 0.2s ease-in-out;
+  /* background-color: rgb(204, 204, 204); */
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg-red:hover {
+  background-color: rgb(208, 25, 55);
+}
+
+.bottomest {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  /* display: grid;
+  grid-template-columns: 3fr 4fr 3fr; */
+  box-sizing: border-box;
+  overflow: visible;
+  z-index: 1;
+  width: 100%;
+  font-size: 1.5rem;
+  letter-spacing: 0.0125rem;
+  line-height: 1.5rem;
+  color: rgb(255, 255, 255);
+  padding-left: calc(env(safe-area-inset-left) + 1rem);
+  padding-right: calc(env(safe-area-inset-right) + 1rem);
+  -webkit-box-align: center;
+  align-items: center;
+  min-height: 48px;
+  max-height: 48px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+}
+
+.answer-round {
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  background: rgb(70, 23, 143);
+  color: rgb(255, 255, 255);
+  padding: 0.5vmin;
+  border-radius: 50%;
+  font-size: 7cqmin;
+  width: 9cqmin;
+  height: 9cqmin;
+}
+
+.timer-round {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  width: 14cqmin;
+  height: 14cqmin;
+  background: rgb(70, 23, 143);
+  border-radius: 100%;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 7cqmin;
+  color: rgb(255, 255, 255);
+  margin-inline: 0.5rem;
+}
+
+.answer-title-round {
+  font-size: 2cqmin;
+  border-radius: 1.5cqmin 1.5cqmin 1.5cqmin 1.5cqmin / 1.5cqmin 1.5cqmin
+    1.5cqmin 1.5cqmin;
+  background: rgb(70, 23, 143);
+  color: rgb(255, 255, 255);
+  padding: 0.25cqmin 1cqmin;
+  margin-top: 8px;
+  line-height: 1.33;
+}
+
+.ranking-container {
+  flex-direction: row;
+  -webkit-box-pack: center;
+  justify-content: center;
+  padding: 1rem 1rem 0px;
+  width: auto;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  flex: 8 1 0px;
+  min-height: 0px;
+  position: relative;
+}
+
+.img-container {
+  flex-direction: row;
+  -webkit-box-pack: center;
+  justify-content: center;
+  padding: 1rem 1rem 0px;
+  width: auto;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  min-height: 0px;
+  position: relative;
+  /* height: 100%; */
+  flex: 1;
+}
+
+.ranking-sub-container {
+  display: flex;
+  flex-direction: column;
+  -webkit-box-align: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.ranking-inner-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  max-width: 75%;
+  min-width: min(520px, 100cqw);
+  height: calc(100% - 4.625rem);
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.first-answer {
+  flex-basis: 20cqmin;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-basis: 14cqmin;
+  width: 11.5cqmin;
+  min-width: 11.5cqmin;
+  margin: 0px 1.5cqmin;
+}
+
+.the-answer {
+  display: flex;
+  flex: 0 1 calc(100% - 1.25rem);
+  flex-direction: column;
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  height: calc(100% - 0.125rem);
+  min-height: 1.25rem;
+}
+
+.red-answer-inner {
+  flex: 0 0 auto;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-shadow: none;
+  height: 70%;
+
+  border-top: 2px solid rgba(0, 0, 0, 0.2);
+  border-left: 2px solid rgba(0, 0, 0, 0.2);
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.the-red-answer-bg {
+  background-color: rgb(226, 27, 60);
+}
+
+.the-red-darker-answer-bg {
+  background-color: rgb(175, 21, 46);
+}
+
+.the-blue-answer-bg {
+  background-color: rgb(19, 104, 206);
+}
+
+.the-blue-darker-answer-bg {
+  background: rgb(15, 81, 160);
+}
+
+.bottom-answer-inner {
+  display: flex;
+  flex: 1 0 auto;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: relative;
+  color: rgb(255, 255, 255);
+  fill: rgb(255, 255, 255);
+  transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
+  min-height: 3.2cqmin;
+  max-width: 100%;
+  overflow-x: hidden;
+  border-radius: 0px 0px 4px 4px;
+}
+
+.scoreboard-div {
+  width: 100%;
+  background-color: rgb(70, 23, 143);
+  min-height: 9vmin;
+  height: 9vmin;
+  border-radius: 0.5rem;
+  margin: 0.5vmin 0px;
+  display: flex;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+}
+
+.scoreboard-inner-div {
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.scoreboard-sub-inner-div {
+  height: 9vmin;
+  min-width: 9vmin;
+  width: 9vmin;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+  position: relative;
+}
+
+.scoreboard-player-icon {
+  height: 7vmin;
+  width: 7vmin;
+}
+
+.scoreboard-button {
+  border: none;
+  background: transparent;
+  font-style: inherit;
+  font-variant: inherit;
+  font-weight: inherit;
+  font-stretch: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  font-optical-sizing: inherit;
+  font-size-adjust: inherit;
+  font-kerning: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  line-height: normal;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+  margin-inline-start: 2vmin;
+}
+
+@media (max-width: 500px) {
+  .countdown-container {
+    width: 250px;
+  }
+}
+
+@keyframes fadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 @media (pointer: fine) {

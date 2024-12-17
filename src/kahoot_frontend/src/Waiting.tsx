@@ -26,7 +26,6 @@ function Waiting() {
       socket.emit("player_left", { gamePin: gamePin, principal, nickname });
     };
 
-    // Add the event listener for beforeunload
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {

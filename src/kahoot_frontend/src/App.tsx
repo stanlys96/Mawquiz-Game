@@ -7,6 +7,7 @@ import ConnectWallet from "./ConnectWallet";
 import LiveGame from "./LiveGame";
 import Waiting from "./Waiting";
 import GamePlay from "./GamePlay";
+import ShowQuizTitle from "./ShowQuizTitle";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/live-game/:gameId?" element={<LiveGame />} />
         <Route path="/waiting/:gameId?" element={<Waiting />} />
         <Route path="/game-play/:gameId?" element={<GamePlay />} />
+        <Route path="/show-quiz-title/:gameId?" element={<ShowQuizTitle />} />
       </Routes>
     </Router>
   );

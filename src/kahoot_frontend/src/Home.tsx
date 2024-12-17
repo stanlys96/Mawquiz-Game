@@ -162,6 +162,7 @@ function Home() {
                   }
                   setLoading(false);
                 } catch (e: any) {
+                  console.log(e);
                   console.log(e?.status);
                   setLoading(false);
                 }

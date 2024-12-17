@@ -20,11 +20,9 @@ const corsOptions = {
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
     "https://mawquiz-backend-production.up.railway.app",
-  ], // Add your URL here
-  methods: ["GET", "POST", "PUT", "DELETE"], // Define the allowed HTTP methods
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
 };
-
-let globalSocket: any = null;
 
 app.use(cors(corsOptions));
 app.use(
@@ -41,7 +39,7 @@ app.use(
     },
   })
 );
-// app.options("*", cors(corsOptions));
+
 app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader(
@@ -50,21 +48,6 @@ app.use((req, res, next) => {
   );
   next();
 });
-// app.use((req: any, res: any, next: any) => {
-//   res.header(
-//     "Access-Control-Allow-Origin",
-//     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
-//     "https://identity.ic0.app",
-//     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
-//     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
-//     "https://mawquiz-backend-production.up.railway.app",
-//     "https://icp0.io"
-//   );
-//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   res.header("Access-Control-Allow-Credentials", "true");
-//   next();
-// });
 
 const PORT = process.env.PORT || 3001;
 
@@ -126,8 +109,7 @@ app.post("/joinGame/:gamePin", (req: any, res: any) => {
       }
     }
   }
-  game.players[globalSocket.id] = {
-    socketId: globalSocket.id,
+  game.players[thePlayer?.owner] = {
     name: thePlayer?.nickname,
     principal: thePlayer?.owner,
     score: 0,
@@ -144,7 +126,6 @@ app.get("/playersJoined/:gamePin", (req: any, res: any) => {
 
 io.on("connection", (socket: any) => {
   console.log(`Someone just connected: ${socket.id}`);
-  globalSocket = socket;
   socket.on("join_game", ({ gamePin, thePlayer }: any) => {
     socket.join(gamePin);
   });
@@ -177,7 +158,7 @@ io.on("connection", (socket: any) => {
   socket.on("disconnect", () => {});
 
   socket.on("player_left", ({ gamePin, principal, nickname }: any) => {
-    delete games?.[gamePin]?.players[socket.id];
+    delete games?.[gamePin]?.players[principal];
     io.to(gamePin).emit("player_left", { principal, nickname });
   });
 
