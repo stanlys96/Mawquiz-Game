@@ -3613,8 +3613,33 @@ html {
   overflow: hidden;
 }
 
+.circle-countdown-container {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  width: 28cqmin;
+  height: 28cqmin;
+  background: rgb(70, 23, 143);
+  border-radius: 100%;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 7cqmin;
+  color: rgb(255, 255, 255);
+  margin-inline: 0.5rem;
+}
+
 .countdown-number {
   font-size: 10rem;
+  font-weight: bold;
+  color: white;
+  animation: fadeScale 1s ease-in-out;
+}
+
+.countdown-player {
   font-weight: bold;
   color: white;
   animation: fadeScale 1s ease-in-out;
@@ -3920,6 +3945,34 @@ html {
   text-overflow: ellipsis;
   color: inherit;
   margin-inline-start: 2vmin;
+}
+
+.bottom-bar {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  z-index: 2;
+  padding-inline: 8px 16px;
+  /* padding-bottom: 10px; */
+  backdrop-filter: blur(20px);
+  height: calc(10px + 48px);
+  min-height: calc(10px + 48px);
+}
+
+.bottom-bar::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  inset-inline-start: 0px;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: rgb(255, 255, 255);
+  opacity: 0.6;
+  z-index: -1;
 }
 
 @media (max-width: 500px) {

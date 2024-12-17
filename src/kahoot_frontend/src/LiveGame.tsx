@@ -142,7 +142,7 @@ function LiveGame() {
                 socket.emit("game_start", { gamePin: gamePin });
                 navigate(`/show-quiz-title?gamePin=${gamePin}`);
               }}
-              disabled={uniqueOwners?.size <= 0}
+              // disabled={uniqueOwners?.size <= 0}
               className="lock-btn font-bold"
             >
               Start

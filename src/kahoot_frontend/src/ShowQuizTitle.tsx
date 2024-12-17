@@ -55,21 +55,9 @@ function ShowQuizTitle() {
   // const controls = useAnimation();
   const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
     useSelector((state: any) => state.user);
-  console.log(currentUniquePlayers);
-  const props = useSpring({
-    number: 1000, // Target number
-    from: { number: 0 }, // Start from 0
-    config: { duration: 2000 }, // Animation duration (2s)
-  });
 
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gamePin");
-
-  const animationProps = useSpring({
-    number: 1000, // Target number
-    from: { number: 0 }, // Start from 0
-    config: { duration: 2000 }, // Animation duration (2s)
-  });
 
   const variants = {
     hidden: { scale: 0, opacity: 0 },

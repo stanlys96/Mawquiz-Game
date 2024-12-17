@@ -8,6 +8,7 @@ import LiveGame from "./LiveGame";
 import Waiting from "./Waiting";
 import GamePlay from "./GamePlay";
 import ShowQuizTitle from "./ShowQuizTitle";
+import GamePlayer from "./GamePlayer";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/waiting/:gameId?" element={<Waiting />} />
         <Route path="/game-play/:gameId?" element={<GamePlay />} />
         <Route path="/show-quiz-title/:gameId?" element={<ShowQuizTitle />} />
+        <Route path="/game-player/:gameId?" element={<GamePlayer />} />
       </Routes>
     </Router>
   );
