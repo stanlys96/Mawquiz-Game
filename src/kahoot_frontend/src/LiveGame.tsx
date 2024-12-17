@@ -28,8 +28,10 @@ function LiveGame() {
   const [uniqueOwners, setUniqueOwners] = useState<Set<any>>(new Set());
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gameId");
-  const { principal, nickname } = useSelector((state: any) => state.user);
-
+  const { principal, nickname, currentPickedKahoot } = useSelector(
+    (state: any) => state.user
+  );
+  console.log(currentPickedKahoot, "<< !!");
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
 
@@ -139,7 +141,10 @@ function LiveGame() {
             <button
               onClick={() => {
                 dispatch(settingUniquePlayers([...uniqueOwners]));
-                socket.emit("game_start", { gamePin: gamePin });
+                socket.emit("game_started", {
+                  gamePin: gamePin,
+                  questions: currentPickedKahoot?.questions,
+                });
                 navigate(`/show-quiz-title?gamePin=${gamePin}`);
               }}
               // disabled={uniqueOwners?.size <= 0}

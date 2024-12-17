@@ -5,6 +5,7 @@ const initialState = {
   nickname: "",
   currentPickedKahoot: {},
   currentUniquePlayers: [],
+  currentQuestions: [],
 };
 
 export const userSlice = createSlice({
@@ -23,6 +24,9 @@ export const userSlice = createSlice({
     settingUniquePlayers: (state, action) => {
       state.currentUniquePlayers = action.payload;
     },
+    settingQuestions: (state, action) => {
+      state.currentQuestions = action.payload;
+    },
   },
 });
 
@@ -32,5 +36,6 @@ export const {
   settingNickname,
   settingKahoot,
   settingUniquePlayers,
+  settingQuestions,
 } = actions;
 export default reducer;

@@ -3632,6 +3632,46 @@ html {
   margin-inline: 0.5rem;
 }
 
+.circle-small {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  width: 5cqmin;
+  height: 5cqmin;
+  background: #fff;
+  border-radius: 100%;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 2.5cqmin;
+  color: black;
+  /* margin-inline: 0.5rem; */
+}
+
+@media (max-width: 768px) {
+  .circle-small {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: row;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    width: 10cqmin;
+    height: 10cqmin;
+    background: #fff;
+    border-radius: 100%;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 5cqmin;
+    color: black;
+    /* margin-inline: 0.5rem; */
+  }
+}
+
 .countdown-number {
   font-size: 10rem;
   font-weight: bold;

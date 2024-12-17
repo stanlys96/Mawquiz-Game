@@ -1,14 +1,16 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { settingQuestions } from "../stores/user-slice";
 
 const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 
 function Waiting() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -21,7 +23,10 @@ function Waiting() {
     socket.on("admin_has_left", () => {
       navigate("/home");
     });
-
+    socket.on("game_started", (data) => {
+      dispatch(settingQuestions(data));
+      navigate(`/game-player?gameId=${gamePin}`);
+    });
     const handleBeforeUnload = (event: any) => {
       socket.emit("player_left", { gamePin: gamePin, principal, nickname });
     };

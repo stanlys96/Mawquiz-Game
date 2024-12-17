@@ -151,8 +151,8 @@ io.on("connection", (socket: any) => {
     }
   });
 
-  socket.on("startGame", ({ gamePin }: any) => {
-    io.to(gamePin).emit("gameStarted");
+  socket.on("startGame", ({ gamePin, questions }: any) => {
+    io.to(gamePin).emit("gameStarted", questions);
   });
 
   socket.on("disconnect", () => {});
@@ -167,7 +167,8 @@ io.on("connection", (socket: any) => {
     io.to(gamePin).emit("admin_has_left");
   });
 
-  socket.on("game_start", ({ gamePin }: any) => {
-    io.to(gamePin).emit("game_start");
+  socket.on("game_started", ({ gamePin, questions }: any) => {
+    console.log(questions, "<<< QUESTIONS");
+    io.to(gamePin).emit("game_started", questions);
   });
 });
