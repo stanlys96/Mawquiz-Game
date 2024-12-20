@@ -27,9 +27,11 @@ const corsOptions = {
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
     "https://mawquiz-backend-production.up.railway.app",
-    "https://smart-marketplace-web3.vercel.app/"
+    "https://smart-marketplace-web3.vercel.app/",
+    "https://smart-marketplace-web3.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
@@ -68,7 +70,6 @@ const games: any = {};
 
 app.post("/pinFileToIPFS", upload.single("file"), async (req: any, res: any) => {
   try {
-    console.log(req.file);
     const file = req.file;
 
     const formData = new FormData();
