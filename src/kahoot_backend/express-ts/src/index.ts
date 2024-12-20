@@ -3,6 +3,10 @@ import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
 import helmet from "helmet";
+import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -57,6 +61,25 @@ server.listen(PORT, () => {
 
 const quizzes: any = {};
 const games: any = {};
+
+app.post("/pinJSONToIPFS", async (req: any, res: any) => {
+  try {
+    const response = await axios.post(
+      'https://api.pinata.cloud/pinning/pinJSONToIPFS',
+      req.body,
+      {
+        headers: {
+          pinata_api_key: process.env.PINATA_API_KEY,
+          pinata_secret_api_key: process.env.PINATA_API_SECRET,
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error pinning JSON to IPFS');
+  }
+})
 
 app.post("/quizzes", (req: any, res: any) => {
   const { title, questions } = req.body;
