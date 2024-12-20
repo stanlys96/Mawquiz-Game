@@ -63,6 +63,25 @@ server.listen(PORT, () => {
 const quizzes: any = {};
 const games: any = {};
 
+app.post("/pinFileToIPFS", async (req: any, res: any) => {
+  try {
+    const response = await axios.post(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      req.body,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
+          pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET,
+        },
+      }
+    );
+    return response.data.IpfsHash;
+  } catch(e) {
+    console.log(e);
+  }
+})
+
 app.post("/pinJSONToIPFS", async (req: any, res: any) => {
   try {
     const response = await axios.post(
