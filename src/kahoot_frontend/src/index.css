@@ -2366,7 +2366,7 @@ html {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  background: url("/background.webp") center center / cover no-repeat
+  background: url("/background.png") center center / cover no-repeat
     rgb(242, 242, 242);
   /* flex: 1 1 calc(100% - 2 * clamp(16px, 2vmin, 48px)); */
   padding: 48px clamp(16px, 2vmin, 48px);
@@ -2379,7 +2379,7 @@ html {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  background: url("/background.webp") center center / cover no-repeat
+  background: url("/background.png") center center / cover no-repeat
     rgb(242, 242, 242);
   /* flex: 1 1 calc(100% - 2 * clamp(16px, 2vmin, 48px)); */
   padding: 48px clamp(16px, 2vmin, 48px);
@@ -3190,7 +3190,7 @@ html {
 .live-game {
   height: 100vh;
   width: 100vw;
-  background: url("kahooty.webp");
+  background: url("/background.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -3205,7 +3205,7 @@ html {
   background-color: rgba(0, 0, 0, 0.1);
   height: 100vh;
   width: 100vw;
-  background: url("kahooty.webp");
+  background: url("/background.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;

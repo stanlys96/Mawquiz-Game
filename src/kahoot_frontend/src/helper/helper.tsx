@@ -3,6 +3,7 @@ import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
 import { CSSProperties } from "react";
 import { Question } from "../../../declarations/kahoot_backend/kahoot_backend.did";
+import axios from "axios";
 
 export const questionTypeItems = (callback: (arg: string) => void) => [
   {
@@ -295,4 +296,24 @@ export const getCurrentFormattedDateTime = () => {
 
   const formattedDateTime = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
   return formattedDateTime;
+};
+
+export const uploadImageToIPFS = async (imageFile: any) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    const response = await axios.post(
+      `https://mawquiz-backend-production.up.railway.app/pinFileToIPFS`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
+  } catch (e) {
+    console.log(e);
+  }
 };

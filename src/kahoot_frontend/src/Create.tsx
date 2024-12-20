@@ -25,6 +25,7 @@ import {
   generateRandomString,
   checkQuizData,
   getCurrentFormattedDateTime,
+  uploadImageToIPFS,
 } from "./helper/helper";
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
@@ -101,6 +102,9 @@ function Create() {
   const [loading, setLoading] = useState(false);
   const [flexibleClickedQuizIndex, setFlexibleClickedQuizIndex] = useState(-1);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [fileImage, setFileImage] = useState();
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [loadingFile, setLoadingFile] = useState(false);
   const [currentTimeLimit, setCurrentTimeLimit] = useState(
     quizData?.[clickedQuizIndex]?.timeLimit ?? 20
   );
@@ -122,41 +126,53 @@ function Create() {
     setDragging(false);
   };
 
-  const handleFileChange = (event: any) => {
+  const handleFileChange = async (event: any) => {
     const file = event.target.files[0];
-    if (file) {
-      setDragging(false);
-      setIsOpen(false);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        let quizTemp = [...quizData];
-        quizTemp[clickedQuizIndex].imageUrl = e?.target?.result as any;
-        setQuizData([...quizTemp]);
-      };
-      reader.readAsDataURL(file);
+    try {
+      if (file && file.type.startsWith("image/")) {
+        setLoadingFile(true);
+        const imageIPFSURL = await uploadImageToIPFS(file);
+        setDragging(false);
+        setIsOpen(false);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          let quizTemp = [...quizData];
+          quizTemp[clickedQuizIndex].imageUrl = imageIPFSURL ?? "";
+          setQuizData([...quizTemp]);
+        };
+        reader.readAsDataURL(file);
+        setLoadingFile(false);
+      } else {
+        Swal.fire("Error!", "Can only upload images!", "error");
+      }
+    } catch (e) {
+      setLoadingFile(false);
     }
   };
 
-  const handleDrop = (e: any) => {
+  const handleDrop = async (e: any) => {
     e.preventDefault();
     setDragging(false);
     setIsOpen(false);
 
-    // Access the dropped files
     const file = e.dataTransfer.files[0];
-
-    // Ensure it's an image
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        let quizTemp = [...quizData];
-        quizTemp[clickedQuizIndex].imageUrl = reader.result as any;
-        setQuizData([...quizTemp]);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert("Please drop an image file.");
-    }
+    try {
+      if (file && file.type.startsWith("image/")) {
+        setLoadingFile(true);
+        const imageIPFSURL = await uploadImageToIPFS(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          let quizTemp = [...quizData];
+          quizTemp[clickedQuizIndex].imageUrl = imageIPFSURL ?? "";
+          setQuizData([...quizTemp]);
+        };
+        reader.readAsDataURL(file);
+        setLoadingFile(false);
+      } else {
+        setLoadingFile(false);
+        Swal.fire("Error!", "Can only upload images!", "error");
+      }
+    } catch (e) {}
   };
 
   const toggleModalSecond = () => {
@@ -244,6 +260,19 @@ function Create() {
           </div>
           <p className="montserrat medium text-[28px] leading-[0px]">
             Saving game...
+          </p>
+        </div>
+      )}
+      {loadingFile && (
+        <div className="kahoot-container z-moreinfinite h-[100%] w-[100vw]">
+          <div className="kahoot-spinner">
+            <div />
+            <div />
+            <div />
+            <div />
+          </div>
+          <p className="montserrat medium text-[28px] leading-[0px]">
+            Uploading file... Please wait...
           </p>
         </div>
       )}
