@@ -14,7 +14,7 @@ interface Player {
   owner: string;
 }
 
-const socket = io("http://localhost:3001/", {
+const socket = io("https://mawquiz-backend-production.up.railway.app/", {
   transports: ["websocket", "polling"],
 });
 
@@ -31,7 +31,7 @@ function LiveGame() {
   const { principal, nickname, currentPickedKahoot } = useSelector(
     (state: any) => state.user
   );
-  console.log(currentPickedKahoot, "<< !!");
+
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
 

@@ -10,6 +10,7 @@ import { useSpring, animated } from "@react-spring/web";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
+import { io } from "socket.io-client";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {
   const [currentValue, setCurrentValue] = useState(from);
@@ -38,6 +39,10 @@ const AnimatedNumber = ({ from, to, duration }: any) => {
   );
 };
 
+const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+  transports: ["websocket", "polling"],
+});
+
 function ShowQuizTitle() {
   const { search } = useLocation();
   const [showTitle, setShowTitle] = useState(false);
@@ -55,6 +60,14 @@ function ShowQuizTitle() {
   // const controls = useAnimation();
   const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
     useSelector((state: any) => state.user);
+  const [uniqueOwners, setUniqueOwners] = useState(
+    new Set(currentUniquePlayers)
+  );
+  const [uniquePlayers, setUniquePlayers] = useState(
+    new Set(
+      currentUniquePlayers?.map((uniquePlayer: any) => uniquePlayer.owner)
+    )
+  );
 
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gamePin");
@@ -67,6 +80,39 @@ function ShowQuizTitle() {
 
   const [number, setNumber] = useState(0);
   const currentKahootQuestion = theKahootQuestions?.[currentQuestionIndex];
+
+  useEffect(() => {
+    socket.emit("join_game", { gamePin: gamePin });
+
+    socket.on("player_joined", (data) => {
+      setUniquePlayers((prevSet) => {
+        const updatedSet = new Set(prevSet);
+        updatedSet.add(data?.thePlayer?.owner);
+        if (prevSet?.size !== updatedSet?.size) {
+          setUniqueOwners((prevState) => {
+            const updatedState = new Set(prevState);
+            updatedState.add(data?.thePlayer);
+            return updatedState;
+          });
+        }
+        return updatedSet;
+      });
+    });
+    socket.on("player_left", (data) => {
+      let uniquePlayersTemp = Array.from(uniquePlayers);
+      let uniqueOwnersTemp = Array.from(uniqueOwners);
+      const thePlayerIndex = uniquePlayersTemp?.findIndex(
+        (player) => player === data?.principal
+      );
+      const theOwnerIndex = uniquePlayersTemp?.findIndex(
+        (player) => (player as any)?.owner === data?.principal
+      );
+      uniquePlayersTemp?.splice(thePlayerIndex, 1);
+      uniqueOwnersTemp?.splice(theOwnerIndex, 1);
+      setUniquePlayers(new Set(uniquePlayersTemp));
+      setUniqueOwners(new Set(uniqueOwnersTemp));
+    });
+  }, []);
 
   useEffect(() => {
     const target = 1000;

@@ -3,6 +3,13 @@ import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
 import helmet from "helmet";
+import axios from "axios";
+import dotenv from "dotenv";
+import multer from "multer";
+import FormData from "form-data";
+
+dotenv.config();
+const upload = multer({ dest: "uploads/" });
 
 const app = express();
 const server = http.createServer(app);
@@ -20,32 +27,28 @@ const corsOptions = {
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
     "https://mawquiz-backend-production.up.railway.app",
+    "https://smart-marketplace-web3.vercel.app",
+    "smart-marketplace-web3.vercel.app",
+    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
+    "cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
-
+app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      connectSrc: [
-        "'self'",
-        "http://localhost:*",
-        "https://icp0.io",
-        "https://*.icp0.io",
-        "https://icp-api.io",
-        "wss://mawquiz-backend-production.up.railway.app",
-      ],
+      connectSrc: ["'self'", "*"],
     },
   })
 );
 
 app.use(express.json());
 app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "connect-src 'self' http://localhost:* https://icp0.io https://*.icp0.io https://icp-api.io wss://mawquiz-backend-production.up.railway.app;"
-  );
+  res.setHeader("Content-Security-Policy", "connect-src 'self' *;");
   next();
 });
 
@@ -57,6 +60,54 @@ server.listen(PORT, () => {
 
 const quizzes: any = {};
 const games: any = {};
+
+app.post(
+  "/pinFileToIPFS",
+  upload.single("file"),
+  async (req: any, res: any) => {
+    try {
+      const file = req.file;
+
+      const formData = new FormData();
+      formData.append("file", require("fs").createReadStream(file.path));
+      const headers = {
+        pinata_api_key: process.env.PINATA_API_KEY,
+        pinata_secret_api_key: process.env.PINATA_API_SECRET,
+      };
+
+      const response = await axios.post(
+        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        formData,
+        {
+          headers,
+        }
+      );
+      res.json(response.data);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send("Error pinning file to IPFS");
+    }
+  }
+);
+
+app.post("/pinJSONToIPFS", async (req: any, res: any) => {
+  try {
+    const response = await axios.post(
+      "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+      req.body,
+      {
+        headers: {
+          pinata_api_key: process.env.PINATA_API_KEY,
+          pinata_secret_api_key: process.env.PINATA_API_SECRET,
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error pinning JSON to IPFS");
+  }
+});
 
 app.post("/quizzes", (req: any, res: any) => {
   const { title, questions } = req.body;

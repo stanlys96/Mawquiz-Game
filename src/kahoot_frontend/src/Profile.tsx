@@ -20,7 +20,7 @@ import { useMediaQuery } from "react-responsive";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3001/", {
+const socket = io("https://mawquiz-backend-production.up.railway.app/", {
   transports: ["websocket", "polling"],
 });
 
@@ -440,7 +440,7 @@ function Profile() {
                       setLoading(true);
                       setIsOpenModalKahoot(false);
                       const theData = await fetch(
-                        "http://localhost:3001/games",
+                        "https://mawquiz-backend-production.up.railway.app/games",
                         {
                           method: "POST",
                           headers: {

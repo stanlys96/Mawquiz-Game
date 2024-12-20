@@ -12,15 +12,6 @@ function ConnectWallet() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("https://cat-fact.herokuapp.com/facts")
-      .then(async (result) => {
-        console.log(result.body);
-        const response = await result.json();
-        console.log(response, "<<<???");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
     IC.getBackend((result: any) => {
       setBackend(result);
     });
