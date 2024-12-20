@@ -28,7 +28,8 @@ const corsOptions = {
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
     "https://mawquiz-backend-production.up.railway.app",
     "https://smart-marketplace-web3.vercel.app/",
-    "https://smart-marketplace-web3.vercel.app"
+    "https://smart-marketplace-web3.vercel.app",
+    "smart-marketplace-web3.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
