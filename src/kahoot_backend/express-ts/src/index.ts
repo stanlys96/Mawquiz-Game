@@ -5,8 +5,11 @@ import http from "http";
 import helmet from "helmet";
 import axios from "axios";
 import dotenv from "dotenv";
+import multer from "multer";
+import FormData from "form-data";
 
 dotenv.config();
+const upload = multer({ dest: "uploads/" });
 
 const app = express();
 const server = http.createServer(app);
@@ -63,17 +66,23 @@ server.listen(PORT, () => {
 const quizzes: any = {};
 const games: any = {};
 
-app.post("/pinFileToIPFS", async (req: any, res: any) => {
+app.post("/pinFileToIPFS", upload.single("file"), async (req: any, res: any) => {
   try {
+    console.log(req.file);
+    const file = req.file;
+
+    const formData = new FormData();
+    formData.append("file", require("fs").createReadStream(file.path));
+    const headers = {
+      pinata_api_key: process.env.PINATA_API_KEY,
+      pinata_secret_api_key: process.env.PINATA_API_SECRET,
+    };
+
     const response = await axios.post(
       "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      req.body,
+      formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
-          pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET,
-        },
+        headers
       }
     );
     res.json(response.data);
