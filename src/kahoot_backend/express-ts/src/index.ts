@@ -76,9 +76,10 @@ app.post("/pinFileToIPFS", async (req: any, res: any) => {
         },
       }
     );
-    return response.data.IpfsHash;
+    res.json(response.data);
   } catch(e) {
     console.log(e);
+    res.status(500).send('Error pinning file to IPFS');
   }
 })
 
