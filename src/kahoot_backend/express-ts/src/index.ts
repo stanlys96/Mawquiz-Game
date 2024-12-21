@@ -26,7 +26,7 @@ const corsOptions = {
     "https://identity.ic0.app",
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
     "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
-    "https://mawquiz-backend-production.up.railway.app",
+    "http://localhost:3001",
     "https://smart-marketplace-web3.vercel.app",
     "smart-marketplace-web3.vercel.app",
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
@@ -219,7 +219,14 @@ io.on("connection", (socket: any) => {
   });
 
   socket.on("game_started", ({ gamePin, questions }: any) => {
-    console.log(questions, "<<< QUESTIONS");
     io.to(gamePin).emit("game_started", questions);
+  });
+
+  socket.on("player_answer_server", ({ gamePin, principal, answer }: any) => {
+    io.to(gamePin).emit("player_answer", { gamePin, principal, answer });
+  });
+
+  socket.on("question_finished", ({ gamePin }: any) => {
+    io.to(gamePin).emit("question_finished", { gamePin });
   });
 });

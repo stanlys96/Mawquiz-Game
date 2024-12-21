@@ -2750,6 +2750,44 @@ html {
   cursor: pointer;
 }
 
+.check-btn-clicked-game {
+  background: rgb(102, 191, 57);
+  flex: 0 0 auto;
+  margin: 0px 0.5rem;
+  width: 5rem;
+  height: 5rem;
+  border: 0.25rem solid rgb(255, 255, 255);
+  transition: background 0.2s;
+  transform-origin: center bottom;
+  box-shadow: transparent 0px 0px 0px 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0.125rem 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0px 0px 0.0625rem;
+  transform: translateY(0px) scaleX(1) scaleY(1);
+  padding: 0;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.cross-btn-clicked-game {
+  background: #ff3355;
+  flex: 0 0 auto;
+  margin: 0px 0.5rem;
+  width: 5rem;
+  height: 5rem;
+  border: 0.25rem solid rgb(255, 255, 255);
+  transition: background 0.2s;
+  transform-origin: center bottom;
+  box-shadow: transparent 0px 0px 0px 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0.125rem 0.125rem,
+    rgba(0, 0, 0, 0.35) 0px 0px 0px 0.0625rem;
+  transform: translateY(0px) scaleX(1) scaleY(1);
+  padding: 0;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
 .check-btn-mobile-clicked {
   flex: 0 0 auto;
   background: rgb(102, 191, 57);
@@ -2789,6 +2827,16 @@ html {
   top: 50%;
   left: 50%;
   overflow: hidden;
+}
+
+.centang-span-game {
+  width: 60px;
+  height: 60px;
+  display: block;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }
 
 .centang-span {

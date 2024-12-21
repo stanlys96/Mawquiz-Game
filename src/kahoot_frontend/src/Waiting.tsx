@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { settingQuestions } from "../stores/user-slice";
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 

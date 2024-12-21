@@ -3,29 +3,23 @@ import { IoPersonCircle } from "react-icons/io5";
 import { useMediaQuery } from "react-responsive";
 import { useEffect, useState } from "react";
 import { FaUnlock, FaLock } from "react-icons/fa";
-import { io } from "socket.io-client";
-import axios from "axios";
-import { Principal } from "@dfinity/principal";
 import { useSelector, useDispatch } from "react-redux";
 import { settingUniquePlayers } from "../stores/user-slice";
+import { getSocket } from "./helper/helper";
 
 interface Player {
   nickname: string;
   owner: string;
 }
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
-  transports: ["websocket", "polling"],
-});
-
 function LiveGame() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const socket = getSocket();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const [locked, setLocked] = useState(false);
   const { search } = useLocation();
-  const [uniquePlayers, setUniquePlayers] = useState<Set<any>>(new Set());
-  const [uniqueOwners, setUniqueOwners] = useState<Set<any>>(new Set());
+  const [uniquePlayers, setUniquePlayers] = useState([]);
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gameId");
   const { principal, nickname, currentPickedKahoot } = useSelector(
@@ -36,43 +30,40 @@ function LiveGame() {
     socket.emit("join_game", { gamePin: gamePin });
 
     // Listen for the player_joined event
-    socket.on("player_joined", (data) => {
-      setUniquePlayers((prevSet) => {
-        const updatedSet = new Set(prevSet);
-        updatedSet.add(data?.thePlayer?.owner);
-        if (prevSet?.size !== updatedSet?.size) {
-          setUniqueOwners((prevState) => {
-            const updatedState = new Set(prevState);
-            updatedState.add(data?.thePlayer);
-            return updatedState;
-          });
+    socket.on("player_joined", (data: any) => {
+      const thePlayer = data.thePlayer;
+      setUniquePlayers((prevState: any) => {
+        for (let i = 0; i < prevState.length; i++) {
+          if (prevState[i].owner === thePlayer.owner) {
+            return prevState;
+          }
         }
-        return updatedSet;
+        return [...prevState, thePlayer];
       });
     });
-    socket.on("player_left", (data) => {
-      let uniquePlayersTemp = Array.from(uniquePlayers);
-      let uniqueOwnersTemp = Array.from(uniqueOwners);
-      const thePlayerIndex = uniquePlayersTemp?.findIndex(
-        (player) => player === data?.principal
-      );
-      const theOwnerIndex = uniquePlayersTemp?.findIndex(
-        (player) => player?.owner === data?.principal
-      );
-      uniquePlayersTemp?.splice(thePlayerIndex, 1);
-      uniqueOwnersTemp?.splice(theOwnerIndex, 1);
-      setUniquePlayers(new Set(uniquePlayersTemp));
-      setUniqueOwners(new Set(uniqueOwnersTemp));
+    socket.on("player_left", (data: any) => {
+      setUniquePlayers((prevState: any) => {
+        const findIndex = prevState?.find(
+          (thePlayer: any) => thePlayer?.owner === data?.principal
+        );
+        if (findIndex) {
+          let temp = [...prevState];
+          temp.splice(findIndex, 1);
+          return temp;
+        }
+        return prevState;
+      });
     });
 
     const handleBeforeUnload = (event: any) => {
       socket.emit("admin_left", { gamePin: gamePin });
     };
 
-    // Add the event listener for beforeunload
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
+      socket.off("player_joined");
+      socket.off("player_left");
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
@@ -140,7 +131,7 @@ function LiveGame() {
             </button>
             <button
               onClick={() => {
-                dispatch(settingUniquePlayers([...uniqueOwners]));
+                dispatch(settingUniquePlayers([...uniquePlayers]));
                 socket.emit("game_started", {
                   gamePin: gamePin,
                   questions: currentPickedKahoot?.questions,
@@ -156,8 +147,8 @@ function LiveGame() {
         </div>
         <div className="h-[65vh] md:h-[58vh] overflow-auto">
           <div className="flex flex-wrap w-full items-start justify-center h-full">
-            {uniqueOwners?.size > 0 ? (
-              Array.from(uniqueOwners)?.map((owner: any) => (
+            {uniquePlayers?.length > 0 ? (
+              uniquePlayers?.map((owner: any) => (
                 <div className="mt-4 flex items-center flex-wrap relative user-container overflow-y-auto">
                   <button className="user-button">
                     <div className="user-avatar">
@@ -191,7 +182,9 @@ function LiveGame() {
       </div>
       <div className="player-absolute absolute bottom-2 right-2 flex gap-x-2">
         <IoPersonCircle size="32px" className="ml-2" />
-        <p className="player-absolute-text mr-5">{uniqueOwners?.size ?? 0}</p>
+        <p className="player-absolute-text mr-5">
+          {uniquePlayers?.length ?? 0}
+        </p>
       </div>
     </div>
   );

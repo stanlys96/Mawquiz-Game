@@ -4,6 +4,7 @@ import { TiMessageTyping } from "react-icons/ti";
 import { CSSProperties } from "react";
 import { Question } from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 export const questionTypeItems = (callback: (arg: string) => void) => [
   {
@@ -304,7 +305,7 @@ export const uploadImageToIPFS = async (imageFile: any) => {
     formData.append("file", imageFile);
 
     const response = await axios.post(
-      `https://mawquiz-backend-production.up.railway.app/pinFileToIPFS`,
+      `http://localhost:3001/pinFileToIPFS`,
       formData,
       {
         headers: {
@@ -316,4 +317,14 @@ export const uploadImageToIPFS = async (imageFile: any) => {
   } catch (e) {
     console.log(e);
   }
+};
+
+let socket: any;
+export const getSocket = () => {
+  if (!socket) {
+    socket = io("http://localhost:3001/", {
+      transports: ["websocket", "polling"],
+    });
+  }
+  return socket;
 };

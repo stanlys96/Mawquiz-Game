@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import Lottie from "lottie-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Quiz from "../public/lottie/Study-3.json";
 import TrueOrFalse from "../public/lottie/Study-2.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
 import { io } from "socket.io-client";
+import { getSocket } from "./helper/helper";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {
   const [currentValue, setCurrentValue] = useState(from);
@@ -39,11 +40,8 @@ const AnimatedNumber = ({ from, to, duration }: any) => {
   );
 };
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
-  transports: ["websocket", "polling"],
-});
-
 function ShowQuizTitle() {
+  const socket = getSocket();
   const { search } = useLocation();
   const [showTitle, setShowTitle] = useState(false);
   const [count, setCount] = useState(-1);
@@ -57,17 +55,12 @@ function ShowQuizTitle() {
   const [currentTimeLimit, setCurrentTimeLimit] = useState(0);
   const [questionFinished, setQuestionFinished] = useState(false);
   const [leaderboardState, setLeaderboardState] = useState(false);
+  const [currentTotalAnswers, setCurrentTotalAnswers] = useState(0);
   // const controls = useAnimation();
   const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
     useSelector((state: any) => state.user);
-  const [uniqueOwners, setUniqueOwners] = useState(
-    new Set(currentUniquePlayers)
-  );
-  const [uniquePlayers, setUniquePlayers] = useState(
-    new Set(
-      currentUniquePlayers?.map((uniquePlayer: any) => uniquePlayer.owner)
-    )
-  );
+  const [uniquePlayers, setUniquePlayers] = useState(currentUniquePlayers);
+  const [playerAnswers, setPlayerAnswers] = useState<any>([]);
 
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gamePin");
@@ -84,33 +77,43 @@ function ShowQuizTitle() {
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
 
-    socket.on("player_joined", (data) => {
-      setUniquePlayers((prevSet) => {
-        const updatedSet = new Set(prevSet);
-        updatedSet.add(data?.thePlayer?.owner);
-        if (prevSet?.size !== updatedSet?.size) {
-          setUniqueOwners((prevState) => {
-            const updatedState = new Set(prevState);
-            updatedState.add(data?.thePlayer);
-            return updatedState;
-          });
+    socket.on("player_joined", (data: any) => {
+      const thePlayer = data.thePlayer;
+      setUniquePlayers((prevState: any) => {
+        for (let i = 0; i < prevState.length; i++) {
+          if (prevState[i].owner === thePlayer.owner) {
+            return prevState;
+          }
         }
-        return updatedSet;
+        return [...prevState, thePlayer];
       });
     });
-    socket.on("player_left", (data) => {
-      let uniquePlayersTemp = Array.from(uniquePlayers);
-      let uniqueOwnersTemp = Array.from(uniqueOwners);
-      const thePlayerIndex = uniquePlayersTemp?.findIndex(
-        (player) => player === data?.principal
-      );
-      const theOwnerIndex = uniquePlayersTemp?.findIndex(
-        (player) => (player as any)?.owner === data?.principal
-      );
-      uniquePlayersTemp?.splice(thePlayerIndex, 1);
-      uniqueOwnersTemp?.splice(theOwnerIndex, 1);
-      setUniquePlayers(new Set(uniquePlayersTemp));
-      setUniqueOwners(new Set(uniqueOwnersTemp));
+    socket.on("player_left", (data: any) => {
+      setUniquePlayers((prevState: any) => {
+        const findIndex = prevState?.find(
+          (thePlayer: any) => thePlayer?.owner === data?.principal
+        );
+        if (findIndex) {
+          let temp = [...prevState];
+          temp.splice(findIndex, 1);
+          return temp;
+        }
+        return prevState;
+      });
+    });
+    socket.on("player_answer", (data: any) => {
+      setPlayerAnswers((prevState: any) => {
+        const findPrincipal = prevState?.find(
+          (theState: any) => theState?.principal === data?.principal
+        );
+        if (findPrincipal) {
+          return prevState;
+        }
+        return [
+          ...prevState,
+          { principal: data.principal, answer: data.answer },
+        ];
+      });
     });
   }, []);
 
@@ -134,8 +137,8 @@ function ShowQuizTitle() {
 
   useEffect(() => {
     if (showGameData) {
-      const duration = 3000; // 3 seconds
-      const increment = 100 / (duration / 100); // Increment per 100ms
+      const duration = 3000;
+      const increment = 100 / (duration / 100);
 
       const interval = setInterval(() => {
         setProgress((prev) => {
@@ -145,12 +148,12 @@ function ShowQuizTitle() {
             setShowGameData(false);
             setShowQuestion(true);
             setCurrentTimeLimit(currentKahootQuestion?.timeLimit);
-            return 100; // Stop at 100%
+            return 100;
           }
           return nextValue;
         });
       }, 100);
-      return () => clearInterval(interval); // Cleanup interval on component unmount
+      return () => clearInterval(interval);
     } else {
       setProgress(0);
     }
@@ -198,6 +201,10 @@ function ShowQuizTitle() {
       const timer = setTimeout(() => {
         setCurrentTimeLimit((prevState) => prevState - 1);
       }, 1000);
+      if (playerAnswers?.length === uniquePlayers?.length) {
+        setQuestionFinished(true);
+        setCurrentTimeLimit(0);
+      }
       return () => clearTimeout(timer);
     } else if (currentTimeLimit === 1) {
       const timer = setTimeout(() => {
@@ -206,7 +213,7 @@ function ShowQuizTitle() {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentTimeLimit]);
+  }, [currentTimeLimit, playerAnswers, uniquePlayers]);
 
   return (
     <div className="waiting-game overflow-hidden relative bg-black/10">
@@ -350,7 +357,7 @@ function ShowQuizTitle() {
           </div>
           <button></button>
           <div className="absolute z-infinite top-[55%] md:top-1/2 flex justify-center items-center flex-col right-[10px] font-bold rounded-full -translate-y-1/2">
-            <p className="answer-round">0</p>
+            <p className="answer-round">{playerAnswers?.length}</p>
             <p className="answer-title-round">Answers</p>
           </div>
           <div className="bg-white text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
