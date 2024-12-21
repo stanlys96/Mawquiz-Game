@@ -52,7 +52,11 @@ function ConnectWallet() {
                       ?.toText();
                     dispatch(settingPrincipal(principalText));
                     setLoading(false);
-                    navigate("/home");
+                    navigate("/home", {
+                      state: {
+                        routerPrincipal: principalText,
+                      },
+                    });
                   },
                   onError: () => {
                     setLoading(false);

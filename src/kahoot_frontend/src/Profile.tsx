@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import IC from "./utils/IC";
 import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   _SERVICE,
   Game,
@@ -17,8 +17,11 @@ import { settingKahoot, settingPrincipal } from "../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
+import { ImCross } from "react-icons/im";
 
 function Profile() {
+  const location = useLocation();
+  const { state } = location;
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -49,6 +52,10 @@ function Profile() {
   }, [userGames]);
 
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     IC.getBackend(async (result: any) => {
       setBackend(result);
     });
@@ -77,7 +84,7 @@ function Profile() {
   return (
     <main className="background flex justify-center items-center">
       {loading && (
-        <div className="relative kahoot-container">
+        <div className="relative z-moreinfinite kahoot-container">
           <div className="kahoot-spinner">
             <div />
             <div />
@@ -93,7 +100,11 @@ function Profile() {
         <div className="absolute z-infinite top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
           <div
             onClick={() => {
-              navigate("/home");
+              navigate("/home", {
+                state: {
+                  routerPrincipal: state.routerPrincipal,
+                },
+              });
             }}
             className="cursor-pointer p-[8px] bg-blue rounded-full flex items-center justify-center"
           >
@@ -168,6 +179,7 @@ function Profile() {
                     onClick={() => {
                       setIsOpenModalKahoot(true);
                       setCurrentPickedKahoot(userGame);
+                      console.log(userGame);
                     }}
                     className="game-card"
                   >
@@ -211,7 +223,14 @@ function Profile() {
             )}
           </div>
           <div
-            onClick={() => navigate("/create")}
+            onClick={() =>
+              navigate("/create", {
+                state: {
+                  mode: "create",
+                  routerPrincipal: state.routerPrincipal,
+                },
+              })
+            }
             className="kahoot-card cursor-pointer"
           >
             <a className="kahoot-card-title">
@@ -405,7 +424,7 @@ function Profile() {
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] lg:w-[50vw]"
+              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] relative lg:w-[50vw]"
               variants={modalVariants}
               initial="hidden"
               animate="visible"
@@ -419,14 +438,25 @@ function Profile() {
                   Do you want to play {currentPickedKahoot?.title}?
                 </p>
               </div>
-              <div className="close-toggle-button gap-x-2">
+              <div className="close-toggle-button gap-x-2 md:flex-row flex-col gap-y-2">
                 <button
                   onClick={() => {
-                    setIsOpenModalKahoot(false);
+                    dispatch(settingKahoot(currentPickedKahoot));
+                    console.log(currentPickedKahoot);
+                    navigate("/create", {
+                      state: {
+                        mode: "edit",
+                        data: currentPickedKahoot?.questions,
+                        title: currentPickedKahoot?.title,
+                        description: currentPickedKahoot?.description,
+                        gamePin: currentPickedKahoot?.gamePin,
+                        routerPrincipal: state.routerPrincipal,
+                      },
+                    });
                   }}
-                  className="exit-button"
+                  className="save-button"
                 >
-                  Cancel
+                  Edit Game
                 </button>
                 <button
                   onClick={async () => {
@@ -451,7 +481,12 @@ function Profile() {
                       if (createGame?.message !== "error") {
                         dispatch(settingKahoot(currentPickedKahoot));
                         navigate(
-                          `/live-game?gameId=${currentPickedKahoot?.gamePin}`
+                          `/live-game?gameId=${currentPickedKahoot?.gamePin}`,
+                          {
+                            state: {
+                              routerPrincipal: state.routerPrincipal,
+                            },
+                          }
                         );
                       }
                       setLoading(false);
@@ -464,7 +499,27 @@ function Profile() {
                 >
                   Host Game Live
                 </button>
+                <button
+                  onClick={() => {
+                    setIsOpenModalKahoot(false);
+                  }}
+                  className="the-orange-answer-bg shadow-md min-h-[42px] min-w-[42px] rounded-[4px] px-[16px] relative"
+                >
+                  Play Solo
+                </button>
               </div>
+              <a
+                onClick={() => {
+                  setIsOpenModalKahoot(false);
+                }}
+                className="cursor-pointer"
+              >
+                <ImCross
+                  size="16px"
+                  color="#000"
+                  className="absolute top-4 right-4"
+                />
+              </a>
             </motion.div>
           </div>
         )}

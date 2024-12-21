@@ -115,6 +115,28 @@ actor {
     }
   };
 
+  public func updateGame(gamePin: Text, title: Text, description: Text, questions: [Question]): async Bool {
+    switch (gameHashMap.get(gamePin)) {
+      case (?existingGame) {
+          var result: Game = {
+          owner = existingGame.owner;
+          title = title;
+          description = description;
+          played = existingGame.played;
+          questions = questions;
+          timestamp = existingGame.timestamp;
+          isLive = existingGame.isLive;
+          gamePin = gamePin;
+        };
+        gameHashMap.put(gamePin, result);
+        return true;
+      };
+      case null {
+        return false;
+      };
+    }
+  };
+
   public func getGame(gamePin: Text): async ?Game {
     gameHashMap.get(gamePin);
   };

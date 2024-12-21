@@ -15,6 +15,8 @@ interface Player {
 function LiveGame() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
   const socket = getSocket();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const [locked, setLocked] = useState(false);
@@ -25,8 +27,12 @@ function LiveGame() {
   const { principal, nickname, currentPickedKahoot } = useSelector(
     (state: any) => state.user
   );
-  console.log(uniquePlayers);
+
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     socket.emit("join_game", { gamePin: gamePin });
 
     // Listen for the player_joined event
@@ -143,7 +149,11 @@ function LiveGame() {
                   gamePin: gamePin,
                   questions: currentPickedKahoot?.questions,
                 });
-                navigate(`/show-quiz-title?gamePin=${gamePin}`);
+                navigate(`/show-quiz-title?gamePin=${gamePin}`, {
+                  state: {
+                    routerPrincipal: state.routerPrincipal,
+                  },
+                });
               }}
               // disabled={uniqueOwners?.size <= 0}
               className="lock-btn font-bold"

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { settingNickname, settingPrincipal } from "../stores/user-slice";
 import { IoPersonCircle } from "react-icons/io5";
@@ -21,8 +21,11 @@ const socket = io("https://mawquiz-backend-production.up.railway.app/", {
 }); // Connect to backend
 
 function Home() {
+  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { state } = location;
+  console.log(state);
   const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [nicknameLoading, setNicknameLoading] = useState(false);
@@ -40,6 +43,10 @@ function Home() {
   };
 
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     IC.getBackend((result: any) => {
       setBackend(result);
     });
@@ -158,12 +165,19 @@ function Home() {
                   );
                   const status = result?.data?.status;
                   if (status === 200) {
-                    navigate(`/waiting?gameId=${gamePin}`);
+                    navigate(`/waiting?gameId=${gamePin}`, {
+                      state: {
+                        routerPrincipal: state.routerPrincipal,
+                      },
+                    });
                   }
                   setLoading(false);
                 } catch (e: any) {
-                  console.log(e);
-                  console.log(e?.status);
+                  Swal.fire(
+                    "There's a problem!",
+                    e?.response?.data?.message ?? "",
+                    "info"
+                  );
                   setLoading(false);
                 }
               }}
@@ -178,12 +192,11 @@ function Home() {
             Create your own kahoot for FREE{" "}
             <a
               onClick={async () => {
-                // backend?.updateNickname(identity, "WALAO EH");
-                // console.log(
-                //   await backend?.getUser(Principal.fromText(identity)),
-                //   "<<< ???"
-                // );
-                navigate("/profile");
+                navigate("/profile", {
+                  state: {
+                    routerPrincipal: state.routerPrincipal,
+                  },
+                });
               }}
               className="underline cursor-pointer"
             >

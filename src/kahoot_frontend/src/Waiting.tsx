@@ -12,20 +12,32 @@ const socket = io("https://mawquiz-backend-production.up.railway.app/", {
 function Waiting() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
   const queryParams = new URLSearchParams(search);
   const { principal, nickname } = useSelector((state: any) => state.user);
 
   const gamePin = queryParams.get("gameId");
 
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     socket.emit("join_game", { gamePin: gamePin });
     socket.on("admin_has_left", () => {
-      navigate("/home");
+      navigate("/home", {
+        state: {
+          routerPrincipal: state.routerPrincipal,
+        },
+      });
     });
     socket.on("game_started", (data) => {
       dispatch(settingQuestions(data));
-      navigate(`/game-player?gameId=${gamePin}`);
+      navigate(`/game-player?gameId=${gamePin}`, {
+        state: {
+          routerPrincipal: state.routerPrincipal,
+        },
+      });
     });
     const handleBeforeUnload = (event: any) => {
       socket.emit("player_left", { gamePin: gamePin, principal, nickname });

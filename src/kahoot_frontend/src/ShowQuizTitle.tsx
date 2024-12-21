@@ -51,7 +51,7 @@ function ShowQuizTitle() {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const socket = getSocket();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
   const [showTitle, setShowTitle] = useState(false);
   const [count, setCount] = useState(-1);
   const [showQuiz, setShowQuiz] = useState(false);
@@ -84,8 +84,12 @@ function ShowQuizTitle() {
   const uniquePlayersSorted = [...uniquePlayers]?.sort(
     (a: any, b: any) => (b?.totalScore ?? 0) - (a?.totalScore ?? 0)
   );
-  console.log(uniquePlayers);
+
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     socket.emit("join_game", { gamePin: gamePin });
 
     socket.on("player_joined", (data: any) => {
@@ -557,7 +561,7 @@ function ShowQuizTitle() {
                           style={{
                             height: `${getScoreLeaderboardHeight(
                               uniquePlayers,
-                              1
+                              0
                             )}%`,
                           }}
                           className="red-answer-inner the-blue-answer-bg"
@@ -566,7 +570,7 @@ function ShowQuizTitle() {
                       <div className="bottom-answer-inner the-blue-darker-answer-bg gap-x-1">
                         <FaAdjust size="12px" />
                         {uniquePlayers?.filter(
-                          (theUser: any) => theUser?.answer === 1
+                          (theUser: any) => theUser?.answer === 0
                         ).length ?? 0}{" "}
                         {currentKahootQuestion?.trueOrFalseAnswer ===
                           "true" && <FaCheck size="12px" />}
@@ -578,7 +582,7 @@ function ShowQuizTitle() {
                           style={{
                             height: `${getScoreLeaderboardHeight(
                               uniquePlayers,
-                              0
+                              1
                             )}%`,
                           }}
                           className="red-answer-inner the-red-answer-bg"
@@ -587,7 +591,7 @@ function ShowQuizTitle() {
                       <div className="bottom-answer-inner the-red-darker-answer-bg gap-x-1">
                         <IoTriangleSharp size="12px" />{" "}
                         {uniquePlayers?.filter(
-                          (theUser: any) => theUser?.answer === 0
+                          (theUser: any) => theUser?.answer === 1
                         )?.length ?? 0}
                         {currentKahootQuestion?.trueOrFalseAnswer ===
                           "false" && <FaCheck size="12px" />}
@@ -846,7 +850,11 @@ function ShowQuizTitle() {
                 <div className="w-[90vw] flex justify-between items-center rounded-[8px] p-[20px] md:w-[80vw] dark-purple-bg">
                   <div className="flex gap-x-2 items-center">
                     <IoPersonCircle size="40px" />
-                    <p className="text-[26px]">{userScore?.nickname}</p>
+                    <p className="text-[26px]">
+                      {userScore?.nickname?.length > 25
+                        ? userScore?.nickname?.slice(0, 25) + "..."
+                        : userScore?.nickname}
+                    </p>
                   </div>
                   <AnimatedNumber
                     from={userScore?.previousScore}
@@ -869,7 +877,11 @@ function ShowQuizTitle() {
         <div className="flex justify-center flex-col items-center h-full relative">
           <button
             onClick={() => {
-              navigate("/profile");
+              navigate("/profile", {
+                state: {
+                  routerPrincipal: state.routerPrincipal,
+                },
+              });
             }}
             className="custom-button-small z-infinite absolute top-[15%] md:top-[20px] right-2 z-infinite"
           >
@@ -891,7 +903,11 @@ function ShowQuizTitle() {
                 <div className="w-[90vw] flex justify-between items-center rounded-[8px] p-[20px] md:w-[80vw] dark-purple-bg">
                   <div className="flex gap-x-2 items-center">
                     <IoPersonCircle size="40px" />
-                    <p className="text-[26px]">{userScore?.nickname}</p>
+                    <p className="text-[26px]">
+                      {userScore?.nickname?.length > 25
+                        ? userScore?.nickname?.slice(0, 25) + "..."
+                        : userScore?.nickname}
+                    </p>
                   </div>
                   <p className="text-[26px] font-bold">
                     {getOrdinalSuffix(index + 1)} place

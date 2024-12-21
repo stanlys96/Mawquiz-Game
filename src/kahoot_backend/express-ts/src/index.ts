@@ -147,6 +147,12 @@ app.get("/games/:gamePin", (req: any, res: any) => {
 
 app.post("/joinGame/:gamePin", (req: any, res: any) => {
   const game = games[req.params.gamePin];
+  if (!game) {
+    return res.status(404).json({
+      message: "Game room does not exist!",
+      status: 404,
+    });
+  }
   const thePlayer = req.body.player;
   for (const key in game.players) {
     for (const secondKey in game.players[key]) {

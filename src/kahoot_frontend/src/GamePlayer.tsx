@@ -36,7 +36,7 @@ import Confetti from "react-confetti";
 function GamePlayer() {
   const socket = getSocket();
   const navigate = useNavigate();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const queryParams = new URLSearchParams(search);
   const { principal, nickname, currentQuestions } = useSelector(
@@ -198,6 +198,10 @@ function GamePlayer() {
   );
 
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     setIsIntroduction(true);
     setTimeout(() => {
       setQuestionReady(true);
@@ -206,7 +210,11 @@ function GamePlayer() {
     }, 9000);
     socket.emit("join_game", { gamePin: gamePin });
     socket.on("admin_has_left", () => {
-      navigate("/home");
+      navigate("/home", {
+        state: {
+          routerPrincipal: state.routerPrincipal,
+        },
+      });
     });
     socket.on("question_finished", () => {
       setQuestionFinished(true);
@@ -274,9 +282,9 @@ function GamePlayer() {
 
   return (
     <div className="waiting-game">
-      <div className={`bg-black-10 h-[100vh] w-[100vw]`}>
+      <div className={`bg-black-10 h-[100vh] w-[100vw] overflow-hidden`}>
         {isIntroduction && (
-          <div className="flex justify-center items-center flex-col gap-y-2 h-full">
+          <div className="flex justify-center items-center flex-col gap-y-2 h-full overflow-hidden">
             <p className="text-[60px] font-bold">Get Ready!</p>
             <PacmanLoader
               color={"#97E8D4"}
@@ -522,7 +530,13 @@ function GamePlayer() {
               </span>
             </p>
             <button
-              onClick={() => navigate("/home")}
+              onClick={() =>
+                navigate("/home", {
+                  state: {
+                    routerPrincipal: state.routerPrincipal,
+                  },
+                })
+              }
               className="save-button text-center md:w-[300px] w-[50vw]"
             >
               Back to lobby

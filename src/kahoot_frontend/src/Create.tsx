@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaArrowRight,
@@ -41,8 +41,11 @@ import {
 import IC from "./utils/IC";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 
 function Create() {
+  const location = useLocation();
+  const { state } = location;
   const navigate = useNavigate();
   const defaultQuizData = {
     question: "",
@@ -61,7 +64,9 @@ function Create() {
     imageUrl: "cdn.svg",
   };
   const timeLimitData = [5, 10, 20, 30, 45, 60, 90, 120, 180, 240];
-  const { principal } = useSelector((state: any) => state.user);
+  const { principal, currentPickedKahoot } = useSelector(
+    (state: any) => state.user
+  );
   const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1024px)" });
   const [currentId, setCurrentId] = useState(1);
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
@@ -78,26 +83,41 @@ function Create() {
   const [clickedQuizIndex, setClickedQuizIndex] = useState(0);
   const [hoveredQuizIndex, setHoveredQuizIndex] = useState(-1);
   const [isOpenModalTitle, setIsOpenModalTitle] = useState(false);
-  const [previousKahootTitle, setPreviousKahootTitle] = useState("");
-  const [kahootTitle, setKahootTitle] = useState("");
-  const [kahootTitleTemp, setKahootTitleTemp] = useState("");
-  const [previousKahootDescription, setPreviousKahootDescription] =
-    useState("");
-  const [kahootDescription, setKahootDescription] = useState("");
-  const [kahootDescriptionTemp, setKahootDescriptionTemp] = useState("");
+  const [previousKahootTitle, setPreviousKahootTitle] = useState(
+    state?.mode === "create" ? "" : state?.title
+  );
+  const [kahootTitle, setKahootTitle] = useState(
+    state?.mode === "create" ? "" : state?.title
+  );
+  const [kahootTitleTemp, setKahootTitleTemp] = useState(
+    state?.mode === "create" ? "" : state?.title
+  );
+  const [previousKahootDescription, setPreviousKahootDescription] = useState(
+    state?.mode === "create" ? "" : state?.description
+  );
+  const [kahootDescription, setKahootDescription] = useState(
+    state?.mode === "create" ? "" : state?.description
+  );
+  const [kahootDescriptionTemp, setKahootDescriptionTemp] = useState(
+    state?.mode === "create" ? "" : state?.description
+  );
   const [backend, setBackend] = useState<_SERVICE>();
   const [isOpenModalValidate, setIsOpenModalValidate] = useState(false);
   const [quizChecked, setQuizChecked] =
     useState<{ index: number; messages: string[] }[]>();
   const [isOpenModalTimeLimit, setIsOpenModalTimeLimit] = useState(false);
   const [fromSaving, setFromSaving] = useState(false);
-  const [quizData, setQuizData] = useState<Question[]>([
-    {
-      id: currentId,
-      questionType: "Quiz",
-      ...defaultQuizData,
-    },
-  ]);
+  const [quizData, setQuizData] = useState<Question[]>(
+    state?.mode === "create"
+      ? [
+          {
+            id: currentId,
+            questionType: "Quiz",
+            ...defaultQuizData,
+          },
+        ]
+      : state?.data
+  );
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [flexibleClickedQuizIndex, setFlexibleClickedQuizIndex] = useState(-1);
@@ -243,7 +263,77 @@ function Create() {
     ...defaultQuizData,
   };
 
+  const addOrUpdateGame = useCallback(() => {
+    if (state?.mode === "create") {
+      const gamePin = generateRandomString();
+      backend
+        ?.addGame(
+          gamePin,
+          principal,
+          kahootTitleTemp,
+          kahootDescriptionTemp,
+          quizData,
+          getCurrentFormattedDateTime()
+        )
+        ?.then((result) => {
+          setLoading(false);
+          Swal.fire({
+            title: "Success!",
+            text: "You have successfully saved your quiz!",
+            icon: "success",
+          })
+            .then((res) => {
+              navigate("/profile", {
+                state: {
+                  routerPrincipal: state.routerPrincipal,
+                },
+              });
+            })
+            .catch((thisErr) => {
+              console.log(thisErr);
+            });
+        })
+        ?.catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
+    } else {
+      backend
+        ?.updateGame(
+          state?.gamePin,
+          kahootTitleTemp,
+          kahootDescriptionTemp,
+          quizData
+        )
+        ?.then((result) => {
+          setLoading(false);
+          Swal.fire({
+            title: "Success!",
+            text: "You have successfully updated your quiz!",
+            icon: "success",
+          })
+            .then((res) => {
+              navigate("/profile", {
+                state: {
+                  routerPrincipal: state.routerPrincipal,
+                },
+              });
+            })
+            .catch((thisErr) => {
+              console.log(thisErr);
+            });
+        })
+        .catch((e) => {
+          console.log(e, "< Error");
+        });
+    }
+  }, [principal, kahootTitleTemp, kahootDescriptionTemp, quizData, principal]);
+
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     IC.getBackend(async (result: any) => {
       setBackend(result);
     });
@@ -251,7 +341,7 @@ function Create() {
   return (
     <main className="background" ref={dropdownRef}>
       {loading && (
-        <div className="kahoot-container z-moreinfinite h-[100%] w-[100vw]">
+        <div className="kahoot-container z-moreinfinite overflow-hidden w-[100vw]">
           <div className="kahoot-spinner">
             <div />
             <div />
@@ -259,7 +349,7 @@ function Create() {
             <div />
           </div>
           <p className="montserrat medium text-[28px] leading-[0px]">
-            Saving game...
+            {state?.mode === "create" ? "Saving" : "Updating"} game...
           </p>
         </div>
       )}
@@ -279,7 +369,17 @@ function Create() {
       {isMobileOrTablet && (
         <nav className="navbar z-infinite fixed top-0 w-full">
           <div className="flex gap-x-6 items-center w-full">
-            <img className="h-[36px]" src="/kahoot-2.png" />
+            <img
+              onClick={() =>
+                navigate("/profile", {
+                  state: {
+                    routerPrincipal: state.routerPrincipal,
+                  },
+                })
+              }
+              className="h-[36px]"
+              src="/logo.png"
+            />
             <div className="kahoot-input-container">
               <button
                 onClick={() => {
@@ -315,34 +415,7 @@ function Create() {
                   toggleModalTitle();
                 } else {
                   setLoading(true);
-                  const gamePin = generateRandomString();
-                  backend
-                    ?.addGame(
-                      gamePin,
-                      principal,
-                      kahootTitle,
-                      kahootDescription,
-                      quizData,
-                      getCurrentFormattedDateTime()
-                    )
-                    ?.then((result) => {
-                      setLoading(false);
-                      Swal.fire({
-                        title: "Success!",
-                        text: "You have successfully saved your quiz!",
-                        icon: "success",
-                      })
-                        .then((res) => {
-                          navigate("/profile");
-                        })
-                        .catch((thisErr) => {
-                          console.log(thisErr);
-                        });
-                    })
-                    ?.catch((error) => {
-                      setLoading(false);
-                      console.log(error);
-                    });
+                  addOrUpdateGame();
                 }
               }}
               className="save-button"
@@ -355,7 +428,7 @@ function Create() {
       {!isMobileOrTablet && (
         <nav className="navbar">
           <div className="flex gap-x-6 items-center w-full">
-            <img className="h-[48px]" src="/kahoot-2.png" />
+            <img className="h-[48px]" src="/logo.png" />
             <div className="kahoot-input-container">
               <button
                 onClick={() => {
@@ -399,34 +472,7 @@ function Create() {
                   toggleModalTitle();
                 } else {
                   setLoading(true);
-                  const gamePin = generateRandomString();
-                  backend
-                    ?.addGame(
-                      gamePin,
-                      principal,
-                      kahootTitle,
-                      kahootDescription,
-                      quizData,
-                      getCurrentFormattedDateTime()
-                    )
-                    ?.then((result) => {
-                      setLoading(false);
-                      Swal.fire({
-                        title: "Success!",
-                        text: "You have successfully saved your quiz!",
-                        icon: "success",
-                      })
-                        .then((res) => {
-                          navigate("/profile");
-                        })
-                        .catch((thisErr) => {
-                          console.log(thisErr);
-                        });
-                    })
-                    ?.catch((error) => {
-                      setLoading(false);
-                      console.log(error);
-                    });
+                  addOrUpdateGame();
                 }
               }}
               className="save-button"
@@ -2485,12 +2531,12 @@ function Create() {
                     if (fromSaving) {
                       if (!kahootTitleTemp?.trim()) return;
                     }
-                    setKahootTitleTemp((prevState) => {
+                    setKahootTitleTemp((prevState: any) => {
                       setKahootTitle(prevState.trim());
                       setPreviousKahootTitle(prevState.trim());
                       return prevState.trim();
                     });
-                    setKahootDescriptionTemp((prevState) => {
+                    setKahootDescriptionTemp((prevState: any) => {
                       setKahootDescription(prevState.trim());
                       setPreviousKahootDescription(prevState.trim());
                       return prevState.trim();
@@ -2498,34 +2544,7 @@ function Create() {
                     toggleModalTitle();
                     if (fromSaving) {
                       setLoading(true);
-                      const gamePin = generateRandomString();
-                      backend
-                        ?.addGame(
-                          gamePin,
-                          principal,
-                          kahootTitleTemp,
-                          kahootDescriptionTemp,
-                          quizData,
-                          getCurrentFormattedDateTime()
-                        )
-                        ?.then((result) => {
-                          setLoading(false);
-                          Swal.fire({
-                            title: "Success!",
-                            text: "You have successfully saved your quiz!",
-                            icon: "success",
-                          })
-                            .then((res) => {
-                              navigate("/profile");
-                            })
-                            .catch((thisErr) => {
-                              console.log(thisErr);
-                            });
-                        })
-                        ?.catch((error) => {
-                          setLoading(false);
-                          console.log(error);
-                        });
+                      addOrUpdateGame();
                     }
                   }}
                   className="save-button"
@@ -2571,7 +2590,11 @@ function Create() {
             <div className="flex gap-x-2 items-center justify-center">
               <button
                 onClick={() => {
-                  navigate("/profile");
+                  navigate("/profile", {
+                    state: {
+                      routerPrincipal: state.routerPrincipal,
+                    },
+                  });
                 }}
                 className="cancel-red-btn"
               >
