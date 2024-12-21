@@ -11,7 +11,7 @@ interface Player {
   owner: string;
 }
 
-const socket = io("http://localhost:3001/", {
+const socket = io("https://mawquiz-backend-production.up.railway.app/", {
   transports: ["websocket", "polling"],
 });
 

@@ -305,7 +305,7 @@ export const uploadImageToIPFS = async (imageFile: any) => {
     formData.append("file", imageFile);
 
     const response = await axios.post(
-      `http://localhost:3001/pinFileToIPFS`,
+      `https://mawquiz-backend-production.up.railway.app/pinFileToIPFS`,
       formData,
       {
         headers: {
@@ -322,7 +322,7 @@ export const uploadImageToIPFS = async (imageFile: any) => {
 let socket: any;
 export const getSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:3001/", {
+    socket = io("https://mawquiz-backend-production.up.railway.app/", {
       transports: ["websocket", "polling"],
     });
   }

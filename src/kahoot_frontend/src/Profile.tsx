@@ -434,7 +434,7 @@ function Profile() {
                       setLoading(true);
                       setIsOpenModalKahoot(false);
                       const theData = await fetch(
-                        "http://localhost:3001/games",
+                        "https://mawquiz-backend-production.up.railway.app/games",
                         {
                           method: "POST",
                           headers: {
