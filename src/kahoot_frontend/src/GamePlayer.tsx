@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
 import RotateLoader from "react-spinners/RotateLoader";
-import { getSocket, override } from "./helper/helper";
+import { getOrdinalSuffix, getSocket, override } from "./helper/helper";
 import {
   HashLoader,
   PacmanLoader,
@@ -31,6 +31,7 @@ import { useMediaQuery } from "react-responsive";
 import { ImCross } from "react-icons/im";
 import { FiRewind } from "react-icons/fi";
 import { VscSymbolBoolean } from "react-icons/vsc";
+import Confetti from "react-confetti";
 
 function GamePlayer() {
   const socket = getSocket();
@@ -56,6 +57,8 @@ function GamePlayer() {
   const [totalScore, setTotalScore] = useState<number>(0);
   const [previousScore, setPreviousScore] = useState<number>(0);
   const [answerStreak, setAnswerStreak] = useState(0);
+  const [gameFinished, setGameFinished] = useState(false);
+  const [theRanking, setTheRanking] = useState(0);
 
   const gamePin = queryParams.get("gameId");
   const theCurrentQuestion = currentQuestions[questionIndex];
@@ -95,13 +98,29 @@ function GamePlayer() {
         return false;
       }
       if (theCurrentQuestion?.questionType === "Type answer") {
-        if (
-          theCurrentQuestion?.text1 === typeAnswer ||
-          theCurrentQuestion?.text2 === typeAnswer ||
-          theCurrentQuestion?.text3 === typeAnswer ||
-          theCurrentQuestion?.text4 === typeAnswer
-        ) {
-          return true;
+        if (theCurrentQuestion?.additionalAnswers === 0) {
+          return theCurrentQuestion?.text1 === typeAnswer;
+        }
+        if (theCurrentQuestion?.additionalAnswers === 1) {
+          return (
+            theCurrentQuestion?.text1 === typeAnswer ||
+            theCurrentQuestion?.text2 === typeAnswer
+          );
+        }
+        if (theCurrentQuestion?.additionalAnswers === 2) {
+          return (
+            theCurrentQuestion?.text1 === typeAnswer ||
+            theCurrentQuestion?.text2 === typeAnswer ||
+            theCurrentQuestion?.text3 === typeAnswer
+          );
+        }
+        if (theCurrentQuestion?.additionalAnswers === 3) {
+          return (
+            theCurrentQuestion?.text1 === typeAnswer ||
+            theCurrentQuestion?.text2 === typeAnswer ||
+            theCurrentQuestion?.text3 === typeAnswer ||
+            theCurrentQuestion?.text4 === typeAnswer
+          );
         }
         return false;
       }
@@ -174,6 +193,7 @@ function GamePlayer() {
       totalScore,
       previousScore,
       answerStreak,
+      typeAnswer,
     ]
   );
 
@@ -190,9 +210,12 @@ function GamePlayer() {
     });
     socket.on("question_finished", () => {
       setQuestionFinished(true);
-      if (answer === -1) {
-        setAnswer(-5);
-      }
+      setAnswer((prevState) => {
+        if (prevState === -1) {
+          return -5;
+        }
+        return prevState;
+      });
     });
     socket.on(
       "question_restarted",
@@ -200,6 +223,7 @@ function GamePlayer() {
         setQuestionIndex(theQuestionIndex);
         setTimeout(() => {
           setAnswer(-1);
+          setTypeAnswer("");
           setQuestionFinished(false);
           setShowQuestion(false);
           setQuestionReady(true);
@@ -207,6 +231,18 @@ function GamePlayer() {
         }, 250);
       }
     );
+    socket.on("game_finished", ({ gamePin, uniquePlayers }: any) => {
+      setGameFinished(true);
+      console.log(uniquePlayers);
+      for (let i = 0; i < (uniquePlayers?.length ?? 0); i++) {
+        if (
+          uniquePlayers[i]?.principal === principal ||
+          uniquePlayers[i]?.owner === principal
+        ) {
+          setTheRanking(i + 1);
+        }
+      }
+    });
 
     const handleBeforeUnload = (event: any) => {
       socket.emit("player_left", { gamePin: gamePin, principal, nickname });
@@ -376,6 +412,47 @@ function GamePlayer() {
               </div>
             </div>
           )}
+        {showQuestion &&
+          answer === -1 &&
+          theCurrentQuestion?.questionType === "Type answer" && (
+            <div className="h-full pb-[10vh] flex flex-col gap-y-4 justify-center items-center px-[20px]">
+              <div className="question-div">
+                <div
+                  className={`question-answer-full ${
+                    typeAnswer?.length > 0 && "bg-blue"
+                  }`}
+                >
+                  <div className="question-sub-inner-div">
+                    <div className="question-1-div-answer">
+                      <div className="question-2-div">
+                        <input
+                          maxLength={20}
+                          value={typeAnswer}
+                          onChange={(e) => {
+                            setTypeAnswer(e.target.value);
+                          }}
+                          placeholder="Type an answer"
+                          className={`${
+                            typeAnswer?.length > 0 ? "text-white" : "text-black"
+                          } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                          type="text"
+                        />
+                        <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
+                          {20 - typeAnswer?.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => answeringQuestion(typeAnswer)}
+                className="type-submit-button text-center md:w-[300px] w-[50vw]"
+              >
+                Submit
+              </button>
+            </div>
+          )}
         {showQuestion && answer !== -1 && !questionFinished && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full">
             <p className="text-[40px] md:text-[60px] font-bold text-center px-[10px]">
@@ -394,7 +471,7 @@ function GamePlayer() {
             </p>
           </div>
         )}
-        {questionFinished && (
+        {questionFinished && !gameFinished && (
           <div className="flex flex-col gap-y-2 justify-center items-center h-full w-full">
             <p className="text-[36px] font-bold">
               {!checkAnswer(answer) ? "Incorrect!" : "Correct!"}
@@ -427,6 +504,29 @@ function GamePlayer() {
               </p>
             </div>
             <p className="text-[18px] font-bold">You are doing well!</p>
+          </div>
+        )}
+        {questionFinished && gameFinished && (
+          <div className="flex flex-col gap-y-2 justify-center items-center h-full w-full">
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              numberOfPieces={200}
+              gravity={0.3}
+            />
+            <p className="text-[26px]">Game finished!</p>
+            <p className="text-[22px]">
+              You are the{" "}
+              <span className="font-bold">
+                {getOrdinalSuffix(theRanking)} place!
+              </span>
+            </p>
+            <button
+              onClick={() => navigate("/home")}
+              className="save-button text-center md:w-[300px] w-[50vw]"
+            >
+              Back to lobby
+            </button>
           </div>
         )}
       </div>

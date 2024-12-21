@@ -1758,6 +1758,31 @@ html {
   position: relative;
 }
 
+.type-submit-button {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+  /* display: flex; */
+  /* flex: 0 0 auto; */
+  /* width: initial; */
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  vertical-align: bottom;
+  background-color: rgb(38, 137, 12);
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-height: 42px;
+  height: 42px;
+  padding: 0px 16px 4px;
+  line-height: 42px;
+  position: relative;
+}
+
 .custom-button-small {
   width: fit-content;
   margin: 0px;
@@ -3892,6 +3917,20 @@ html {
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
+  max-width: 75%;
+  min-width: min(520px, 100cqw);
+  height: calc(100% - 4.625rem);
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.ranking-type-answer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   max-width: 75%;
   min-width: min(520px, 100cqw);
   height: calc(100% - 4.625rem);

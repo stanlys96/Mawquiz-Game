@@ -31,7 +31,6 @@ function LiveGame() {
 
     // Listen for the player_joined event
     socket.on("player_joined", (data: any) => {
-      console.log(data, "<<< DATA");
       const thePlayer = {
         ...data.thePlayer,
         totalScore: 0,
