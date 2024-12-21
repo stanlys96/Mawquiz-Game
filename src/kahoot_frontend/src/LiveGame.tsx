@@ -25,13 +25,21 @@ function LiveGame() {
   const { principal, nickname, currentPickedKahoot } = useSelector(
     (state: any) => state.user
   );
-
+  console.log(uniquePlayers);
   useEffect(() => {
     socket.emit("join_game", { gamePin: gamePin });
 
     // Listen for the player_joined event
     socket.on("player_joined", (data: any) => {
-      const thePlayer = data.thePlayer;
+      console.log(data, "<<< DATA");
+      const thePlayer = {
+        ...data.thePlayer,
+        totalScore: 0,
+        currentScore: 0,
+        questionIndex: 0,
+        previousScore: 0,
+        answer: -1,
+      };
       setUniquePlayers((prevState: any) => {
         for (let i = 0; i < prevState.length; i++) {
           if (prevState[i].owner === thePlayer.owner) {

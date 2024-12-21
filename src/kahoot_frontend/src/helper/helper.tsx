@@ -328,3 +328,23 @@ export const getSocket = () => {
   }
   return socket;
 };
+
+export const getScoreLeaderboardHeight = (allScores: any, answer: number) => {
+  try {
+    if (!Array.isArray(allScores) || allScores.length === 0) return "0"; // Handle invalid or empty input
+
+    let totalCount = 0;
+    for (let i = 0; i < allScores.length; i++) {
+      if (allScores[i]?.answer?.toString() === answer?.toString()) {
+        totalCount++;
+      }
+    }
+
+    const percentage = (totalCount / allScores.length) * 100;
+
+    return percentage.toFixed(2);
+  } catch (e) {
+    console.error("Error calculating star ratings width:", e);
+    return "0";
+  }
+};

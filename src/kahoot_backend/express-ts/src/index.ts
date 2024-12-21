@@ -222,11 +222,38 @@ io.on("connection", (socket: any) => {
     io.to(gamePin).emit("game_started", questions);
   });
 
-  socket.on("player_answer_server", ({ gamePin, principal, answer }: any) => {
-    io.to(gamePin).emit("player_answer", { gamePin, principal, answer });
-  });
+  socket.on(
+    "player_answer_server",
+    ({
+      gamePin,
+      principal,
+      answer,
+      currentScore,
+      totalScore,
+      isCorrect,
+      questionIndex,
+      previousScore,
+      nickname,
+    }: any) => {
+      io.to(gamePin).emit("player_answer", {
+        gamePin,
+        principal,
+        answer,
+        currentScore,
+        totalScore,
+        isCorrect,
+        questionIndex,
+        previousScore,
+        nickname,
+      });
+    }
+  );
 
   socket.on("question_finished", ({ gamePin }: any) => {
     io.to(gamePin).emit("question_finished", { gamePin });
+  });
+
+  socket.on("question_restarted", ({ gamePin, questionIndex }: any) => {
+    io.to(gamePin).emit("question_restarted", { gamePin, questionIndex });
   });
 });

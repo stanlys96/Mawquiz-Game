@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +30,7 @@ import {
 import { useMediaQuery } from "react-responsive";
 import { ImCross } from "react-icons/im";
 import { FiRewind } from "react-icons/fi";
+import { VscSymbolBoolean } from "react-icons/vsc";
 
 function GamePlayer() {
   const socket = getSocket();
@@ -40,22 +41,141 @@ function GamePlayer() {
   const { principal, nickname, currentQuestions } = useSelector(
     (state: any) => state.user
   );
+
   const [isIntroduction, setIsIntroduction] = useState(false);
   const [questionReady, setQuestionReady] = useState(false);
   const [count, setCount] = useState(-1);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [showQuestion, setShowQuestion] = useState(false);
   const [answer, setAnswer] = useState(-1);
-  const gamePin = queryParams.get("gameId");
+  const [typeAnswer, setTypeAnswer] = useState("");
+  const [questionFinished, setQuestionFinished] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [totalScore, setTotalScore] = useState<number>(0);
+  const [previousScore, setPreviousScore] = useState<number>(0);
+  const [answerStreak, setAnswerStreak] = useState(0);
 
-  const answerQuestion = (theAnswer: any) => {
-    setAnswer(theAnswer);
-    socket.emit("player_answer_server", {
-      gamePin: gamePin,
-      principal,
-      answer: theAnswer,
-    });
-  };
+  const gamePin = queryParams.get("gameId");
+  const theCurrentQuestion = currentQuestions[questionIndex];
+  const MAX_SCORE = 1000;
+  const MAX_TIME_MS = theCurrentQuestion?.timeLimit * 1000;
+
+  const checkAnswer = useCallback(
+    (theAnswer: any): boolean => {
+      if (theCurrentQuestion?.questionType === "Quiz") {
+        if (theCurrentQuestion?.answer1Clicked && theAnswer === 0) {
+          return true;
+        }
+        if (theCurrentQuestion?.answer2Clicked && theAnswer === 1) {
+          return true;
+        }
+        if (theCurrentQuestion?.answer3Clicked && theAnswer === 2) {
+          return true;
+        }
+        if (theCurrentQuestion?.answer4Clicked && theAnswer === 3) {
+          return true;
+        }
+        return false;
+      }
+      if (theCurrentQuestion?.questionType === "True or false") {
+        if (
+          theCurrentQuestion?.trueOrFalseAnswer === "true" &&
+          theAnswer === 0
+        ) {
+          return true;
+        }
+        if (
+          theCurrentQuestion?.trueOrFalseAnswer === "false" &&
+          theAnswer === 1
+        ) {
+          return true;
+        }
+        return false;
+      }
+      if (theCurrentQuestion?.questionType === "Type answer") {
+        if (
+          theCurrentQuestion?.text1 === typeAnswer ||
+          theCurrentQuestion?.text2 === typeAnswer ||
+          theCurrentQuestion?.text3 === typeAnswer ||
+          theCurrentQuestion?.text4 === typeAnswer
+        ) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    },
+    [theCurrentQuestion, answer, typeAnswer]
+  );
+
+  const calculateScore = useCallback(
+    (elapsedTime: number): number => {
+      if (elapsedTime > MAX_TIME_MS) return 0;
+      return Math.max(
+        0,
+        Math.round(MAX_SCORE * (1 - elapsedTime / MAX_TIME_MS))
+      );
+    },
+    [MAX_SCORE, MAX_TIME_MS]
+  );
+
+  const startQuestion = useCallback(() => {
+    setStartTime(Date.now());
+    setScore(0);
+    setElapsedTime(0);
+    setAnswer(-1);
+  }, [startTime]);
+
+  const answeringQuestion = useCallback(
+    (theAnswer: any) => {
+      const currentTime = Date.now();
+      const timeTaken = currentTime - (startTime ?? 0);
+      const isCorrect = checkAnswer(theAnswer);
+      const currentScore = isCorrect ? calculateScore(timeTaken) : 0;
+      const currentTotalScore =
+        totalScore + (isCorrect ? calculateScore(timeTaken) : 0);
+      if (isCorrect) {
+        setAnswerStreak((prevState) => prevState + 1);
+      } else {
+        setAnswerStreak(0);
+      }
+      socket.emit("player_answer_server", {
+        gamePin: gamePin,
+        principal,
+        answer: theAnswer,
+        currentScore,
+        totalScore: currentTotalScore,
+        isCorrect: isCorrect,
+        questionIndex: questionIndex,
+        previousScore: previousScore,
+        nickname: nickname,
+      });
+      setAnswer(theAnswer);
+      try {
+        if (startTime && isCorrect) {
+          setElapsedTime(timeTaken);
+          setScore(calculateScore(timeTaken));
+          setTotalScore((prevState) => {
+            setPreviousScore(prevState + calculateScore(timeTaken));
+            return prevState + calculateScore(timeTaken);
+          });
+        }
+      } catch (e) {
+        console.log(e, "<< error");
+      }
+    },
+    [
+      score,
+      answer,
+      elapsedTime,
+      startTime,
+      totalScore,
+      previousScore,
+      answerStreak,
+    ]
+  );
 
   useEffect(() => {
     setIsIntroduction(true);
@@ -68,6 +188,25 @@ function GamePlayer() {
     socket.on("admin_has_left", () => {
       navigate("/home");
     });
+    socket.on("question_finished", () => {
+      setQuestionFinished(true);
+      if (answer === -1) {
+        setAnswer(-5);
+      }
+    });
+    socket.on(
+      "question_restarted",
+      ({ questionIndex: theQuestionIndex }: any) => {
+        setQuestionIndex(theQuestionIndex);
+        setTimeout(() => {
+          setAnswer(-1);
+          setQuestionFinished(false);
+          setShowQuestion(false);
+          setQuestionReady(true);
+          setCount(6);
+        }, 250);
+      }
+    );
 
     const handleBeforeUnload = (event: any) => {
       socket.emit("player_left", { gamePin: gamePin, principal, nickname });
@@ -91,6 +230,7 @@ function GamePlayer() {
         setCount(count - 1);
         setShowQuestion(true);
         setQuestionReady(false);
+        startQuestion();
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -99,7 +239,7 @@ function GamePlayer() {
   return (
     <div className="waiting-game">
       <div className={`bg-black-10 h-[100vh] w-[100vw]`}>
-        {/* {isIntroduction && (
+        {isIntroduction && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full">
             <p className="text-[60px] font-bold">Get Ready!</p>
             <PacmanLoader
@@ -114,8 +254,8 @@ function GamePlayer() {
               Loading...
             </p>
           </div>
-        )} */}
-        {/* {questionReady && (
+        )}
+        {questionReady && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full relative">
             <p className="text-[60px] font-bold">Question 1</p>
             {count > 0 && (
@@ -129,69 +269,114 @@ function GamePlayer() {
               Ready...
             </p>
           </div>
-        )} */}
-        {showQuestion && (
+        )}
+        {!isIntroduction && (
           <div className="absolute top-[10px] w-full">
             <div className="circle-small absolute top-[10px] left-[10px]">
               <p>{questionIndex + 1}</p>
             </div>
             <div className="pt-[15px] w-full flex justify-center items-center">
               <div className="px-[10px] flex gap-x-2 items-center py-[5px] bg-white rounded-[35px] w-fit">
-                <MdQuiz size="20px" color="black" />
+                {theCurrentQuestion?.questionType === "Quiz" && (
+                  <MdQuiz size="20px" color="black" />
+                )}
+                {theCurrentQuestion?.questionType === "True or false" && (
+                  <VscSymbolBoolean size="20px" color="black" />
+                )}
                 <p className="text-center text-[1.5rem] text-black font-semibold">
-                  Quiz
+                  {theCurrentQuestion?.questionType ?? ""}
                 </p>
               </div>
             </div>
           </div>
         )}
-        {/* {showQuestion && answer == -1 && (
-          <div className="h-full pb-[10vh]">
-            <div className="grid grid-cols-2 gap-[10px] mx-[10px] pt-[15vh] h-full">
-              <div
-                onClick={() => {
-                  answerQuestion(0);
-                }}
-                className={`answer-div cursor-pointer bg-red h-full flex justify-center items-center gap-x-[10px]`}
-              >
-                <div className="flex gap-x-2 items-center justify-center ml-[10px]">
-                  <IoTriangleSharp size={`${isMobile ? "70px" : "120px"}`} />
-                </div>
+        {showQuestion &&
+          answer === -1 &&
+          theCurrentQuestion?.questionType === "Quiz" && (
+            <div className="h-full pb-[10vh]">
+              <div className="grid grid-cols-2 gap-[10px] mx-[10px] pt-[15vh] h-full">
+                {theCurrentQuestion?.text1 && (
+                  <div
+                    onClick={() => {
+                      answeringQuestion(0);
+                    }}
+                    className={`answer-div cursor-pointer bg-red h-full flex justify-center items-center gap-x-[10px]`}
+                  >
+                    <div className="flex gap-x-2 items-center justify-center ml-[10px]">
+                      <IoTriangleSharp
+                        size={`${isMobile ? "70px" : "120px"}`}
+                      />
+                    </div>
+                  </div>
+                )}
+                {theCurrentQuestion?.text2 && (
+                  <div
+                    onClick={() => {
+                      answeringQuestion(1);
+                    }}
+                    className={`answer-div cursor-pointer bg-blue h-full flex justify-center items-center gap-x-[10px]`}
+                  >
+                    <div className="flex gap-x-2 items-center ml-[10px]">
+                      <FaAdjust size={`${isMobile ? "70px" : "120px"}`} />
+                    </div>
+                  </div>
+                )}
+                {theCurrentQuestion?.text3 && (
+                  <div
+                    onClick={() => {
+                      answeringQuestion(2);
+                    }}
+                    className={`answer-div cursor-pointer bg-orange h-full flex justify-center items-center gap-x-[10px]`}
+                  >
+                    <div className="flex gap-x-2 items-center ml-[10px]">
+                      <FaCircle size={`${isMobile ? "70px" : "120px"}`} />
+                    </div>
+                  </div>
+                )}
+                {theCurrentQuestion?.text4 && (
+                  <div
+                    onClick={() => {
+                      answeringQuestion(3);
+                    }}
+                    className={`answer-div cursor-pointer bg-dark-green h-full flex justify-center items-center gap-x-[10px]`}
+                  >
+                    <div className="flex gap-x-2 items-center ml-[10px]">
+                      <FaSquareFull size={`${isMobile ? "70px" : "120px"}`} />
+                    </div>
+                  </div>
+                )}
               </div>
-              <div
-                onClick={() => {
-                  answerQuestion(1);
-                }}
-                className={`answer-div cursor-pointer bg-blue h-full flex justify-center items-center gap-x-[10px]`}
-              >
-                <div className="flex gap-x-2 items-center ml-[10px]">
-                  <FaAdjust size={`${isMobile ? "70px" : "120px"}`} />
+            </div>
+          )}
+        {showQuestion &&
+          answer === -1 &&
+          theCurrentQuestion?.questionType === "True or false" && (
+            <div className="h-full pb-[10vh]">
+              <div className="grid grid-cols-2 gap-[10px] mx-[10px] pt-[15vh] h-full">
+                <div
+                  onClick={() => {
+                    answeringQuestion(0);
+                  }}
+                  className={`answer-div cursor-pointer bg-blue h-full flex justify-center items-center gap-x-[10px]`}
+                >
+                  <div className="flex gap-x-2 items-center justify-center ml-[10px]">
+                    <FaAdjust size={`${isMobile ? "70px" : "120px"}`} />
+                  </div>
                 </div>
-              </div>
-              <div
-                onClick={() => {
-                  answerQuestion(2);
-                }}
-                className={`answer-div cursor-pointer bg-orange h-full flex justify-center items-center gap-x-[10px]`}
-              >
-                <div className="flex gap-x-2 items-center ml-[10px]">
-                  <FaCircle size={`${isMobile ? "70px" : "120px"}`} />
-                </div>
-              </div>
-              <div
-                onClick={() => {
-                  answerQuestion(3);
-                }}
-                className={`answer-div cursor-pointer bg-dark-green h-full flex justify-center items-center gap-x-[10px]`}
-              >
-                <div className="flex gap-x-2 items-center ml-[10px]">
-                  <FaSquareFull size={`${isMobile ? "70px" : "120px"}`} />
+                <div
+                  onClick={() => {
+                    answeringQuestion(1);
+                  }}
+                  className={`answer-div cursor-pointer bg-red h-full flex justify-center items-center gap-x-[10px]`}
+                >
+                  <div className="flex gap-x-2 items-center ml-[10px]">
+                    <IoTriangleSharp size={`${isMobile ? "70px" : "120px"}`} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )} */}
-        {/* {showQuestion && answer !== -1 && (
+          )}
+        {showQuestion && answer !== -1 && !questionFinished && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full">
             <p className="text-[40px] md:text-[60px] font-bold text-center px-[10px]">
               What a good time!
@@ -208,13 +393,13 @@ function GamePlayer() {
               You are doing well!
             </p>
           </div>
-        )} */}
-        {true && (
+        )}
+        {questionFinished && (
           <div className="flex flex-col gap-y-2 justify-center items-center h-full w-full">
             <p className="text-[36px] font-bold">
-              {false ? "Incorrect!" : "Correct!"}
+              {!checkAnswer(answer) ? "Incorrect!" : "Correct!"}
             </p>
-            {false ? (
+            {!checkAnswer(answer) ? (
               <button className="cross-btn-clicked-game">
                 <span className="centang-span-game">
                   <ImCross size="40px" className="centang-img" />
@@ -227,16 +412,18 @@ function GamePlayer() {
                 </span>
               </button>
             )}
-            {true && (
+            {checkAnswer(answer) && (
               <div className="flex gap-x-2 items-center">
                 <FaFireAlt color="" size="30px" />
-                <p className="text-[24px] font-bold">Answer streak 1</p>
+                <p className="text-[24px] font-bold">
+                  Answer streak {answerStreak}
+                </p>
                 <FaFireAlt color="" size="30px" />
               </div>
             )}
             <div className="bg-black/50 p-[10px] rounded-[5px] w-[300px] text-center">
               <p className="font-bold text-[24px] text-white">
-                {true ? "+886" : "Great try!"}
+                {checkAnswer(answer) ? `+${score}` : "Great try!"}
               </p>
             </div>
             <p className="text-[18px] font-bold">You are doing well!</p>
@@ -247,10 +434,10 @@ function GamePlayer() {
         <div className="bottom-bar-inner flex justify-between w-full items-center h-full">
           <div className="flex gap-x-2 items-center">
             <IoPersonCircle color="black" size="32px" />
-            <p className="font-bold text-[24px] text-black">Donald Trump</p>
+            <p className="font-bold text-[24px] text-black">{nickname}</p>
           </div>
           <div className="bg-[#333333] flex px-[40px] rounded-[5px] py-[5px] justify-center items-center">
-            <p className="font-bold text-[20px]">0</p>
+            <p className="font-bold text-[20px]">{totalScore ?? 0}</p>
           </div>
         </div>
       </div>
