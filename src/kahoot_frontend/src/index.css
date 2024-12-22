@@ -4132,6 +4132,11 @@ html {
   opacity: 0.6;
   z-index: -1;
 }
+
+.shadow-card {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+}
+
 @media (max-width: 500px) {
   .countdown-container {
     width: 250px;

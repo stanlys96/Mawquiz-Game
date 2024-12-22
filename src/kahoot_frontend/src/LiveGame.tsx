@@ -134,6 +134,18 @@ function LiveGame() {
       </div>
       <div className="flex justify-center flex-col items-center mt-4 md:mt-1">
         <div className="flex items-center gap-x-4">
+          <button
+            onClick={() => {
+              navigate(`/profile`, {
+                state: {
+                  routerPrincipal: state.routerPrincipal,
+                },
+              });
+            }}
+            className={`lock-btn font-bold`}
+          >
+            Exit
+          </button>
           <img className="w-[150px] md:w-[200px]" src="kahoot-2.png" />
           <div className="flex gap-x-2">
             <button

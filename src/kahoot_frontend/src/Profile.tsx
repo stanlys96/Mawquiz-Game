@@ -39,6 +39,7 @@ function Profile() {
   const [userGames, setUserGames] = useState<Game[]>([]);
   const [isOpenModalKahoot, setIsOpenModalKahoot] = useState<boolean>(false);
   const [currentPickedKahoot, setCurrentPickedKahoot] = useState<any>();
+  const [initialLoading, setInitialLoading] = useState<boolean>(false);
 
   const toggleModalJiggle = () => {
     setIsOpenModalJiggle((prevState) => !prevState);
@@ -63,6 +64,7 @@ function Profile() {
 
   useEffect(() => {
     if (principal && backend) {
+      setInitialLoading(true);
       backend
         ?.getUser(Principal.fromText(principal))
         ?.then((result) => {
@@ -74,9 +76,11 @@ function Profile() {
       backend
         ?.getGamesByPrincipal(principal)
         ?.then(async (res) => {
+          setInitialLoading(false);
           setUserGames(res);
         })
         .catch((err) => {
+          setInitialLoading(false);
           console.log(err);
         });
     }
@@ -93,6 +97,19 @@ function Profile() {
           </div>
           <p className="montserrat medium text-[28px] leading-[0px]">
             Creating game room!
+          </p>
+        </div>
+      )}
+      {initialLoading && (
+        <div className="relative z-moreinfinite kahoot-container">
+          <div className="kahoot-spinner">
+            <div />
+            <div />
+            <div />
+            <div />
+          </div>
+          <p className="montserrat medium text-[28px] leading-[0px]">
+            Loading data...
           </p>
         </div>
       )}
@@ -217,7 +234,16 @@ function Profile() {
               )}
             </div>
             {userGames?.length > 0 && (
-              <p className="text-see-all text-center font-bold cursor-pointer my-[16px] underline">
+              <p
+                onClick={() => {
+                  navigate("/library", {
+                    state: {
+                      routerPrincipal: state.routerPrincipal,
+                    },
+                  });
+                }}
+                className="text-see-all text-center font-bold cursor-pointer my-[16px] underline"
+              >
                 See all ({userGames?.length})
               </p>
             )}
@@ -442,7 +468,6 @@ function Profile() {
                 <button
                   onClick={() => {
                     dispatch(settingKahoot(currentPickedKahoot));
-                    console.log(currentPickedKahoot);
                     navigate("/create", {
                       state: {
                         mode: "edit",
