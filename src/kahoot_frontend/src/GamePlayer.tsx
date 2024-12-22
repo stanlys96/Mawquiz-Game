@@ -548,7 +548,13 @@ function GamePlayer() {
         <div className="bottom-bar-inner flex justify-between w-full items-center h-full">
           <div className="flex gap-x-2 items-center">
             <IoPersonCircle color="black" size="32px" />
-            <p className="font-bold text-[24px] text-black">{nickname}</p>
+            <p className="font-bold text-[24px] text-black">
+              {nickname
+                ? nickname?.length > 8
+                  ? nickname?.slice(0, 8) + "..."
+                  : nickname
+                : principal?.slice(0, 8) + "..."}
+            </p>
           </div>
           <div className="bg-[#333333] flex px-[40px] rounded-[5px] py-[5px] justify-center items-center">
             <p className="font-bold text-[20px]">{totalScore ?? 0}</p>

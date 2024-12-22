@@ -1,24 +1,16 @@
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Quiz from "../public/lottie/Study-3.json";
 import TrueOrFalse from "../public/lottie/Study-2.json";
 import TypeAnswer from "../public/lottie/Study.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
-import { MdHexagon } from "react-icons/md";
 import { FaAdjust, FaCircle, FaSquareFull, FaCheck } from "react-icons/fa";
-import { useSpring, animated } from "@react-spring/web";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
-import { io } from "socket.io-client";
-import {
-  getOrdinalSuffix,
-  getScoreLeaderboardHeight,
-  getSocket,
-} from "./helper/helper";
+import { getOrdinalSuffix, getScoreLeaderboardHeight } from "./helper/helper";
 import Confetti from "react-confetti";
-import { Fireworks } from "fireworks-js";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {
   const [currentValue, setCurrentValue] = useState(from);
@@ -47,10 +39,9 @@ const AnimatedNumber = ({ from, to, duration }: any) => {
   );
 };
 
-function ShowQuizTitle() {
+function SoloGame() {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-  const socket = getSocket();
   const { search, state } = useLocation();
   const [showTitle, setShowTitle] = useState(false);
   const [count, setCount] = useState(-1);
@@ -64,15 +55,22 @@ function ShowQuizTitle() {
   const [questionFinished, setQuestionFinished] = useState(false);
   const [leaderboardState, setLeaderboardState] = useState(false);
   const [gameFinished, setGameFinished] = useState(false);
+  const [currentAnswer, setCurrentAnswer] = useState<any>(-1);
+  const [typeAnswer, setTypeAnswer] = useState("");
+  const [currentScore, setCurrentScore] = useState(0);
+  const [previousScore, setPreviousScore] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
 
   const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
     useSelector((state: any) => state.user);
   const [uniquePlayers, setUniquePlayers] = useState(currentUniquePlayers);
   const [playerAnswers, setPlayerAnswers] = useState<any>([]);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [answerStreak, setAnswerStreak] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   const queryParams = new URLSearchParams(search);
-  const gamePin = queryParams.get("gamePin");
-
+  const gamePin = queryParams.get("gameId");
   const variants = {
     hidden: { scale: 0, opacity: 0 },
     visible: { scale: 1, opacity: 1 },
@@ -84,93 +82,125 @@ function ShowQuizTitle() {
   const uniquePlayersSorted = [...uniquePlayers]?.sort(
     (a: any, b: any) => (b?.totalScore ?? 0) - (a?.totalScore ?? 0)
   );
+  const MAX_SCORE = 1000;
+  const MAX_TIME_MS = currentKahootQuestion?.timeLimit * 1000;
+  const handleAnswer = useCallback(
+    (theAnswer: any) => {
+      if (currentAnswer !== -1) return;
+      const currentTime = Date.now();
+      setCount(0);
+      const timeTaken = currentTime - (startTime ?? 0);
+      const isCorrect = checkAnswer(theAnswer);
+      if (isCorrect) {
+        setAnswerStreak((prevState) => prevState + 1);
+      } else {
+        setAnswerStreak(0);
+      }
+      setCurrentAnswer(theAnswer);
+      if (startTime && isCorrect) {
+        setElapsedTime(timeTaken);
+        setCurrentScore(calculateScore(timeTaken));
+        setTotalScore((prevState) => {
+          return prevState + calculateScore(timeTaken);
+        });
+      }
+    },
+    [
+      currentAnswer,
+      answerStreak,
+      totalScore,
+      elapsedTime,
+      previousScore,
+      typeAnswer,
+      startTime,
+    ]
+  );
 
+  const checkAnswer = useCallback(
+    (theAnswer: any): boolean => {
+      if (currentKahootQuestion?.questionType === "Quiz") {
+        if (currentKahootQuestion?.answer1Clicked && theAnswer === 0) {
+          return true;
+        }
+        if (currentKahootQuestion?.answer2Clicked && theAnswer === 1) {
+          return true;
+        }
+        if (currentKahootQuestion?.answer3Clicked && theAnswer === 2) {
+          return true;
+        }
+        if (currentKahootQuestion?.answer4Clicked && theAnswer === 3) {
+          return true;
+        }
+        return false;
+      }
+      if (currentKahootQuestion?.questionType === "True or false") {
+        if (
+          currentKahootQuestion?.trueOrFalseAnswer === "true" &&
+          theAnswer === 0
+        ) {
+          return true;
+        }
+        if (
+          currentKahootQuestion?.trueOrFalseAnswer === "false" &&
+          theAnswer === 1
+        ) {
+          return true;
+        }
+        return false;
+      }
+      if (currentKahootQuestion?.questionType === "Type answer") {
+        if (currentKahootQuestion?.additionalAnswers === 0) {
+          return currentKahootQuestion?.text1 === typeAnswer;
+        }
+        if (currentKahootQuestion?.additionalAnswers === 1) {
+          return (
+            currentKahootQuestion?.text1 === typeAnswer ||
+            currentKahootQuestion?.text2 === typeAnswer
+          );
+        }
+        if (currentKahootQuestion?.additionalAnswers === 2) {
+          return (
+            currentKahootQuestion?.text1 === typeAnswer ||
+            currentKahootQuestion?.text2 === typeAnswer ||
+            currentKahootQuestion?.text3 === typeAnswer
+          );
+        }
+        if (currentKahootQuestion?.additionalAnswers === 3) {
+          return (
+            currentKahootQuestion?.text1 === typeAnswer ||
+            currentKahootQuestion?.text2 === typeAnswer ||
+            currentKahootQuestion?.text3 === typeAnswer ||
+            currentKahootQuestion?.text4 === typeAnswer
+          );
+        }
+        return false;
+      }
+      return false;
+    },
+    [currentKahootQuestion, currentAnswer, typeAnswer]
+  );
+  const calculateScore = useCallback(
+    (elapsedTime: number): number => {
+      if (elapsedTime > MAX_TIME_MS) return 0;
+      return Math.max(
+        0,
+        Math.round(MAX_SCORE * (1 - elapsedTime / MAX_TIME_MS))
+      );
+    },
+    [MAX_SCORE, MAX_TIME_MS]
+  );
+
+  const startQuestion = useCallback(() => {
+    setStartTime(Date.now());
+    setCurrentScore(0);
+    setElapsedTime(0);
+    setCurrentAnswer(-1);
+  }, [startTime, elapsedTime, currentScore, currentAnswer]);
   useEffect(() => {
     if (!state?.routerPrincipal) {
       navigate("/");
       return;
     }
-    socket.emit("join_game", { gamePin: gamePin });
-
-    socket.on("player_joined", (data: any) => {
-      const thePlayer = {
-        ...data.thePlayer,
-        totalScore: 0,
-        currentScore: 0,
-        questionIndex: currentQuestionIndex,
-        previousScore: 0,
-        answer: -1,
-      };
-      setUniquePlayers((prevState: any) => {
-        for (let i = 0; i < prevState.length; i++) {
-          if (prevState[i]?.owner === thePlayer?.owner) {
-            return prevState;
-          }
-        }
-        return [...prevState, thePlayer];
-      });
-    });
-    socket.on("player_left", (data: any) => {
-      setUniquePlayers((prevState: any) => {
-        const findIndex = prevState?.find(
-          (thePlayer: any) => thePlayer?.owner === data?.principal
-        );
-        if (findIndex) {
-          let temp = [...prevState];
-          temp.splice(findIndex, 1);
-          return temp;
-        }
-        return prevState;
-      });
-    });
-    socket.on("player_answer", (data: any) => {
-      setPlayerAnswers((prevState: any) => {
-        const findPrincipal = prevState?.find(
-          (theState: any) => theState?.principal === data?.principal
-        );
-        if (findPrincipal) {
-          return prevState;
-        }
-        return [
-          ...prevState,
-          { principal: data.principal, answer: data.answer },
-        ];
-      });
-      setUniquePlayers((prevState: any) => {
-        const findPrincipal = prevState?.findIndex(
-          (theState: any) => theState?.owner === data?.principal
-        );
-        if (findPrincipal !== -1) {
-          const updatedState = prevState.map((player: any, index: number) => {
-            if (index === findPrincipal) {
-              return {
-                ...player,
-                totalScore: data?.totalScore ?? 0,
-                currentScore: data?.currentScore ?? 0,
-                questionIndex: data?.questionIndex ?? 0,
-                previousScore: data?.previousScore ?? 0,
-                answer: data?.answer ?? 0,
-                nickname: data?.nickname ?? "",
-              };
-            }
-            return player;
-          });
-          return updatedState;
-        }
-        return [
-          ...prevState,
-          {
-            owner: data?.principal ?? "",
-            principal: data?.principal ?? "",
-            totalScore: data?.currentScore ?? 0,
-            currentScore: data?.currentScore ?? 0,
-            questionIndex: currentQuestionIndex ?? 0,
-            previousScore: data?.previousScore ?? 0,
-            nickname: data?.nickname ?? "",
-          },
-        ];
-      });
-    });
   }, []);
 
   useEffect(() => {
@@ -204,6 +234,7 @@ function ShowQuizTitle() {
             setShowGameData(false);
             setShowQuestion(true);
             setCurrentTimeLimit(currentKahootQuestion?.timeLimit);
+            startQuestion();
             return 100;
           }
           return nextValue;
@@ -254,41 +285,22 @@ function ShowQuizTitle() {
 
   useEffect(() => {
     if (currentTimeLimit > 1) {
+      if (currentAnswer !== -1) {
+        setCurrentTimeLimit(0);
+        setQuestionFinished(true);
+      }
       const timer = setTimeout(() => {
         setCurrentTimeLimit((prevState) => prevState - 1);
       }, 1000);
-      if (playerAnswers?.length === uniquePlayers?.length) {
-        setQuestionFinished(true);
-        setCurrentTimeLimit(0);
-        socket.emit("question_finished", { gamePin });
-      }
       return () => clearTimeout(timer);
     } else if (currentTimeLimit === 1) {
       const timer = setTimeout(() => {
         setCurrentTimeLimit((prevState) => prevState - 1);
         setQuestionFinished(true);
-        socket.emit("question_finished", { gamePin });
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentTimeLimit, playerAnswers, uniquePlayers]);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const fireworks = new Fireworks(containerRef.current, {
-        rocketsPoint: {
-          min: 50,
-          max: 50,
-        },
-        hue: { min: 0, max: 360 },
-        delay: { min: 15, max: 30 },
-        particles: 50,
-      });
-
-      fireworks.start();
-      return () => fireworks.stop();
-    }
-  }, [containerRef]);
+  }, [currentTimeLimit, playerAnswers, uniquePlayers, currentAnswer]);
 
   return (
     <div className="waiting-game overflow-hidden relative bg-black/10">
@@ -435,7 +447,7 @@ function ShowQuizTitle() {
           </div>
           <button></button>
           <div className="absolute z-infinite top-[55%] md:top-1/2 flex justify-center items-center flex-col right-[10px] font-bold rounded-full -translate-y-1/2">
-            <p className="answer-round">{playerAnswers?.length}</p>
+            <p className="answer-round">{currentAnswer !== -1 ? 1 : 0}</p>
             <p className="answer-title-round">Answers</p>
           </div>
           <div className="bg-white text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
@@ -445,7 +457,7 @@ function ShowQuizTitle() {
             <div className="absolute inset-0 bg-black/50"></div>
           )}
           {!questionFinished && showQuestion ? (
-            <div className="img-container flex justify-center items-center">
+            <div className="img-container-answer gap-y-[100px] flex justify-center items-center">
               {currentKahootQuestion?.imageUrl &&
                 currentKahootQuestion?.imageUrl !== "cdn.svg" && (
                   <img
@@ -453,6 +465,47 @@ function ShowQuizTitle() {
                     className="w-[300px] md:w-[400px] h-[250px]"
                   />
                 )}
+              {currentKahootQuestion?.questionType === "Type answer" && (
+                <div className="h-fit pb-[10vh] flex flex-col gap-y-4 justify-center items-center px-[20px]">
+                  <div className="question-div">
+                    <div
+                      className={`question-answer-full ${
+                        typeAnswer?.length > 0 && "bg-blue"
+                      }`}
+                    >
+                      <div className="question-sub-inner-div">
+                        <div className="question-1-div-answer">
+                          <div className="question-2-div">
+                            <input
+                              maxLength={20}
+                              value={typeAnswer}
+                              onChange={(e) => {
+                                setTypeAnswer(e.target.value);
+                              }}
+                              placeholder="Type an answer"
+                              className={`${
+                                typeAnswer?.length > 0
+                                  ? "text-white"
+                                  : "text-black"
+                              } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                              type="text"
+                            />
+                            <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
+                              {20 - typeAnswer?.length}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleAnswer(typeAnswer)}
+                    className="type-submit-button text-center md:w-[300px] w-[50vw]"
+                  >
+                    Submit
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="ranking-container">
@@ -463,21 +516,20 @@ function ShowQuizTitle() {
                       <div className="the-answer">
                         <div
                           style={{
-                            height: `${getScoreLeaderboardHeight(
-                              uniquePlayers,
-                              0
-                            )}%`,
+                            height: currentAnswer === 0 ? "100%" : "0%",
                           }}
                           className="red-answer-inner the-red-answer-bg"
                         ></div>
                       </div>
                       <div className="bottom-answer-inner the-red-darker-answer-bg gap-x-1">
                         <IoTriangleSharp size="12px" />{" "}
-                        {uniquePlayers?.filter(
-                          (theUser: any) => theUser?.answer === 0
-                        )?.length ?? 0}
-                        {currentKahootQuestion?.answer1Clicked && (
-                          <FaCheck size="12px" />
+                        {currentKahootQuestion?.answer1Clicked ? (
+                          <div className="flex gap-x-2 items-center">
+                            1
+                            <FaCheck size="12px" />
+                          </div>
+                        ) : (
+                          "0"
                         )}
                       </div>
                     </div>
@@ -485,21 +537,20 @@ function ShowQuizTitle() {
                       <div className="the-answer">
                         <div
                           style={{
-                            height: `${getScoreLeaderboardHeight(
-                              uniquePlayers,
-                              1
-                            )}%`,
+                            height: currentAnswer === 1 ? "100%" : "0%",
                           }}
                           className="red-answer-inner the-blue-answer-bg"
                         ></div>
                       </div>
                       <div className="bottom-answer-inner the-blue-darker-answer-bg gap-x-1">
                         <FaAdjust size="12px" />
-                        {uniquePlayers?.filter(
-                          (theUser: any) => theUser?.answer === 1
-                        ).length ?? 0}{" "}
-                        {currentKahootQuestion?.answer2Clicked && (
-                          <FaCheck size="12px" />
+                        {currentKahootQuestion?.answer2Clicked ? (
+                          <div className="flex gap-x-2 items-center">
+                            1
+                            <FaCheck size="12px" />
+                          </div>
+                        ) : (
+                          "0"
                         )}
                       </div>
                     </div>
@@ -508,21 +559,20 @@ function ShowQuizTitle() {
                         <div className="the-answer">
                           <div
                             style={{
-                              height: `${getScoreLeaderboardHeight(
-                                uniquePlayers,
-                                2
-                              )}%`,
+                              height: currentAnswer === 2 ? "100%" : "0%",
                             }}
                             className="red-answer-inner the-orange-answer-bg"
                           ></div>
                         </div>
                         <div className="bottom-answer-inner the-orange-darker-answer-bg gap-x-1">
                           <FaCircle size="12px" />
-                          {uniquePlayers?.filter(
-                            (theUser: any) => theUser?.answer === 2
-                          ).length ?? 0}{" "}
-                          {currentKahootQuestion?.answer3Clicked && (
-                            <FaCheck size="12px" />
+                          {currentKahootQuestion?.answer3Clicked ? (
+                            <div className="flex gap-x-2 items-center">
+                              1
+                              <FaCheck size="12px" />
+                            </div>
+                          ) : (
+                            "0"
                           )}
                         </div>
                       </div>
@@ -532,21 +582,20 @@ function ShowQuizTitle() {
                         <div className="the-answer">
                           <div
                             style={{
-                              height: `${getScoreLeaderboardHeight(
-                                uniquePlayers,
-                                3
-                              )}%`,
+                              height: currentAnswer === 3 ? "100%" : "0%",
                             }}
                             className="red-answer-inner the-green-answer-bg"
                           ></div>
                         </div>
                         <div className="bottom-answer-inner the-green-darker-answer-bg gap-x-1">
                           <FaSquareFull size="12px" />
-                          {uniquePlayers?.filter(
-                            (theUser: any) => theUser?.answer === 3
-                          ).length ?? 0}{" "}
-                          {currentKahootQuestion?.answer4Clicked && (
-                            <FaCheck size="12px" />
+                          {currentKahootQuestion?.answer4Clicked ? (
+                            <div className="flex gap-x-2 items-center">
+                              1
+                              <FaCheck size="12px" />
+                            </div>
+                          ) : (
+                            "0"
                           )}
                         </div>
                       </div>
@@ -559,19 +608,14 @@ function ShowQuizTitle() {
                       <div className="the-answer">
                         <div
                           style={{
-                            height: `${getScoreLeaderboardHeight(
-                              uniquePlayers,
-                              0
-                            )}%`,
+                            height: currentAnswer === 0 ? "100%" : "0%",
                           }}
                           className="red-answer-inner the-blue-answer-bg"
                         ></div>
                       </div>
                       <div className="bottom-answer-inner the-blue-darker-answer-bg gap-x-1">
                         <FaAdjust size="12px" />
-                        {uniquePlayers?.filter(
-                          (theUser: any) => theUser?.answer === 0
-                        ).length ?? 0}{" "}
+                        {currentAnswer === 0 ? "1" : "0"}
                         {currentKahootQuestion?.trueOrFalseAnswer ===
                           "true" && <FaCheck size="12px" />}
                       </div>
@@ -580,19 +624,14 @@ function ShowQuizTitle() {
                       <div className="the-answer">
                         <div
                           style={{
-                            height: `${getScoreLeaderboardHeight(
-                              uniquePlayers,
-                              1
-                            )}%`,
+                            height: currentAnswer === 1 ? "100%" : "0%",
                           }}
                           className="red-answer-inner the-red-answer-bg"
                         ></div>
                       </div>
                       <div className="bottom-answer-inner the-red-darker-answer-bg gap-x-1">
                         <IoTriangleSharp size="12px" />{" "}
-                        {uniquePlayers?.filter(
-                          (theUser: any) => theUser?.answer === 1
-                        )?.length ?? 0}
+                        {currentAnswer === 1 ? "1" : "0"}
                         {currentKahootQuestion?.trueOrFalseAnswer ===
                           "false" && <FaCheck size="12px" />}
                       </div>
@@ -651,13 +690,16 @@ function ShowQuizTitle() {
             <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px] pb-[25px]">
               {currentKahootQuestion?.text1 && (
                 <div
+                  onClick={() => {
+                    handleAnswer(0);
+                  }}
                   className={`${
                     questionFinished
                       ? !currentKahootQuestion?.answer1Clicked
                         ? "opacity-65"
                         : ""
                       : ""
-                  } answer-div bg-red flex justify-between items-center gap-x-[10px]`}
+                  } cursor-pointer answer-div bg-red flex justify-between items-center gap-x-[10px]`}
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <IoTriangleSharp size="32px" />
@@ -674,13 +716,16 @@ function ShowQuizTitle() {
               )}
               {currentKahootQuestion?.text2 && (
                 <div
+                  onClick={() => {
+                    handleAnswer(1);
+                  }}
                   className={`${
                     questionFinished
                       ? !currentKahootQuestion?.answer2Clicked
                         ? "opacity-65"
                         : ""
                       : ""
-                  } answer-div bg-blue flex justify-between items-center gap-x-[10px]`}
+                  } cursor-pointer answer-div bg-blue flex justify-between items-center gap-x-[10px]`}
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaAdjust size="32px" />
@@ -697,13 +742,16 @@ function ShowQuizTitle() {
               )}
               {currentKahootQuestion?.text3 && (
                 <div
+                  onClick={() => {
+                    handleAnswer(2);
+                  }}
                   className={`${
                     questionFinished
                       ? !currentKahootQuestion?.answer3Clicked
                         ? "opacity-65"
                         : ""
                       : ""
-                  } answer-div bg-orange flex justify-between items-center gap-x-[10px]`}
+                  } cursor-pointer answer-div bg-orange flex justify-between items-center gap-x-[10px]`}
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaCircle size="32px" />
@@ -720,13 +768,16 @@ function ShowQuizTitle() {
               )}
               {currentKahootQuestion?.text4 && (
                 <div
+                  onClick={() => {
+                    handleAnswer(3);
+                  }}
                   className={`${
                     questionFinished
                       ? !currentKahootQuestion?.answer4Clicked
                         ? "opacity-65"
                         : ""
                       : ""
-                  } answer-div bg-dark-green flex justify-between items-center gap-x-[10px]`}
+                  } cursor-pointer answer-div bg-dark-green flex justify-between items-center gap-x-[10px]`}
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaSquareFull size="32px" />
@@ -746,13 +797,16 @@ function ShowQuizTitle() {
           {currentKahootQuestion?.questionType === "True or false" && (
             <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px] pb-[25px]">
               <div
+                onClick={() => {
+                  handleAnswer(0);
+                }}
                 className={`${
                   questionFinished
                     ? currentKahootQuestion?.trueOrFalseAnswer === "false"
                       ? "opacity-65"
                       : ""
                     : ""
-                } answer-div bg-blue flex justify-between items-center gap-x-[10px]`}
+                } cursor-pointer answer-div bg-blue flex justify-between items-center gap-x-[10px]`}
               >
                 <div className="flex gap-x-2 items-center ml-[10px]">
                   <FaAdjust size="32px" />
@@ -767,13 +821,16 @@ function ShowQuizTitle() {
                 ) : null}
               </div>
               <div
+                onClick={() => {
+                  handleAnswer(1);
+                }}
                 className={`${
                   questionFinished
                     ? currentKahootQuestion?.trueOrFalseAnswer === "true"
                       ? "opacity-65"
                       : ""
                     : ""
-                } answer-div bg-red flex justify-between items-center gap-x-[10px]`}
+                } cursor-pointer answer-div bg-red flex justify-between items-center gap-x-[10px]`}
               >
                 <div className="flex gap-x-2 items-center ml-[10px]">
                   <IoTriangleSharp size="32px" />
@@ -793,9 +850,9 @@ function ShowQuizTitle() {
             <p className="absolute left-[10px]">
               {currentQuestionIndex + 1}/{theKahootQuestions?.length}
             </p>
-            <p className="">
-              Game PIN: <span className="font-bold">{gamePin}</span>
-            </p>
+            <div className="bg-[#333333] absolute right-[10px] flex px-[40px] rounded-[5px] py-[5px] justify-center items-center">
+              <p className="font-bold text-[20px]">{totalScore ?? 0}</p>
+            </div>
           </div>
         </div>
       ) : !gameFinished ? (
@@ -803,13 +860,10 @@ function ShowQuizTitle() {
           <button
             onClick={() => {
               if (currentQuestionIndex < theKahootQuestions?.length - 1) {
-                socket.emit("question_restarted", {
-                  gamePin,
-                  questionIndex: currentQuestionIndex + 1,
-                });
                 setLeaderboardState(false);
                 setShowQuestion(false);
                 setQuestionFinished(false);
+                setPreviousScore(totalScore);
                 setCurrentQuestionIndex((prevState: any) => prevState + 1);
                 setUniquePlayers((prevState: any) => {
                   const updatedState = prevState.map((player: any) => {
@@ -830,13 +884,9 @@ function ShowQuizTitle() {
                 }, 2500);
               } else {
                 setGameFinished(true);
-                socket.emit("game_finished", {
-                  gamePin,
-                  uniquePlayers: uniquePlayersSorted,
-                });
               }
             }}
-            className="custom-button-small z-infinite absolute top-[1%] md:top-[20px] right-2 z-infinite"
+            className="custom-button-small z-infinite absolute top-[2%] md:top-[20px] right-2 z-infinite"
           >
             Next
           </button>
@@ -844,33 +894,29 @@ function ShowQuizTitle() {
             Scoreboard
           </div>
           <div className="flex flex-col gap-y-5 overflow-y-auto w-full justify-start items-center mb-[25px]">
-            {uniquePlayersSorted?.length > 0 &&
-              Array.isArray(uniquePlayersSorted) &&
-              uniquePlayersSorted?.map((userScore: any) => (
-                <div className="w-[90vw] flex justify-between items-center rounded-[8px] p-[20px] md:w-[80vw] dark-purple-bg">
-                  <div className="flex gap-x-2 items-center">
-                    <IoPersonCircle size="40px" />
-                    <p className="text-[26px]">
-                      {userScore?.nickname?.length > 25
-                        ? userScore?.nickname?.slice(0, 25) + "..."
-                        : userScore?.nickname}
-                    </p>
-                  </div>
-                  <AnimatedNumber
-                    from={userScore?.previousScore}
-                    to={userScore?.totalScore}
-                    duration={2000}
-                  />
-                </div>
-              ))}
+            <div className="w-[90vw] flex justify-between items-center rounded-[8px] p-[20px] md:w-[80vw] dark-purple-bg">
+              <div className="flex gap-x-2 items-center">
+                <IoPersonCircle size="40px" />
+                <p className="text-[26px]">
+                  {nickname?.length > 25
+                    ? nickname?.slice(0, 25) + "..."
+                    : nickname}
+                </p>
+              </div>
+              <AnimatedNumber
+                from={previousScore}
+                to={totalScore}
+                duration={2000}
+              />
+            </div>
           </div>
           <div className="mt-auto bottomest relative flex justify-center items-center gap-x-[25px] w-full">
             <p className="absolute left-[10px]">
               {currentQuestionIndex + 1}/{theKahootQuestions?.length}
             </p>
-            <p className="">
-              Game PIN: <span className="font-bold">{gamePin}</span>
-            </p>
+            <div className="bg-[#333333] absolute right-[10px] flex px-[40px] rounded-[5px] py-[5px] justify-center items-center">
+              <p className="font-bold text-[20px]">{totalScore ?? 0}</p>
+            </div>
           </div>
         </div>
       ) : (
@@ -897,31 +943,29 @@ function ShowQuizTitle() {
             gravity={0.3}
           />
           <div className="flex flex-col gap-y-5 overflow-y-auto w-full justify-start items-center mb-[25px]">
-            {uniquePlayersSorted?.length > 0 &&
-              Array.isArray(uniquePlayersSorted) &&
-              uniquePlayersSorted?.map((userScore: any, index: any) => (
-                <div className="w-[90vw] flex justify-between items-center rounded-[8px] p-[20px] md:w-[80vw] dark-purple-bg">
-                  <div className="flex gap-x-2 items-center">
-                    <IoPersonCircle size="40px" />
-                    <p className="text-[26px]">
-                      {userScore?.nickname?.length > 25
-                        ? userScore?.nickname?.slice(0, 25) + "..."
-                        : userScore?.nickname}
-                    </p>
-                  </div>
-                  <p className="text-[26px] font-bold">
-                    {getOrdinalSuffix(index + 1)} place
-                  </p>
-                </div>
-              ))}
+            <div className="w-[90vw] flex justify-between items-center rounded-[8px] p-[20px] md:w-[80vw] dark-purple-bg">
+              <div className="flex gap-x-2 items-center">
+                <IoPersonCircle size="40px" />
+                <p className="text-[26px]">
+                  {nickname?.length > 25
+                    ? nickname?.slice(0, 25) + "..."
+                    : nickname}
+                </p>
+              </div>
+              <AnimatedNumber
+                from={totalScore}
+                to={totalScore}
+                duration={2000}
+              />
+            </div>
           </div>
           <div className="mt-auto bottomest relative flex justify-center items-center gap-x-[25px] w-full">
             <p className="absolute left-[10px]">
               {currentQuestionIndex + 1}/{theKahootQuestions?.length}
             </p>
-            <p className="">
-              Game PIN: <span className="font-bold">{gamePin}</span>
-            </p>
+            <div className="bg-[#333333] absolute right-[10px] flex px-[40px] rounded-[5px] py-[5px] justify-center items-center">
+              <p className="font-bold text-[20px]">{totalScore ?? 0}</p>
+            </div>
           </div>
         </div>
       )}
@@ -929,4 +973,4 @@ function ShowQuizTitle() {
   );
 }
 
-export default ShowQuizTitle;
+export default SoloGame;

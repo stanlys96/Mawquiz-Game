@@ -501,7 +501,15 @@ function Profile() {
                 </button>
                 <button
                   onClick={() => {
-                    setIsOpenModalKahoot(false);
+                    dispatch(settingKahoot(currentPickedKahoot));
+                    navigate(
+                      `/solo-game?gameId=${currentPickedKahoot?.gamePin}`,
+                      {
+                        state: {
+                          routerPrincipal: state.routerPrincipal,
+                        },
+                      }
+                    );
                   }}
                   className="the-orange-answer-bg shadow-md min-h-[42px] min-w-[42px] rounded-[4px] px-[16px] relative"
                 >

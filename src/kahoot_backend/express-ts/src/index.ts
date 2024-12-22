@@ -1,4 +1,4 @@
-import express, { Request, Application } from "express";
+import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
@@ -58,7 +58,6 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-const quizzes: any = {};
 const games: any = {};
 
 app.post(
@@ -106,22 +105,6 @@ app.post("/pinJSONToIPFS", async (req: any, res: any) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error pinning JSON to IPFS");
-  }
-});
-
-app.post("/quizzes", (req: any, res: any) => {
-  const { title, questions } = req.body;
-  const quizId = Date.now().toString();
-  quizzes[quizId] = { title, questions };
-  res.json({ quizId, message: "Quiz created successfully" });
-});
-
-app.get("/quizzes/:id", (req: any, res: any) => {
-  const quiz = quizzes[req.params.id];
-  if (quiz) {
-    res.json(quiz);
-  } else {
-    res.status(404).json({ message: "Quiz not found" });
   }
 });
 

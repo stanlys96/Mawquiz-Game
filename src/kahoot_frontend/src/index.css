@@ -3904,6 +3904,21 @@ html {
   flex: 1;
 }
 
+.img-container-answer {
+  flex-direction: column;
+  -webkit-box-pack: center;
+  justify-content: center;
+  padding: 1rem 1rem 0px;
+  width: auto;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  min-height: 0px;
+  position: relative;
+  /* height: 100%; */
+  flex: 1;
+}
+
 .ranking-sub-container {
   display: flex;
   flex-direction: column;
