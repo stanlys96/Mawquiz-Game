@@ -333,7 +333,7 @@ function SoloGame() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="w-full bg-white text-black py-[24px] text-[48px] font-bold"
+              className="w-[95%] md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[48px] font-bold"
             >
               {currentPickedKahoot?.title}
             </motion.button>
@@ -382,7 +382,7 @@ function SoloGame() {
                     animationData={GameFinished}
                   />
                 )}
-                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center">
+                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
                   {showDrumRoll
                     ? "Drum roll...."
                     : currentKahootQuestion?.questionType}

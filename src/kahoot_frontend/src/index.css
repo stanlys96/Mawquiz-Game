@@ -3733,6 +3733,7 @@ html {
   height: 30vh;
   background-color: #47178f;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .circle-countdown-container {

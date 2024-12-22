@@ -102,6 +102,7 @@ function ShowQuizTitle() {
         questionIndex: currentQuestionIndex,
         previousScore: 0,
         answer: -1,
+        answered: false,
       };
       setUniquePlayers((prevState: any) => {
         for (let i = 0; i < prevState.length; i++) {
@@ -113,6 +114,17 @@ function ShowQuizTitle() {
       });
     });
     socket.on("player_left", (data: any) => {
+      setPlayerAnswers((prevState: any) => {
+        const findPrincipalIndex = prevState?.findIndex(
+          (theState: any) => theState?.principal === data?.principal
+        );
+        if (findPrincipalIndex) {
+          let temp = [...prevState];
+          temp.splice(findPrincipalIndex, 1);
+          return temp;
+        }
+        return prevState;
+      });
       setUniquePlayers((prevState: any) => {
         const findIndex = prevState?.find(
           (thePlayer: any) => thePlayer?.owner === data?.principal
@@ -235,6 +247,16 @@ function ShowQuizTitle() {
         setCount(3);
       }, 3000);
     }, 1500);
+
+    const handleBeforeUnload = (event: any) => {
+      socket.emit("admin_left", { gamePin: gamePin });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   useEffect(() => {
@@ -318,7 +340,7 @@ function ShowQuizTitle() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="w-full bg-white text-black py-[24px] text-[48px] font-bold"
+              className="w-[95%] md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[48px] font-bold"
             >
               {currentPickedKahoot?.title}
             </motion.button>
@@ -367,7 +389,7 @@ function ShowQuizTitle() {
                     animationData={GameFinished}
                   />
                 )}
-                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center">
+                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
                   {showDrumRoll
                     ? "Drum roll...."
                     : currentKahootQuestion?.questionType}

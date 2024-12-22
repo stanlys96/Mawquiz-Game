@@ -22,15 +22,7 @@ const io = new Server(server, {
 const corsOptions = {
   origin: [
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
-    "http://localhost:3000",
-    "https://identity.ic0.app",
-    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=cs3lg-sqaaa-aaaac-aac3a-cai",
-    "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
-    "https://mawquiz-backend-production.up.railway.app",
     "https://smart-marketplace-web3.vercel.app",
-    "smart-marketplace-web3.vercel.app",
-    "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
-    "cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -119,15 +111,6 @@ app.post("/games", (req: any, res: any) => {
   }
 });
 
-app.get("/games/:gamePin", (req: any, res: any) => {
-  const game = games[req.params.gamePin];
-  if (game) {
-    res.json(game);
-  } else {
-    res.status(404).json({ message: "Game not found" });
-  }
-});
-
 app.post("/joinGame/:gamePin", (req: any, res: any) => {
   const game = games[req.params.gamePin];
   if (!game) {
@@ -168,31 +151,6 @@ io.on("connection", (socket: any) => {
   console.log(`Someone just connected: ${socket.id}`);
   socket.on("join_game", ({ gamePin, thePlayer }: any) => {
     socket.join(gamePin);
-  });
-
-  socket.on("submit_answer", ({ pin, answer }: any) => {
-    const game = games[pin];
-    if (!game) return;
-
-    const currentQuestion = game.quiz.questions[game.currentQuestion];
-    const correctAnswer = currentQuestion.correctAnswer;
-
-    const player = game.players[socket.id];
-    if (player) {
-      if (answer === correctAnswer) {
-        player.score += 10;
-      }
-
-      const leaderboard = Object.values(game.players).map((p: any) => ({
-        name: p.name,
-        score: p.score,
-      }));
-      io.to(pin).emit("leaderboard_update", leaderboard);
-    }
-  });
-
-  socket.on("startGame", ({ gamePin, questions }: any) => {
-    io.to(gamePin).emit("gameStarted", questions);
   });
 
   socket.on("disconnect", () => {});
