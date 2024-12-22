@@ -29,6 +29,10 @@ function Library() {
   }, []);
 
   useEffect(() => {
+    if (!state?.routerPrincipal) {
+      navigate("/");
+      return;
+    }
     if (principal && backend) {
       setLoading(true);
       backend
