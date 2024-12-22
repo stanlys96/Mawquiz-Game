@@ -189,7 +189,7 @@ function Home() {
         </div>
         <div className="mt-[40px]">
           <p className="text-center">
-            Create your own kahoot for FREE{" "}
+            Create your own mawquiz for FREE{" "}
             <a
               onClick={async () => {
                 navigate("/profile", {

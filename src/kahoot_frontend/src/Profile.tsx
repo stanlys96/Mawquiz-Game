@@ -185,7 +185,7 @@ function Profile() {
                       : "text-ordinary"
                   } cursor-pointer font-semibold kahoot-text`}
                 >
-                  Your kahoots
+                  Your mawquizes
                 </p>
               </div>
             </div>
@@ -272,7 +272,7 @@ function Profile() {
                     />
                   </span>
                 </div>
-                <div className="card-desc text-black">Create a new kahoot</div>
+                <div className="card-desc text-black">Create a new mawquiz</div>
               </div>
             </a>
           </div>

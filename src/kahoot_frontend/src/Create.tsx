@@ -389,7 +389,7 @@ function Create() {
                 }}
                 className="kahoot-btn-title font-semibold"
               >
-                {!kahootTitle ? "Enter kahoot title..." : kahootTitle}
+                {!kahootTitle ? "Enter mawquiz title..." : kahootTitle}
               </button>
               <button
                 onClick={() => {
@@ -438,7 +438,7 @@ function Create() {
                 }}
                 className="kahoot-btn-title font-semibold"
               >
-                {!kahootTitle ? "Enter kahoot title..." : kahootTitle}
+                {!kahootTitle ? "Enter mawquiz title..." : kahootTitle}
               </button>
               <button
                 onClick={() => {
@@ -2477,7 +2477,7 @@ function Create() {
                   Title
                 </p>
                 <p className="text-black text-left">
-                  Enter a title for your kahoot.
+                  Enter a title for your mawquiz.
                 </p>
                 <div className="relative">
                   <input
@@ -2498,7 +2498,7 @@ function Create() {
                   <span className="text-[#6E6E6E] font-normal">(optional)</span>
                 </p>
                 <p className="text-black text-left">
-                  Provide a short description for your kahoot to increase
+                  Provide a short description for your mawquiz to increase
                   visibility.
                 </p>
                 <div className="relative">
@@ -2628,7 +2628,7 @@ function Create() {
             >
               <div className="mt-[24px] px-[16px] md:px-[32px]">
                 <p className="text-gray mb-[12px] text-[24px] font-bold text-left">
-                  This kahoot can't be played
+                  This mawquiz can't be played
                 </p>
                 <p className="text-black text-left">
                   All questions need to be completed before you can start
