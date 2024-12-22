@@ -32,8 +32,16 @@ import { ImCross } from "react-icons/im";
 import { FiRewind } from "react-icons/fi";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import Confetti from "react-confetti";
+import GameFinished from "../public/lottie/drum-roll.json";
+import Lottie from "lottie-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 function GamePlayer() {
+  const variants = {
+    hidden: { scale: 0, opacity: 0 },
+    visible: { scale: 1, opacity: 1 },
+    exit: { scale: 0, opacity: 0 },
+  };
   const socket = getSocket();
   const navigate = useNavigate();
   const { search, state } = useLocation();
@@ -59,6 +67,8 @@ function GamePlayer() {
   const [answerStreak, setAnswerStreak] = useState(0);
   const [gameFinished, setGameFinished] = useState(false);
   const [theRanking, setTheRanking] = useState(0);
+  const [showDrumRoll, setShowDrumRoll] = useState(false);
+  const [marker, setMarker] = useState(false);
 
   const gamePin = queryParams.get("gameId");
   const theCurrentQuestion = currentQuestions[questionIndex];
@@ -240,8 +250,15 @@ function GamePlayer() {
       }
     );
     socket.on("game_finished", ({ gamePin, uniquePlayers }: any) => {
-      setGameFinished(true);
-      console.log(uniquePlayers);
+      setShowDrumRoll(true);
+      setTimeout(() => {
+        setShowDrumRoll(false);
+        setMarker(true);
+        setTimeout(() => {
+          setGameFinished(true);
+          setMarker(false);
+        }, 500);
+      }, 5000);
       for (let i = 0; i < (uniquePlayers?.length ?? 0); i++) {
         if (
           uniquePlayers[i]?.principal === principal ||
@@ -299,6 +316,29 @@ function GamePlayer() {
             </p>
           </div>
         )}
+        <AnimatePresence mode="wait">
+          {showDrumRoll && (
+            <motion.div
+              key={"Drum roll"}
+              variants={variants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center flex-col gap-y-2 h-full overflow-hidden"
+            >
+              {showDrumRoll && (
+                <Lottie
+                  className="w-[90vw] md:w-[400px]"
+                  animationData={GameFinished}
+                />
+              )}
+              <p className="text-[36px] font-semibold text-center px-[15px]">
+                Drum roll...
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {questionReady && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full relative">
             <p className="text-[60px] font-bold">Question 1</p>
@@ -461,7 +501,7 @@ function GamePlayer() {
               </button>
             </div>
           )}
-        {showQuestion && answer !== -1 && !questionFinished && (
+        {!marker && showQuestion && answer !== -1 && !questionFinished && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full">
             <p className="text-[40px] md:text-[60px] font-bold text-center px-[10px]">
               What a good time!
@@ -479,7 +519,7 @@ function GamePlayer() {
             </p>
           </div>
         )}
-        {questionFinished && !gameFinished && (
+        {!marker && questionFinished && !gameFinished && (
           <div className="flex flex-col gap-y-2 justify-center items-center h-full w-full">
             <p className="text-[36px] font-bold">
               {!checkAnswer(answer) ? "Incorrect!" : "Correct!"}
@@ -537,7 +577,7 @@ function GamePlayer() {
                   },
                 })
               }
-              className="save-button text-center md:w-[300px] w-[50vw]"
+              className="question-btn-game-player text-center md:w-[300px] w-[50vw]"
             >
               Back to lobby
             </button>

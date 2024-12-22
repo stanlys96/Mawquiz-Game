@@ -118,7 +118,7 @@ actor {
   public func updateGame(gamePin: Text, title: Text, description: Text, questions: [Question]): async Bool {
     switch (gameHashMap.get(gamePin)) {
       case (?existingGame) {
-          var result: Game = {
+        var result: Game = {
           owner = existingGame.owner;
           title = title;
           description = description;

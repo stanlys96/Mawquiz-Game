@@ -1,9 +1,10 @@
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import Lottie from "lottie-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Quiz from "../public/lottie/Study-3.json";
-import TrueOrFalse from "../public/lottie/Study-2.json";
-import TypeAnswer from "../public/lottie/Study.json";
+import Quiz from "../public/lottie/quiz-2.json";
+import TrueOrFalse from "../public/lottie/true-or-false.json";
+import TypeAnswer from "../public/lottie/type-answer.json";
+import GameFinished from "../public/lottie/drum-roll.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaAdjust, FaCircle, FaSquareFull, FaCheck } from "react-icons/fa";
@@ -64,6 +65,7 @@ function ShowQuizTitle() {
   const [questionFinished, setQuestionFinished] = useState(false);
   const [leaderboardState, setLeaderboardState] = useState(false);
   const [gameFinished, setGameFinished] = useState(false);
+  const [showDrumRoll, setShowDrumRoll] = useState(false);
 
   const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
     useSelector((state: any) => state.user);
@@ -325,7 +327,7 @@ function ShowQuizTitle() {
             </div>
           )}
           <AnimatePresence mode="wait">
-            {showQuiz && (
+            {(showQuiz || showDrumRoll) && (
               <motion.div
                 key={"Quiz"}
                 variants={variants}
@@ -333,18 +335,38 @@ function ShowQuizTitle() {
                 animate="visible"
                 exit="exit"
                 transition={{ duration: 0.5 }}
+                className="flex justify-center items-center w-full flex-col h-[100vh]"
               >
-                {currentKahootQuestion?.questionType === "Quiz" && (
-                  <Lottie animationData={Quiz} />
+                {!showDrumRoll &&
+                  currentKahootQuestion?.questionType === "Quiz" && (
+                    <Lottie
+                      className="w-[800px]"
+                      width={500}
+                      animationData={Quiz}
+                    />
+                  )}
+                {!showDrumRoll &&
+                  currentKahootQuestion?.questionType === "True or false" && (
+                    <Lottie
+                      className="w-[500px]"
+                      width={1000}
+                      animationData={TrueOrFalse}
+                    />
+                  )}
+                {!showDrumRoll &&
+                  currentKahootQuestion?.questionType === "Type answer" && (
+                    <Lottie animationData={TypeAnswer} />
+                  )}
+                {showDrumRoll && (
+                  <Lottie
+                    className="w-[90vw] md:w-[400px]"
+                    animationData={GameFinished}
+                  />
                 )}
-                {currentKahootQuestion?.questionType === "True or false" && (
-                  <Lottie animationData={TrueOrFalse} />
-                )}
-                {currentKahootQuestion?.questionType === "Type answer" && (
-                  <Lottie animationData={TypeAnswer} />
-                )}
-                <p className="w-full dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center">
-                  {currentKahootQuestion?.questionType}
+                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center">
+                  {showDrumRoll
+                    ? "Drum roll...."
+                    : currentKahootQuestion?.questionType}
                 </p>
               </motion.div>
             )}
@@ -829,11 +851,23 @@ function ShowQuizTitle() {
                   }, 600);
                 }, 2500);
               } else {
-                setGameFinished(true);
+                setShowDrumRoll(true);
+                setLeaderboardState(false);
+                setShowQuestion(false);
+                setQuestionFinished(false);
                 socket.emit("game_finished", {
                   gamePin,
                   uniquePlayers: uniquePlayersSorted,
                 });
+                setTimeout(() => {
+                  setShowDrumRoll(false);
+                  setTimeout(() => {
+                    setLeaderboardState(true);
+                    setGameFinished(true);
+                    setShowQuestion(true);
+                    setQuestionFinished(true);
+                  }, 500);
+                }, 5000);
               }
             }}
             className="custom-button-small z-infinite absolute top-[1%] md:top-[20px] right-2 z-infinite"

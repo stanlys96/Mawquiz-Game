@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Quiz from "../public/lottie/Study-3.json";
-import TrueOrFalse from "../public/lottie/Study-2.json";
-import TypeAnswer from "../public/lottie/Study.json";
+import Quiz from "../public/lottie/quiz-2.json";
+import TrueOrFalse from "../public/lottie/true-or-false.json";
+import TypeAnswer from "../public/lottie/type-answer.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
 import {
   FaAdjust,
@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
 import { getOrdinalSuffix, getScoreLeaderboardHeight } from "./helper/helper";
+import GameFinished from "../public/lottie/drum-roll.json";
 import Confetti from "react-confetti";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {
@@ -74,6 +75,7 @@ function SoloGame() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [answerStreak, setAnswerStreak] = useState(0);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [showDrumRoll, setShowDrumRoll] = useState(false);
 
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gameId");
@@ -273,6 +275,7 @@ function SoloGame() {
       const timer = setTimeout(() => {
         setCount(count - 1);
         setShowQuiz(true);
+        setPreviousScore(totalScore);
         setTimeout(() => {
           setShowQuiz(false);
           setTimeout(() => {
@@ -308,7 +311,6 @@ function SoloGame() {
       return () => clearTimeout(timer);
     }
   }, [currentTimeLimit, playerAnswers, uniquePlayers, currentAnswer]);
-
   return (
     <div className="waiting-game overflow-hidden relative bg-black/10">
       {!showQuestion && (
@@ -344,7 +346,7 @@ function SoloGame() {
             </div>
           )}
           <AnimatePresence mode="wait">
-            {showQuiz && (
+            {(showQuiz || showDrumRoll) && (
               <motion.div
                 key={"Quiz"}
                 variants={variants}
@@ -352,18 +354,38 @@ function SoloGame() {
                 animate="visible"
                 exit="exit"
                 transition={{ duration: 0.5 }}
+                className="flex justify-center items-center w-full flex-col h-[100vh]"
               >
-                {currentKahootQuestion?.questionType === "Quiz" && (
-                  <Lottie animationData={Quiz} />
+                {!showDrumRoll &&
+                  currentKahootQuestion?.questionType === "Quiz" && (
+                    <Lottie
+                      className="w-[800px]"
+                      width={500}
+                      animationData={Quiz}
+                    />
+                  )}
+                {!showDrumRoll &&
+                  currentKahootQuestion?.questionType === "True or false" && (
+                    <Lottie
+                      className="w-[500px]"
+                      width={1000}
+                      animationData={TrueOrFalse}
+                    />
+                  )}
+                {!showDrumRoll &&
+                  currentKahootQuestion?.questionType === "Type answer" && (
+                    <Lottie animationData={TypeAnswer} />
+                  )}
+                {showDrumRoll && (
+                  <Lottie
+                    className="w-[90vw] md:w-[400px]"
+                    animationData={GameFinished}
+                  />
                 )}
-                {currentKahootQuestion?.questionType === "True or false" && (
-                  <Lottie animationData={TrueOrFalse} />
-                )}
-                {currentKahootQuestion?.questionType === "Type answer" && (
-                  <Lottie animationData={TypeAnswer} />
-                )}
-                <p className="w-full dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center">
-                  {currentKahootQuestion?.questionType}
+                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center">
+                  {showDrumRoll
+                    ? "Drum roll...."
+                    : currentKahootQuestion?.questionType}
                 </p>
               </motion.div>
             )}
@@ -797,7 +819,20 @@ function SoloGame() {
                   }, 600);
                 }, 2500);
               } else {
-                setGameFinished(true);
+                setLeaderboardState(false);
+                setShowQuestion(false);
+                setQuestionFinished(false);
+                setPreviousScore(totalScore);
+                setShowDrumRoll(true);
+                setTimeout(() => {
+                  setShowDrumRoll(false);
+                  setTimeout(() => {
+                    setLeaderboardState(true);
+                    setGameFinished(true);
+                    setShowQuestion(true);
+                    setQuestionFinished(true);
+                  }, 500);
+                }, 5000);
               }
             }}
             className="custom-button-small z-infinite absolute top-[2%] md:top-[20px] right-2 z-infinite"
@@ -833,8 +868,9 @@ function SoloGame() {
             </div>
           </div>
         </div>
-      ) : (
-        <div className="flex justify-center flex-col items-center h-full relative">
+      ) : null}
+      {gameFinished ? (
+        <div className="flex z-infinite justify-center flex-col items-center h-full relative">
           <button
             onClick={() => {
               navigate("/profile", {
@@ -882,7 +918,7 @@ function SoloGame() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
