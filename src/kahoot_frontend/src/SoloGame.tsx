@@ -5,7 +5,13 @@ import Quiz from "../public/lottie/Study-3.json";
 import TrueOrFalse from "../public/lottie/Study-2.json";
 import TypeAnswer from "../public/lottie/Study.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
-import { FaAdjust, FaCircle, FaSquareFull, FaCheck } from "react-icons/fa";
+import {
+  FaAdjust,
+  FaCircle,
+  FaSquareFull,
+  FaCheck,
+  FaFireAlt,
+} from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
@@ -195,6 +201,7 @@ function SoloGame() {
     setCurrentScore(0);
     setElapsedTime(0);
     setCurrentAnswer(-1);
+    setTypeAnswer("");
   }, [startTime, elapsedTime, currentScore, currentAnswer]);
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -466,8 +473,8 @@ function SoloGame() {
                   />
                 )}
               {currentKahootQuestion?.questionType === "Type answer" && (
-                <div className="h-fit pb-[10vh] flex flex-col gap-y-4 justify-center items-center px-[20px]">
-                  <div className="question-div">
+                <div className="h-fit pb-[10vh] w-full flex flex-col gap-y-4 justify-center items-center px-[20px]">
+                  <div className="md:w-[75%] w-full flex justify-center items-center">
                     <div
                       className={`question-answer-full ${
                         typeAnswer?.length > 0 && "bg-blue"
@@ -487,7 +494,7 @@ function SoloGame() {
                                 typeAnswer?.length > 0
                                   ? "text-white"
                                   : "text-black"
-                              } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                              } w-[75%] text-center question-p bg-transparent border-transparent outline-none`}
                               type="text"
                             />
                             <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -500,7 +507,7 @@ function SoloGame() {
                   </div>
                   <button
                     onClick={() => handleAnswer(typeAnswer)}
-                    className="type-submit-button text-center md:w-[300px] w-[50vw]"
+                    className="custom-button text-center md:w-[300px] w-[50vw]"
                   >
                     Submit
                   </button>
@@ -510,134 +517,41 @@ function SoloGame() {
           ) : (
             <div className="ranking-container">
               <div className="ranking-sub-container">
-                {currentKahootQuestion?.questionType === "Quiz" && (
-                  <div className="ranking-inner-container">
-                    <div className="first-answer">
-                      <div className="the-answer">
-                        <div
-                          style={{
-                            height: currentAnswer === 0 ? "100%" : "0%",
-                          }}
-                          className="red-answer-inner the-red-answer-bg"
-                        ></div>
-                      </div>
-                      <div className="bottom-answer-inner the-red-darker-answer-bg gap-x-1">
-                        <IoTriangleSharp size="12px" />{" "}
-                        {currentKahootQuestion?.answer1Clicked ? (
-                          <div className="flex gap-x-2 items-center">
-                            1
-                            <FaCheck size="12px" />
-                          </div>
-                        ) : (
-                          "0"
-                        )}
-                      </div>
+                <div className="flex flex-col gap-y-2 justify-center items-center h-full w-full">
+                  <p className="text-[36px] font-bold">
+                    {!checkAnswer(currentAnswer) ? "Incorrect!" : "Correct!"}
+                  </p>
+                  {!checkAnswer(currentAnswer) ? (
+                    <button className="cross-btn-clicked-game">
+                      <span className="centang-span-game">
+                        <ImCross size="40px" className="centang-img" />
+                      </span>
+                    </button>
+                  ) : (
+                    <button className="check-btn-clicked-game">
+                      <span className="centang-span-game">
+                        <FaCheck size="40px" className="centang-img" />
+                      </span>
+                    </button>
+                  )}
+                  {checkAnswer(currentAnswer) && (
+                    <div className="flex gap-x-2 items-center">
+                      <FaFireAlt color="" size="30px" />
+                      <p className="text-[24px] font-bold">
+                        Answer streak {answerStreak}
+                      </p>
+                      <FaFireAlt color="" size="30px" />
                     </div>
-                    <div className="first-answer">
-                      <div className="the-answer">
-                        <div
-                          style={{
-                            height: currentAnswer === 1 ? "100%" : "0%",
-                          }}
-                          className="red-answer-inner the-blue-answer-bg"
-                        ></div>
-                      </div>
-                      <div className="bottom-answer-inner the-blue-darker-answer-bg gap-x-1">
-                        <FaAdjust size="12px" />
-                        {currentKahootQuestion?.answer2Clicked ? (
-                          <div className="flex gap-x-2 items-center">
-                            1
-                            <FaCheck size="12px" />
-                          </div>
-                        ) : (
-                          "0"
-                        )}
-                      </div>
-                    </div>
-                    {currentKahootQuestion?.text3 && (
-                      <div className="first-answer">
-                        <div className="the-answer">
-                          <div
-                            style={{
-                              height: currentAnswer === 2 ? "100%" : "0%",
-                            }}
-                            className="red-answer-inner the-orange-answer-bg"
-                          ></div>
-                        </div>
-                        <div className="bottom-answer-inner the-orange-darker-answer-bg gap-x-1">
-                          <FaCircle size="12px" />
-                          {currentKahootQuestion?.answer3Clicked ? (
-                            <div className="flex gap-x-2 items-center">
-                              1
-                              <FaCheck size="12px" />
-                            </div>
-                          ) : (
-                            "0"
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {currentKahootQuestion?.text4 && (
-                      <div className="first-answer">
-                        <div className="the-answer">
-                          <div
-                            style={{
-                              height: currentAnswer === 3 ? "100%" : "0%",
-                            }}
-                            className="red-answer-inner the-green-answer-bg"
-                          ></div>
-                        </div>
-                        <div className="bottom-answer-inner the-green-darker-answer-bg gap-x-1">
-                          <FaSquareFull size="12px" />
-                          {currentKahootQuestion?.answer4Clicked ? (
-                            <div className="flex gap-x-2 items-center">
-                              1
-                              <FaCheck size="12px" />
-                            </div>
-                          ) : (
-                            "0"
-                          )}
-                        </div>
-                      </div>
-                    )}
+                  )}
+                  <div className="bg-black/50 p-[10px] rounded-[5px] w-[300px] text-center">
+                    <p className="font-bold text-[24px] text-white">
+                      {checkAnswer(currentAnswer)
+                        ? `+${currentScore}`
+                        : "Great try!"}
+                    </p>
                   </div>
-                )}
-                {currentKahootQuestion?.questionType === "True or false" && (
-                  <div className="ranking-inner-container">
-                    <div className="first-answer">
-                      <div className="the-answer">
-                        <div
-                          style={{
-                            height: currentAnswer === 0 ? "100%" : "0%",
-                          }}
-                          className="red-answer-inner the-blue-answer-bg"
-                        ></div>
-                      </div>
-                      <div className="bottom-answer-inner the-blue-darker-answer-bg gap-x-1">
-                        <FaAdjust size="12px" />
-                        {currentAnswer === 0 ? "1" : "0"}
-                        {currentKahootQuestion?.trueOrFalseAnswer ===
-                          "true" && <FaCheck size="12px" />}
-                      </div>
-                    </div>
-                    <div className="first-answer">
-                      <div className="the-answer">
-                        <div
-                          style={{
-                            height: currentAnswer === 1 ? "100%" : "0%",
-                          }}
-                          className="red-answer-inner the-red-answer-bg"
-                        ></div>
-                      </div>
-                      <div className="bottom-answer-inner the-red-darker-answer-bg gap-x-1">
-                        <IoTriangleSharp size="12px" />{" "}
-                        {currentAnswer === 1 ? "1" : "0"}
-                        {currentKahootQuestion?.trueOrFalseAnswer ===
-                          "false" && <FaCheck size="12px" />}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  <p className="text-[18px] font-bold">You are doing well!</p>
+                </div>
                 {currentKahootQuestion?.questionType === "Type answer" && (
                   <div className="ranking-type-answer flex flex-col gap-y-4 justify-center items-center">
                     {Array.from(
