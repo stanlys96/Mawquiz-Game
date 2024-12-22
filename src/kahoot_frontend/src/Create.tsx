@@ -44,6 +44,7 @@ import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
 
 function Create() {
+  const fileInputRef = useRef(null);
   const location = useLocation();
   const { state } = location;
   const navigate = useNavigate();
@@ -101,6 +102,15 @@ function Create() {
   const [kahootDescriptionTemp, setKahootDescriptionTemp] = useState(
     state?.mode === "create" ? "" : state?.description
   );
+  const [imageCoverUrl, setImageCoverUrl] = useState(
+    state?.mode === "create" ? "" : state?.imageCoverUrl
+  );
+  const [imageCoverUrlTemp, setImageCoverUrlTemp] = useState(
+    state?.mode === "create" ? "" : state?.imageCoverUrl
+  );
+  const [previousImageCoverUrl, setPreviousImageCoverUrl] = useState(
+    state?.mode === "create" ? "" : state?.imageCoverUrl
+  );
   const [backend, setBackend] = useState<_SERVICE>();
   const [isOpenModalValidate, setIsOpenModalValidate] = useState(false);
   const [quizChecked, setQuizChecked] =
@@ -128,6 +138,8 @@ function Create() {
   const [currentTimeLimit, setCurrentTimeLimit] = useState(
     quizData?.[clickedQuizIndex]?.timeLimit ?? 20
   );
+  const [loadingCoverImage, setLoadingCoverImage] = useState(false);
+  const [draggingCoverImage, setDraggingCoverImage] = useState(false);
 
   const hide = () => {
     setOpen(false);
@@ -167,6 +179,27 @@ function Create() {
       }
     } catch (e) {
       setLoadingFile(false);
+    }
+  };
+
+  const handleCoverImage = async (event: any) => {
+    const file = event.target.files[0];
+    try {
+      if (file && file.type.startsWith("image/")) {
+        setLoadingCoverImage(true);
+        const imageIPFSURL = await uploadImageToIPFS(file);
+        setDraggingCoverImage(false);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImageCoverUrlTemp(imageIPFSURL ?? "");
+        };
+        reader.readAsDataURL(file);
+        setLoadingCoverImage(false);
+      } else {
+        Swal.fire("Error!", "Can only upload images!", "error");
+      }
+    } catch (e) {
+      setLoadingCoverImage(false);
     }
   };
 
@@ -273,7 +306,8 @@ function Create() {
           kahootTitleTemp,
           kahootDescriptionTemp,
           quizData,
-          getCurrentFormattedDateTime()
+          getCurrentFormattedDateTime(),
+          imageCoverUrlTemp
         )
         ?.then((result) => {
           setLoading(false);
@@ -303,7 +337,8 @@ function Create() {
           state?.gamePin,
           kahootTitleTemp,
           kahootDescriptionTemp,
-          quizData
+          quizData,
+          imageCoverUrlTemp
         )
         ?.then((result) => {
           setLoading(false);
@@ -327,7 +362,14 @@ function Create() {
           console.log(e, "< Error");
         });
     }
-  }, [principal, kahootTitleTemp, kahootDescriptionTemp, quizData, principal]);
+  }, [
+    principal,
+    kahootTitleTemp,
+    kahootDescriptionTemp,
+    quizData,
+    principal,
+    imageCoverUrlTemp,
+  ]);
 
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -353,7 +395,7 @@ function Create() {
           </p>
         </div>
       )}
-      {loadingFile && (
+      {(loadingFile || loadingCoverImage) && (
         <div className="kahoot-container z-moreinfinite h-[100%] w-[100vw]">
           <div className="kahoot-spinner">
             <div />
@@ -386,6 +428,7 @@ function Create() {
                   toggleModalTitle();
                   setPreviousKahootTitle(kahootTitleTemp);
                   setPreviousKahootDescription(kahootDescriptionTemp);
+                  setPreviousImageCoverUrl(imageCoverUrlTemp);
                 }}
                 className="kahoot-btn-title font-semibold"
               >
@@ -396,6 +439,7 @@ function Create() {
                   toggleModalTitle();
                   setPreviousKahootTitle(kahootTitleTemp);
                   setPreviousKahootDescription(kahootDescriptionTemp);
+                  setPreviousImageCoverUrl(imageCoverUrlTemp);
                 }}
                 className="settings-btn-mobile"
               >
@@ -435,6 +479,7 @@ function Create() {
                   toggleModalTitle();
                   setPreviousKahootTitle(kahootTitleTemp);
                   setPreviousKahootDescription(kahootDescriptionTemp);
+                  setPreviousImageCoverUrl(imageCoverUrlTemp);
                 }}
                 className="kahoot-btn-title font-semibold"
               >
@@ -445,6 +490,7 @@ function Create() {
                   toggleModalTitle();
                   setPreviousKahootTitle(kahootTitleTemp);
                   setPreviousKahootDescription(kahootDescriptionTemp);
+                  setPreviousImageCoverUrl(imageCoverUrlTemp);
                 }}
                 className="settings-btn"
               >
@@ -2494,6 +2540,69 @@ function Create() {
                   </p>
                 </div>
                 <p className="text-gray mb-[12px] mt-[20px] font-semibold text-left">
+                  Cover Image{" "}
+                  <span className="text-[#6E6E6E] font-normal">(optional)</span>
+                </p>
+                <div className="inner-modal-div-cover relative bg-blue">
+                  {!imageCoverUrlTemp ? (
+                    <div className="flex gap-x-[15px] items-center">
+                      <FaUpload size="32px" color="black" />
+                      <div className="flex flex-col gap-y-1">
+                        <div className="flex gap-x-2 items-center">
+                          <p className="text-[#6E6E6E] text-left">
+                            Max. file size: 80MB
+                          </p>
+                          <Tooltip
+                            className="z-infinite"
+                            placement="top"
+                            title={"Image: 80 MB"}
+                          >
+                            <FaCircleQuestion color="gray" />
+                          </Tooltip>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      onClick={() => {
+                        (fileInputRef?.current as any)?.click();
+                      }}
+                      className="w-[200px] h-[100px]"
+                      src={imageCoverUrlTemp}
+                    />
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    id="file-upload"
+                    type="file"
+                    onChange={handleCoverImage}
+                    className="hidden"
+                  />
+                  {!imageCoverUrlTemp && (
+                    <label
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        (fileInputRef?.current as any)?.click();
+                      }}
+                      className="save-button"
+                    >
+                      Upload Media
+                    </label>
+                  )}
+                  {draggingCoverImage && (
+                    <div className="drop-zone flex flex-col gap-y-[24px]">
+                      <div className="arrow-down-div">
+                        <span className="arrow-down-span">
+                          <FaArrowDown size="88px" />
+                        </span>
+                      </div>
+                      <p className="text-[20px] font-bold">
+                        Drop your file here
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <p className="text-gray mb-[12px] mt-[20px] font-semibold text-left">
                   Description{" "}
                   <span className="text-[#6E6E6E] font-normal">(optional)</span>
                 </p>
@@ -2505,7 +2614,7 @@ function Create() {
                   <textarea
                     value={kahootDescriptionTemp}
                     onChange={(e) => setKahootDescriptionTemp(e.target.value)}
-                    rows={5}
+                    rows={4}
                     className="mt-[12px] textarea-input outline-none w-full"
                     maxLength={500}
                   />
@@ -2521,6 +2630,7 @@ function Create() {
                     toggleModalTitle();
                     setKahootTitleTemp(previousKahootTitle);
                     setKahootDescriptionTemp(previousKahootDescription);
+                    setImageCoverUrlTemp(previousImageCoverUrl);
                   }}
                   className="exit-button"
                 >
@@ -2539,6 +2649,11 @@ function Create() {
                     setKahootDescriptionTemp((prevState: any) => {
                       setKahootDescription(prevState.trim());
                       setPreviousKahootDescription(prevState.trim());
+                      return prevState.trim();
+                    });
+                    setImageCoverUrlTemp((prevState: any) => {
+                      setImageCoverUrl(prevState.trim());
+                      setPreviousImageCoverUrl(prevState.trim());
                       return prevState.trim();
                     });
                     toggleModalTitle();

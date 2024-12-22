@@ -203,7 +203,11 @@ function Profile() {
                     <div className="game-card-inner cursor-pointer">
                       <div className="relative">
                         <img
-                          src="logo.png"
+                          src={
+                            userGame?.imageCoverUrl
+                              ? userGame?.imageCoverUrl
+                              : "logo.png"
+                          }
                           className="h-[74px] rounded-l-[4px] w-[109px]"
                         />
                         <div className="question-card">
@@ -476,6 +480,7 @@ function Profile() {
                         description: currentPickedKahoot?.description,
                         gamePin: currentPickedKahoot?.gamePin,
                         routerPrincipal: state.routerPrincipal,
+                        imageCoverUrl: currentPickedKahoot?.imageCoverUrl,
                       },
                     });
                   }}

@@ -35,6 +35,7 @@ actor {
     isLive: Bool;
     questions: [Question];
     gamePin: Text;
+    imageCoverUrl: Text;
   };
 
   public type User = {
@@ -93,7 +94,7 @@ actor {
     return userHashMap.get(user);
   };
 
-  public func addGame(gamePin: Text, owner: Text, title: Text, description: Text, questions: [Question], timestamp: Text): async Bool {
+  public func addGame(gamePin: Text, owner: Text, title: Text, description: Text, questions: [Question], timestamp: Text, imageCoverUrl: Text): async Bool {
     switch (gameHashMap.get(gamePin)) {
       case (?_exists) {
         return false;
@@ -108,6 +109,7 @@ actor {
           timestamp = timestamp;
           isLive = false;
           gamePin = gamePin;
+          imageCoverUrl = imageCoverUrl;
         };
         gameHashMap.put(gamePin, result);
         return true;
@@ -115,7 +117,7 @@ actor {
     }
   };
 
-  public func updateGame(gamePin: Text, title: Text, description: Text, questions: [Question]): async Bool {
+  public func updateGame(gamePin: Text, title: Text, description: Text, questions: [Question], imageCoverUrl: Text): async Bool {
     switch (gameHashMap.get(gamePin)) {
       case (?existingGame) {
         var result: Game = {
@@ -127,6 +129,7 @@ actor {
           timestamp = existingGame.timestamp;
           isLive = existingGame.isLive;
           gamePin = gamePin;
+          imageCoverUrl = imageCoverUrl;
         };
         gameHashMap.put(gamePin, result);
         return true;

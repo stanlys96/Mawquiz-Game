@@ -3013,6 +3013,23 @@ html {
   padding: 64px 0px 32px;
 }
 
+.inner-modal-div-cover {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* flex: 1 1 0%; */
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  gap: 1.5rem;
+  align-self: stretch;
+  border: 1px dashed rgb(178, 178, 178);
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.25rem;
+  padding: 32px 0px 32px;
+}
+
 .close-toggle-button {
   width: calc(100%);
   flex: 0 0 auto;

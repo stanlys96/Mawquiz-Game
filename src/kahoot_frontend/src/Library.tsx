@@ -207,6 +207,7 @@ function Library() {
                       description: userGame?.description,
                       gamePin: userGame?.gamePin,
                       routerPrincipal: state.routerPrincipal,
+                      imageCoverUrl: userGame?.imageCoverUrl,
                     },
                   });
                 }}
