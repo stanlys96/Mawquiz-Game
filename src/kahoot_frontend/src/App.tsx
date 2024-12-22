@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./Home";
-import Profile from "./Profile";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 import "./index.css";
-import Create from "./Create";
-import ConnectWallet from "./ConnectWallet";
-import LiveGame from "./LiveGame";
-import Waiting from "./Waiting";
-import ShowQuizTitle from "./ShowQuizTitle";
-import GamePlayer from "./GamePlayer";
-import SoloGame from "./SoloGame";
-import Library from "./Library";
+import Create from "./pages/Create";
+import ConnectWallet from "./pages/ConnectWallet";
+import LiveGame from "./pages/LiveGame";
+import Waiting from "./pages/Waiting";
+import ShowQuizTitle from "./pages/ShowQuizTitle";
+import GamePlayer from "./pages/GamePlayer";
+import SoloGame from "./pages/SoloGame";
+import Library from "./pages/Library";
 
 function App() {
   return (

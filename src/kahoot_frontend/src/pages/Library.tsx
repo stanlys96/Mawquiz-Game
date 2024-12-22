@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { settingKahoot, settingPrincipal } from "../stores/user-slice";
-import IC from "./utils/IC";
+import { settingKahoot, settingPrincipal } from "../../stores/user-slice";
+import IC from "../utils/IC";
 import {
   _SERVICE,
   Game,
-} from "../../declarations/kahoot_backend/kahoot_backend.did";
+} from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import { IoPerson } from "react-icons/io5";
 import { Principal } from "@dfinity/principal";
 import { FaPencil } from "react-icons/fa6";

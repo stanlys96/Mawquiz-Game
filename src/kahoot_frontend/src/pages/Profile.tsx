@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import IC from "./utils/IC";
+import IC from "../utils/IC";
 import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   _SERVICE,
   Game,
-} from "../../declarations/kahoot_backend/kahoot_backend.did";
+} from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import { Principal } from "@dfinity/principal";
 import { FiEdit } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
-import { modalVariants, override } from "./helper/helper";
+import { modalVariants, override } from "../helper/helper";
 import { BeatLoader } from "react-spinners";
 import { notification } from "antd";
-import { settingKahoot, settingPrincipal } from "../stores/user-slice";
+import { settingKahoot, settingPrincipal } from "../../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";

@@ -1,31 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { settingNickname, settingPrincipal } from "../stores/user-slice";
-import { IoPersonCircle } from "react-icons/io5";
+import { settingNickname, settingPrincipal } from "../../stores/user-slice";
 import { Principal } from "@dfinity/principal";
-import IC from "./utils/IC";
-import { _SERVICE } from "../../declarations/kahoot_backend/kahoot_backend.did";
+import IC from "../utils/IC";
+import { _SERVICE } from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import { FiEdit } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
 import BeatLoader from "react-spinners/BeatLoader";
 import { notification } from "antd";
-import { modalVariants, override } from "./helper/helper";
+import { getUserNickname, modalVariants, override } from "../helper/helper";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import { io } from "socket.io-client";
 import Swal from "sweetalert2";
 import axios from "axios";
-
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
-  transports: ["websocket", "polling"],
-}); // Connect to backend
+import { LoadingLayover } from "../components/LoadingLayover";
 
 function Home() {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { state } = location;
-  console.log(state);
   const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [nicknameLoading, setNicknameLoading] = useState(false);
@@ -41,6 +35,17 @@ function Home() {
   const toggleModalJiggle = () => {
     setIsOpenModalJiggle((prevState) => !prevState);
   };
+
+  const handleEdit = useCallback(() => {
+    if (!currentUser?.nickname) return;
+    if (currentUser?.nickname?.length > 35) {
+      setNickname("");
+    } else {
+      setNickname(currentUser?.nickname ?? "");
+      dispatch(settingNickname(currentUser?.nickname ?? ""));
+    }
+    setIsOpenModalNickname(true);
+  }, [currentUser, nickname, isOpenModalNickname]);
 
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -69,35 +74,14 @@ function Home() {
     <main className="background flex justify-center items-center">
       <div className="circle-bg" />
       <div className="square-bg" />
-      {loading && (
-        <div className="relative kahoot-container">
-          <div className="kahoot-spinner">
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-          <p className="montserrat medium text-[28px] leading-[0px]">
-            Connecting to Mawquiz!
-          </p>
-        </div>
-      )}
+      <LoadingLayover loading={loading} description="Connecting to Mawquiz!" />
       <div className="flex flex-col justify-center items-center gap-y-2 main-profile">
         <img className="w-[200px] mx-auto img-home bg-white" src="logo.png" />
         <div className="main-container">
           <div className="flex flex-col justify-center items-center gap-y-2">
             <div className="flex gap-x-2 items-center">
               <div
-                onClick={() => {
-                  if (!currentUser?.nickname) return;
-                  if (currentUser?.nickname?.length > 35) {
-                    setNickname("");
-                  } else {
-                    setNickname(currentUser?.nickname ?? "");
-                    dispatch(settingNickname(currentUser?.nickname ?? ""));
-                  }
-                  setIsOpenModalNickname(true);
-                }}
+                onClick={handleEdit}
                 className="cursor-pointer p-[8px] flex lg:hidden bg-dark-green rounded-full flex items-center justify-center"
               >
                 <FiEdit color="white" />
@@ -111,38 +95,16 @@ function Home() {
             </div>
             <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 items-center">
               <div
-                onClick={() => {
-                  if (!currentUser?.nickname) return;
-                  if (currentUser?.nickname?.length > 35) {
-                    setNickname("");
-                  } else {
-                    setNickname(currentUser?.nickname ?? "");
-                    dispatch(settingNickname(currentUser?.nickname ?? ""));
-                  }
-                  setIsOpenModalNickname(true);
-                }}
+                onClick={handleEdit}
                 className="cursor-pointer p-[8px] bg-dark-green rounded-full hidden lg:flex items-center justify-center"
               >
                 <FiEdit color="white" />
               </div>
               <p
-                onClick={() => {
-                  if (!currentUser?.nickname) return;
-                  if (currentUser?.nickname?.length > 35) {
-                    setNickname("");
-                  } else {
-                    setNickname(currentUser?.nickname ?? "");
-                    dispatch(settingNickname(currentUser?.nickname ?? ""));
-                  }
-                  setIsOpenModalNickname(true);
-                }}
+                onClick={handleEdit}
                 className="cursor-pointer text-black text-center"
               >
-                {currentUser?.nickname
-                  ? currentUser?.nickname?.length > 20
-                    ? currentUser?.nickname?.slice(0, 20) + "..."
-                    : currentUser?.nickname ?? ""
-                  : currentUser?.owner?.slice(0, 20) + "..."}
+                {getUserNickname(currentUser?.nickname, currentUser?.owner)}
               </p>
             </div>
             <input

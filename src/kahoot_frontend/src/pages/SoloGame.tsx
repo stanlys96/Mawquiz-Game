@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Quiz from "../public/lottie/quiz-2.json";
-import TrueOrFalse from "../public/lottie/true-or-false.json";
-import TypeAnswer from "../public/lottie/type-answer.json";
+import Quiz from "../../public/lottie/quiz-2.json";
+import TrueOrFalse from "../../public/lottie/true-or-false.json";
+import TypeAnswer from "../../public/lottie/type-answer.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
 import {
   FaAdjust,
@@ -15,8 +15,8 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
-import { getOrdinalSuffix, getScoreLeaderboardHeight } from "./helper/helper";
-import GameFinished from "../public/lottie/drum-roll.json";
+import { getOrdinalSuffix, getScoreLeaderboardHeight } from "../helper/helper";
+import GameFinished from "../../public/lottie/drum-roll.json";
 import Confetti from "react-confetti";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {

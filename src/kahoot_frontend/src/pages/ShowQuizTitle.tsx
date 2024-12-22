@@ -1,10 +1,10 @@
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import Lottie from "lottie-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Quiz from "../public/lottie/quiz-2.json";
-import TrueOrFalse from "../public/lottie/true-or-false.json";
-import TypeAnswer from "../public/lottie/type-answer.json";
-import GameFinished from "../public/lottie/drum-roll.json";
+import Quiz from "../../public/lottie/quiz-2.json";
+import TrueOrFalse from "../../public/lottie/true-or-false.json";
+import TypeAnswer from "../../public/lottie/type-answer.json";
+import GameFinished from "../../public/lottie/drum-roll.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaAdjust, FaCircle, FaSquareFull, FaCheck } from "react-icons/fa";
@@ -17,7 +17,7 @@ import {
   getOrdinalSuffix,
   getScoreLeaderboardHeight,
   getSocket,
-} from "./helper/helper";
+} from "../helper/helper";
 import Confetti from "react-confetti";
 import { Fireworks } from "fireworks-js";
 

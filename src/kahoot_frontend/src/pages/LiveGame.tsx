@@ -4,8 +4,8 @@ import { useMediaQuery } from "react-responsive";
 import { useEffect, useState } from "react";
 import { FaUnlock, FaLock } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { settingUniquePlayers } from "../stores/user-slice";
-import { getSocket } from "./helper/helper";
+import { settingUniquePlayers } from "../../stores/user-slice";
+import { getSocket } from "../helper/helper";
 
 interface Player {
   nickname: string;

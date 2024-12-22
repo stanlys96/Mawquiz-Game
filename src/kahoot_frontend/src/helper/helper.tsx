@@ -365,3 +365,14 @@ export const getOrdinalSuffix = (number: number): string => {
       return `${number}th`;
   }
 };
+
+export const getUserNickname = (
+  nickname: string,
+  principal: string
+): string => {
+  return nickname
+    ? nickname?.length > 20
+      ? nickname?.slice(0, 20) + "..."
+      : nickname ?? ""
+    : principal?.slice(0, 20) + "...";
+};

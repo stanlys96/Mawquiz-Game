@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
 import RotateLoader from "react-spinners/RotateLoader";
-import { getOrdinalSuffix, getSocket, override } from "./helper/helper";
+import { getOrdinalSuffix, getSocket, override } from "../helper/helper";
 import {
   HashLoader,
   PacmanLoader,
@@ -32,7 +32,7 @@ import { ImCross } from "react-icons/im";
 import { FiRewind } from "react-icons/fi";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import Confetti from "react-confetti";
-import GameFinished from "../public/lottie/drum-roll.json";
+import GameFinished from "../../public/lottie/drum-roll.json";
 import Lottie from "lottie-react";
 import { AnimatePresence, motion } from "framer-motion";
 

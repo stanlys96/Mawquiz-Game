@@ -26,7 +26,7 @@ import {
   checkQuizData,
   getCurrentFormattedDateTime,
   uploadImageToIPFS,
-} from "./helper/helper";
+} from "../helper/helper";
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaCircle, FaSquareFull } from "react-icons/fa";
@@ -37,8 +37,8 @@ import { useNavigate } from "react-router-dom";
 import {
   _SERVICE,
   Question,
-} from "../../declarations/kahoot_backend/kahoot_backend.did";
-import IC from "./utils/IC";
+} from "../../../declarations/kahoot_backend/kahoot_backend.did";
+import IC from "../utils/IC";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
