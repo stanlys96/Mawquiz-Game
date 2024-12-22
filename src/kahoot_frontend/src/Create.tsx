@@ -544,7 +544,7 @@ function Create() {
                           {quizData?.[index]?.imageUrl !== "cdn.svg" ? (
                             <img
                               src={quizData?.[index]?.imageUrl ?? "walaoeh.svg"}
-                              className="rounded-b-[0.25rem] py-[10px] h-[30px] w-[30px]"
+                              className="rounded-b-[0.25rem] py-[10px] h-[30px] w-[60px]"
                             />
                           ) : (
                             <div className="">
@@ -1526,7 +1526,7 @@ function Create() {
                                 !quizData?.[clickedQuizIndex]?.answer2Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer3Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? ""
+                                  ? "check-btn-animation"
                                   : ""
                               } check-btn-mobile`
                         }`}
@@ -1586,7 +1586,7 @@ function Create() {
                                 !quizData?.[clickedQuizIndex]?.answer2Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer3Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? ""
+                                  ? "check-btn-animation"
                                   : ""
                               } check-btn-mobile`
                         }`}
@@ -1648,7 +1648,7 @@ function Create() {
                                 !quizData?.[clickedQuizIndex]?.answer2Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer3Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? ""
+                                  ? "check-btn-animation"
                                   : ""
                               } check-btn-mobile`
                         }`}
@@ -1710,7 +1710,7 @@ function Create() {
                                 !quizData?.[clickedQuizIndex]?.answer2Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer3Clicked &&
                                 !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? ""
+                                  ? "check-btn-animation"
                                   : ""
                               } check-btn-mobile`
                         }`}
