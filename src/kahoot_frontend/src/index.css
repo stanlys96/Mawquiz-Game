@@ -2161,6 +2161,30 @@ html {
   cursor: pointer;
 }
 
+.question-btn-answer-player {
+  width: 90%;
+  margin: 0px;
+  border: 0px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
+  background-color: rgb(38, 137, 12);
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0px 16px 4px;
+  position: relative;
+  font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
+    Arial, "Bai Jamjuree", sans-serif;
+  cursor: pointer;
+}
+
 .montserrat {
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
     Arial, "Bai Jamjuree", sans-serif;

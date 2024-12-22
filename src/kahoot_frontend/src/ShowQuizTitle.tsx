@@ -153,6 +153,7 @@ function ShowQuizTitle() {
                 previousScore: data?.previousScore ?? 0,
                 answer: data?.answer ?? 0,
                 nickname: data?.nickname ?? "",
+                answered: true,
               };
             }
             return player;
@@ -206,6 +207,15 @@ function ShowQuizTitle() {
             setShowGameData(false);
             setShowQuestion(true);
             setCurrentTimeLimit(currentKahootQuestion?.timeLimit);
+            setUniquePlayers((prevState: any) => {
+              const updatedState = prevState.map((player: any) => {
+                return {
+                  ...player,
+                  answered: false,
+                };
+              });
+              return updatedState;
+            });
             return 100;
           }
           return nextValue;
@@ -269,28 +279,22 @@ function ShowQuizTitle() {
       const timer = setTimeout(() => {
         setCurrentTimeLimit((prevState) => prevState - 1);
         setQuestionFinished(true);
+        setUniquePlayers((prevState: any) => {
+          const updatedState = prevState.map((player: any, index: number) => {
+            return {
+              ...player,
+              previousScore: player?.answered
+                ? player?.previousScore ?? 0
+                : player?.totalScore ?? 0,
+            };
+          });
+          return updatedState;
+        });
         socket.emit("question_finished", { gamePin });
       }, 1000);
       return () => clearTimeout(timer);
     }
   }, [currentTimeLimit, playerAnswers, uniquePlayers]);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const fireworks = new Fireworks(containerRef.current, {
-        rocketsPoint: {
-          min: 50,
-          max: 50,
-        },
-        hue: { min: 0, max: 360 },
-        delay: { min: 15, max: 30 },
-        particles: 50,
-      });
-
-      fireworks.start();
-      return () => fireworks.stop();
-    }
-  }, [containerRef]);
 
   return (
     <div className="waiting-game overflow-hidden relative bg-black/10">

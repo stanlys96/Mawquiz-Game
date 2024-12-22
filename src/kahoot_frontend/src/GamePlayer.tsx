@@ -495,7 +495,7 @@ function GamePlayer() {
               </div>
               <button
                 onClick={() => answeringQuestion(typeAnswer)}
-                className="type-submit-button text-center md:w-[300px] w-[50vw]"
+                className="question-btn-answer-player text-center md:w-[300px] w-[50vw]"
               >
                 Submit
               </button>
