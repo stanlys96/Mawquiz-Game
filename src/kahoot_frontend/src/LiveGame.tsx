@@ -136,6 +136,7 @@ function LiveGame() {
         <div className="flex items-center gap-x-4">
           <button
             onClick={() => {
+              socket.emit("admin_left", { gamePin: gamePin });
               navigate(`/profile`, {
                 state: {
                   routerPrincipal: state.routerPrincipal,
