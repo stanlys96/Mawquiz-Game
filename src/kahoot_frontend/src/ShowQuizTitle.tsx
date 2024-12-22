@@ -417,7 +417,7 @@ function ShowQuizTitle() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white text-black text-[1rem] md:text-[54px] font-bold py-[10px] px-[20px] rounded-[5px]"
+                  className="bg-white text-black text-[1rem] text-center md:text-[54px] font-bold py-[10px] px-[20px] rounded-[5px]"
                 >
                   {currentKahootQuestion?.question}
                 </motion.div>
