@@ -23,7 +23,7 @@ export const ValidateModalComponent = ({
           All questions need to be completed before you can start playing.
         </p>
       </div>
-      <div className="validate-div mt-[24px] h-full overflow-y-auto h-[60vh]">
+      <div className="validate-div mt-[24px] overflow-y-auto h-[60vh]">
         <ul className="validate-subdiv">
           {quizChecked?.map((theData: any) => (
             <li className="validate-li">
