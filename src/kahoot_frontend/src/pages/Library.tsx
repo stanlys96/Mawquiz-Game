@@ -27,24 +27,21 @@ function Library() {
     async (userGame: Game) => {
       try {
         setLoading(true);
-        const theData = await fetch(
-          "https://mawquiz-backend-production.up.railway.app/games",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              gamePin: userGame?.gamePin,
-              questions: userGame?.questions,
-            }),
-          }
-        );
+        const theData = await fetch("http://localhost:3001/games", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gamePin: userGame?.gamePin,
+            questions: userGame?.questions,
+          }),
+        });
 
         const createGame = await theData?.json();
         if (createGame?.message !== "error") {
           dispatch(settingKahoot(userGame));
-          navigate(`/live-game?gameId=${userGame?.gamePin}`, {
+          navigate(`/live-game?gamePin=${createGame?.gameRoom}`, {
             state: {
               routerPrincipal: state.routerPrincipal,
             },
@@ -179,7 +176,7 @@ function Library() {
                 <button
                   onClick={() => {
                     dispatch(settingKahoot(userGame));
-                    navigate(`/solo-game?gameId=${userGame?.gamePin}`, {
+                    navigate(`/solo-game?gamePin=${userGame?.gamePin}`, {
                       state: {
                         routerPrincipal: state.routerPrincipal,
                       },

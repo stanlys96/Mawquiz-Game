@@ -23,7 +23,7 @@ function LiveGame() {
   const { search } = useLocation();
   const [uniquePlayers, setUniquePlayers] = useState([]);
   const queryParams = new URLSearchParams(search);
-  const gamePin = queryParams.get("gameId");
+  const gamePin = queryParams.get("gamePin");
   const { principal, nickname, currentPickedKahoot } = useSelector(
     (state: any) => state.user
   );

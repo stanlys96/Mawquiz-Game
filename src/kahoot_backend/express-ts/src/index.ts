@@ -24,7 +24,6 @@ const corsOptions = {
   origin: [
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
     "https://smart-marketplace-web3.vercel.app",
-    "http://localhost:3000",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -152,7 +151,7 @@ app.get("/playersJoined/:gamePin", (req: any, res: any) => {
 
 io.on("connection", (socket: any) => {
   console.log(`Someone just connected: ${socket.id}`);
-  socket.on("join_game", ({ gamePin, thePlayer }: any) => {
+  socket.on("join_game", ({ gamePin }: any) => {
     socket.join(gamePin);
   });
 

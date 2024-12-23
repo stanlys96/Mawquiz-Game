@@ -285,7 +285,7 @@ export const uploadImageToIPFS = async (imageFile: any) => {
     formData.append("file", imageFile);
 
     const response = await axios.post(
-      `https://mawquiz-backend-production.up.railway.app/pinFileToIPFS`,
+      `http://localhost:3001/pinFileToIPFS`,
       formData,
       {
         headers: {
@@ -302,7 +302,7 @@ export const uploadImageToIPFS = async (imageFile: any) => {
 let socket: any;
 export const getSocket = () => {
   if (!socket) {
-    socket = io("https://mawquiz-backend-production.up.railway.app/", {
+    socket = io("http://localhost:3001/", {
       transports: ["websocket", "polling"],
     });
   }
@@ -351,10 +351,10 @@ export const getUserNickname = (
   principal: string
 ): string => {
   return nickname
-    ? nickname?.length > 20
-      ? nickname?.slice(0, 20) + "..."
+    ? nickname?.length > 15
+      ? nickname?.slice(0, 15) + "..."
       : nickname ?? ""
-    : principal?.slice(0, 20) + "...";
+    : principal?.slice(0, 15) + "...";
 };
 
 export const modalVariants = {

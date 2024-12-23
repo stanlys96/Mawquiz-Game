@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { settingQuestions } from "../../stores/user-slice";
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 
@@ -16,7 +16,7 @@ function Waiting() {
   const queryParams = new URLSearchParams(search);
   const { principal, nickname } = useSelector((state: any) => state.user);
 
-  const gamePin = queryParams.get("gameId");
+  const gamePin = queryParams.get("gamePin");
 
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -33,7 +33,7 @@ function Waiting() {
     });
     socket.on("game_started", (data) => {
       dispatch(settingQuestions(data));
-      navigate(`/game-player?gameId=${gamePin}`, {
+      navigate(`/game-player?gamePin=${gamePin}`, {
         state: {
           routerPrincipal: state.routerPrincipal,
         },

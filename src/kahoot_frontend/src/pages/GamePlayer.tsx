@@ -55,7 +55,7 @@ function GamePlayer() {
   const [showDrumRoll, setShowDrumRoll] = useState(false);
   const [marker, setMarker] = useState(false);
 
-  const gamePin = queryParams.get("gameId");
+  const gamePin = queryParams.get("gamePin");
   const theCurrentQuestion = currentQuestions[questionIndex];
   const MAX_SCORE = 1000;
   const MAX_TIME_MS = theCurrentQuestion?.timeLimit * 1000;

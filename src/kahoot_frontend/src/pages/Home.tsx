@@ -115,14 +115,14 @@ function Home() {
     try {
       setLoading(true);
       const result = await axios.post(
-        `https://mawquiz-backend-production.up.railway.app/joinGame/${gamePin}`,
+        `http://localhost:3001/joinGame/${gamePin}`,
         {
           player: { ...currentUser, admin: false },
         }
       );
       const status = result?.data?.status;
       if (status === 200) {
-        navigate(`/waiting?gameId=${gamePin}`, {
+        navigate(`/waiting?gamePin=${gamePin}`, {
           state: {
             routerPrincipal: state.routerPrincipal,
           },

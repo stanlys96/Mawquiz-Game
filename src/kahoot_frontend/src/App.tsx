@@ -19,11 +19,11 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/create" element={<Create />} />
-        <Route path="/live-game/:gameId?" element={<LiveGame />} />
-        <Route path="/waiting/:gameId?" element={<Waiting />} />
-        <Route path="/show-quiz-title/:gameId?" element={<ShowQuizTitle />} />
-        <Route path="/game-player/:gameId?" element={<GamePlayer />} />
-        <Route path="/solo-game/:gameId?" element={<SoloGame />} />
+        <Route path="/live-game/:gamePin?" element={<LiveGame />} />
+        <Route path="/waiting/:gamePin?" element={<Waiting />} />
+        <Route path="/show-quiz-title/:gamePin?" element={<ShowQuizTitle />} />
+        <Route path="/game-player/:gamePin?" element={<GamePlayer />} />
+        <Route path="/solo-game/:gamePin?" element={<SoloGame />} />
         <Route path="/library" element={<Library />} />
       </Routes>
     </Router>
