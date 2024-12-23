@@ -172,6 +172,11 @@ io.on("connection", (socket: any) => {
     games[gamePin].locked = !games[gamePin].locked;
   });
 
+  socket.on("kick_player", ({ gamePin, principal, nickname }: any) => {
+    delete games?.[gamePin]?.players[principal];
+    io.to(gamePin).emit("kick_player", { principal, nickname });
+  });
+
   socket.on("admin_left", ({ gamePin }: any) => {
     delete games?.[gamePin];
     io.to(gamePin).emit("admin_has_left");

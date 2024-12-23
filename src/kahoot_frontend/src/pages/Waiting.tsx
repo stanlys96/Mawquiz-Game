@@ -39,6 +39,15 @@ function Waiting() {
         },
       });
     });
+    socket.on("kick_player", ({ principal }) => {
+      if (principal === state?.routerPrincipal) {
+        navigate("/home", {
+          state: {
+            routerPrincipal: state.routerPrincipal,
+          },
+        });
+      }
+    });
     const handleBeforeUnload = (event: any) => {
       socket.emit("player_left", { gamePin: gamePin, principal, nickname });
     };

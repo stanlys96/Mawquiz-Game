@@ -178,13 +178,27 @@ function LiveGame() {
         <div className="h-[65vh] md:h-[58vh] overflow-auto">
           <div className="flex flex-wrap w-full items-start justify-center h-full">
             {uniquePlayers?.length > 0 ? (
-              uniquePlayers?.map((owner: any) => (
+              uniquePlayers?.map((owner: any, index: number) => (
                 <div className="mt-4 flex items-center flex-wrap relative user-container overflow-y-auto">
                   <button className="user-button">
                     <div className="user-avatar">
                       <IoPersonCircle size={isMobile ? "25px" : "45px"} />
                     </div>
-                    <span className="hover:line-through">
+                    <span
+                      onClick={() => {
+                        socket.emit("kick_player", {
+                          gamePin: gamePin,
+                          principal: owner?.owner,
+                          nickname: owner?.nickname,
+                        });
+                        setUniquePlayers((prevState) => {
+                          let temp = [...prevState];
+                          temp.splice(index, 1);
+                          return temp;
+                        });
+                      }}
+                      className="hover:line-through"
+                    >
                       {owner?.nickname?.length > 15
                         ? owner?.nickname?.slice(0, 15) + "..."
                         : owner?.nickname ?? ""}
