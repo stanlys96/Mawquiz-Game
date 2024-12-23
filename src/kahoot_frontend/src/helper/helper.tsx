@@ -210,26 +210,6 @@ export const convertSecondsToMinutes = (seconds: number) => {
   }
 };
 
-export const modalVariants = {
-  hidden: { scale: 0.5, opacity: 0 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    transition: {
-      type: "spring", // Spring for bouncy effect
-      stiffness: 500, // Control bounciness
-      damping: 20,
-    },
-  },
-  exit: { scale: 0.5, opacity: 0 },
-};
-
-export const override: CSSProperties = {
-  display: "block",
-  margin: "0 auto",
-  borderColor: "red",
-};
-
 export function generateRandomString(length: number = 8): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -375,4 +355,24 @@ export const getUserNickname = (
       ? nickname?.slice(0, 20) + "..."
       : nickname ?? ""
     : principal?.slice(0, 20) + "...";
+};
+
+export const modalVariants = {
+  hidden: { scale: 0.5, opacity: 0 },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: "spring", // Spring for bouncy effect
+      stiffness: 500, // Control bounciness
+      damping: 20,
+    },
+  },
+  exit: { scale: 0.5, opacity: 0 },
+};
+
+export const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
 };

@@ -26,6 +26,7 @@ import {
   checkQuizData,
   getCurrentFormattedDateTime,
   uploadImageToIPFS,
+  modalVariants,
 } from "../helper/helper";
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
@@ -278,19 +279,6 @@ function Create() {
     }
   };
 
-  const modalVariants = {
-    hidden: { scale: 0.5, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        type: "spring", // Spring for bouncy effect
-        stiffness: 500, // Control bounciness
-        damping: 20,
-      },
-    },
-    exit: { scale: 0.5, opacity: 0 },
-  };
   const newQuizData = {
     id: currentId + 1,
     ...defaultQuizData,
