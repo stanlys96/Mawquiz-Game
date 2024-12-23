@@ -196,7 +196,6 @@ function Profile() {
                     onClick={() => {
                       setIsOpenModalKahoot(true);
                       setCurrentPickedKahoot(userGame);
-                      console.log(userGame);
                     }}
                     className="game-card"
                   >

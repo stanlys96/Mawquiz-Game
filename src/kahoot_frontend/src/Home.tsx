@@ -25,7 +25,6 @@ function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { state } = location;
-  console.log(state);
   const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [nicknameLoading, setNicknameLoading] = useState(false);
