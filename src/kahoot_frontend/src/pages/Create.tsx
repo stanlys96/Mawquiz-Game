@@ -26,7 +26,7 @@ import {
 import { IoTriangleSharp } from "react-icons/io5";
 import { MdHexagon } from "react-icons/md";
 import { FaCircle, FaSquareFull } from "react-icons/fa";
-import { FaCircleQuestion, FaGear } from "react-icons/fa6";
+import { FaCircleQuestion } from "react-icons/fa6";
 import { useMediaQuery } from "react-responsive";
 import { HiDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +38,12 @@ import IC from "../utils/IC";
 import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
 import { LoadingLayover } from "@components/LoadingLayover";
-import { NavbarMobile, NavbarNonMobile } from "@components/CreatePage";
+import {
+  BottomQuizDataMobile,
+  NavbarMobile,
+  NavbarNonMobile,
+} from "../components/CreatePage";
+import { SidebarNonMobile } from "@components/CreatePage/SidebarNonMobile";
 
 function Create() {
   const fileInputRef = useRef(null);
@@ -271,6 +276,33 @@ function Create() {
     ...defaultQuizData,
   };
 
+  const handleAddQuestion = useCallback(() => {
+    if (loading) return;
+    setOpenModalQuestion(true);
+  }, []);
+
+  const handleCopyQuiz = useCallback(
+    (index: number) => {
+      let quizTemp = [...quizData];
+      quizTemp.splice(index + 1, 0, {
+        ...quizData?.[index],
+        id: currentId + 1,
+      });
+      setCurrentId((prevState) => prevState + 1);
+      setQuizData([...quizTemp]);
+    },
+    [quizData, currentId]
+  );
+
+  const handleDeleteQuiz = useCallback(
+    (index: number) => {
+      if (quizData?.length === 1) return;
+      setFlexibleClickedQuizIndex(index);
+      toggleModalJiggle();
+    },
+    [quizData, flexibleClickedQuizIndex, isOpenModalJiggle]
+  );
+
   const addOrUpdateGame = useCallback(() => {
     if (state?.mode === "create") {
       const gamePin = generateRandomString();
@@ -382,6 +414,24 @@ function Create() {
     previousImageCoverUrl,
   ]);
 
+  const handleUpdateQuestion = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let quizDataTemp = [...quizData];
+      quizDataTemp[clickedQuizIndex].question = e.target.value;
+      setQuizData([...quizDataTemp]);
+    },
+    [quizData, clickedQuizIndex]
+  );
+
+  const handleUpdateText1 = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let quizTemp = [...quizData];
+      quizTemp[clickedQuizIndex]["text1"] = e.target.value;
+      setQuizData([...quizTemp]);
+    },
+    [quizData, clickedQuizIndex]
+  );
+
   const handleNavigateProfile = useCallback(() => {
     navigate("/profile", {
       state: {
@@ -430,245 +480,33 @@ function Create() {
       )}
       <div className="flex justify-between">
         {isMobileOrTablet && (
-          <div className="fixed bottom-container-mobile h-[4.5rem] bottom-0 bg-white z-infinite w-full flex items-center gap-x-2">
-            <ul
-              ref={bottomRef}
-              onMouseEnter={() => setMouseEnterUl(true)}
-              onMouseLeave={() => setMouseEnterUl(false)}
-              className={`${
-                mouseEnterUl ? "overflow-y-auto" : "overflow-hidden"
-              } flex flex-1 mobile-ul w-full mr-auto gap-x-2 h-full`}
-            >
-              {quizData?.map((quiz, index) => (
-                <motion.li
-                  onMouseEnter={() => setHoveredQuizIndex(index)}
-                  onMouseLeave={() => setHoveredQuizIndex(-1)}
-                  initial={{ opacity: 1, scale: 1 }}
-                  animate={
-                    index !== 0
-                      ? {
-                          opacity: 1,
-                          scale: 1,
-                          y: [0, -10, 10, -5, 5, 0],
-                        }
-                      : {}
-                  }
-                  exit={{ opacity: 0, scale: 1 }}
-                  transition={{
-                    duration: 0.6,
-                    ease: "easeInOut",
-                  }}
-                  key={quiz?.id}
-                  className="w-[100px]"
-                >
-                  <div
-                    className={`${
-                      clickedQuizIndex === index && "sidebar-card-clicked"
-                    } p-[8px] w-[100px] h-full flex justify-center items-center relative`}
-                  >
-                    <div className="flex gap-x-2">
-                      <p className="text-sidebar">{index + 1}</p>
-                      <div
-                        onClick={() => {
-                          if (loading) return;
-                          setClickedQuizIndex(index);
-                        }}
-                        className={`${
-                          clickedQuizIndex === index
-                            ? "quiz-card-clicked"
-                            : hoveredQuizIndex === index
-                            ? "border-quiz-hover"
-                            : ""
-                        } quiz-card bg-white cursor-pointer mt-[5px] relative`}
-                      >
-                        <p className="text-[0.75rem] bg-[#F2F2F2] rounded-t-[0.25rem] text-[#6E6E6E] py-[2px] text-center font-medium">
-                          {quiz?.question?.length > 5
-                            ? quiz?.question?.slice(0, 5) + "..."
-                            : quiz?.question || "Question"}
-                        </p>
-                        <div className="bg-[#F2F2F2] rounded-b-[0.25rem] px-[4px] flex justify-center items-center">
-                          {quizData?.[index]?.imageUrl !== "cdn.svg" ? (
-                            <img
-                              src={quizData?.[index]?.imageUrl ?? "walaoeh.svg"}
-                              className="rounded-b-[0.25rem] py-[10px] h-[30px] w-[60px]"
-                            />
-                          ) : (
-                            <div className="">
-                              <FaRegImage className="h-[30px] w-[60px] pb-[5px]" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="exclamation-container-mobile">
-                          <img className="exclamation" src="/exclamation.svg" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.li>
-              ))}
-            </ul>
-            <div className="mr-[10px]">
-              <div className="question-container">
-                <span>
-                  <button
-                    onClick={() => {
-                      if (loading) return;
-                      setOpenModalQuestion(true);
-                    }}
-                    className="question-btn"
-                  >
-                    <FaPlus
-                      size="24px"
-                      className="block my-[10px]"
-                      color="white"
-                    />
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
+          <BottomQuizDataMobile
+            bottomRef={bottomRef}
+            setMouseEnterUl={setMouseEnterUl}
+            mouseEnterUl={mouseEnterUl}
+            quizData={quizData}
+            setHoveredQuizIndex={setHoveredQuizIndex}
+            clickedQuizIndex={clickedQuizIndex}
+            setClickedQuizIndex={setClickedQuizIndex}
+            hoveredQuizIndex={hoveredQuizIndex}
+            handleAddQuestion={handleAddQuestion}
+            loading={loading}
+          />
         )}
         {!isMobileOrTablet && (
-          <div className="the-sidebar">
-            <ul
-              ref={bottomRef}
-              onMouseEnter={() => setMouseEnterUl(true)}
-              onMouseLeave={() => setMouseEnterUl(false)}
-              className={`${
-                mouseEnterUl ? "overflow-y-auto" : "overflow-hidden"
-              } sidebar-ul`}
-            >
-              {quizData?.map((quiz, index) => (
-                <motion.li
-                  onMouseEnter={() => setHoveredQuizIndex(index)}
-                  onMouseLeave={() => setHoveredQuizIndex(-1)}
-                  initial={{ opacity: 1, scale: 1 }}
-                  animate={
-                    index !== 0
-                      ? {
-                          opacity: 1,
-                          scale: 1,
-                          y: [0, -10, 10, -5, 5, 0],
-                        }
-                      : {}
-                  }
-                  exit={{ opacity: 0, scale: 1 }}
-                  transition={{
-                    duration: 0.6,
-                    ease: "easeInOut",
-                  }}
-                  key={quiz?.id}
-                  className="sidebar-li"
-                >
-                  <div
-                    className={`${
-                      clickedQuizIndex === index && "sidebar-card-clicked"
-                    } sidebar-card relative`}
-                  >
-                    <div>
-                      <div className="flex gap-x-2">
-                        <p className="ml-[32px] text-sidebar">{index + 1}</p>
-                        <p className="text-sidebar">{quiz?.questionType}</p>
-                      </div>
-                      <div
-                        onClick={() => {
-                          setClickedQuizIndex(index);
-                        }}
-                        className={`${
-                          clickedQuizIndex === index
-                            ? "quiz-card-clicked"
-                            : hoveredQuizIndex === index
-                            ? "border-quiz-hover"
-                            : ""
-                        } quiz-card bg-white ml-[32px] cursor-pointer mt-[5px] mx-[16px] relative`}
-                      >
-                        <p className="text-[0.75rem] my-[5px] text-center font-medium">
-                          {quiz?.question?.length > 15
-                            ? quiz?.question?.slice(0, 15) + "..."
-                            : quiz?.question || "Question"}
-                        </p>
-                        <div className="bg-[#F2F2F2] rounded-b-[0.25rem] flex justify-center items-center">
-                          <img
-                            src={quizData?.[index]?.imageUrl ?? "walaoeh.svg"}
-                            className="rounded-b-[0.25rem] py-[10px] h-[60px] w-[50px] w-full"
-                          />
-                        </div>
-                        <div className="exclamation-container">
-                          <img className="exclamation" src="/exclamation.svg" />
-                        </div>
-                      </div>
-                    </div>
-                    {(clickedQuizIndex === index ||
-                      hoveredQuizIndex === index) && (
-                      <div className="flex flex-col absolute top-[50%] gap-y-1">
-                        <Tooltip placement="right" title={"Duplicate"}>
-                          <a
-                            onClick={() => {
-                              let quizTemp = [...quizData];
-                              quizTemp.splice(index + 1, 0, {
-                                ...quizData?.[index],
-                                id: currentId + 1,
-                              });
-                              setCurrentId((prevState) => prevState + 1);
-                              setQuizData([...quizTemp]);
-                            }}
-                            className="cursor-pointer rounded-full icon-quiz"
-                          >
-                            <MdOutlineFolderCopy
-                              color="#6E6E6E"
-                              height={16}
-                              width={16}
-                            />
-                          </a>
-                        </Tooltip>
-                        <Tooltip
-                          placement="right"
-                          title={
-                            quizData?.length === 1
-                              ? "Can't delete all content"
-                              : "Delete"
-                          }
-                        >
-                          <a
-                            onClick={() => {
-                              if (quizData?.length === 1) return;
-                              setFlexibleClickedQuizIndex(index);
-                              toggleModalJiggle();
-                            }}
-                            className={`${
-                              quizData?.length === 1
-                                ? "cursor-not-allowed"
-                                : "cursor-pointer"
-                            } icon-quiz rounded-full`}
-                          >
-                            <RiDeleteBinLine
-                              color="#6E6E6E"
-                              height={16}
-                              width={16}
-                            />
-                          </a>
-                        </Tooltip>
-                      </div>
-                    )}
-                  </div>
-                </motion.li>
-              ))}
-            </ul>
-            <div className="sidebar-bottom">
-              <div className="question-container">
-                <span>
-                  <button
-                    onClick={() => {
-                      setOpenModalQuestion(true);
-                    }}
-                    className="question-btn"
-                  >
-                    Add question
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
+          <SidebarNonMobile
+            bottomRef={bottomRef}
+            setMouseEnterUl={setMouseEnterUl}
+            mouseEnterUl={mouseEnterUl}
+            quizData={quizData}
+            setHoveredQuizIndex={setHoveredQuizIndex}
+            clickedQuizIndex={clickedQuizIndex}
+            setClickedQuizIndex={setClickedQuizIndex}
+            hoveredQuizIndex={hoveredQuizIndex}
+            handleCopyQuiz={handleCopyQuiz}
+            handleDeleteQuiz={handleDeleteQuiz}
+            handleAddQuestion={handleAddQuestion}
+          />
         )}
         {!isMobileOrTablet && (
           <div className="middle-div flex-1">
@@ -680,12 +518,7 @@ function Create() {
                       <input
                         maxLength={120}
                         value={quizData?.[clickedQuizIndex]?.question ?? ""}
-                        onChange={(e) => {
-                          let quizDataTemp = [...quizData];
-                          quizDataTemp[clickedQuizIndex].question =
-                            e.target.value;
-                          setQuizData([...quizDataTemp]);
-                        }}
+                        onChange={handleUpdateQuestion}
                         placeholder="Start typing your question"
                         className="w-full text-center question-p bg-transparent border-transparent outline-none"
                         type="text"
@@ -760,11 +593,7 @@ function Create() {
                   <input
                     maxLength={75}
                     value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text1 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
+                    onChange={handleUpdateText1}
                     placeholder="Add answer 1"
                     className={`${
                       quizData?.[clickedQuizIndex]?.text1
