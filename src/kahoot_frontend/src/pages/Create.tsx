@@ -1,34 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaArrowRight,
-  FaRegQuestionCircle,
-  FaArrowDown,
-  FaUpload,
-} from "react-icons/fa";
-import { MdOutlineFolderCopy, MdQuiz, MdAccessTime } from "react-icons/md";
-import { VscSymbolBoolean } from "react-icons/vsc";
-import { TiMessageTyping } from "react-icons/ti";
-import { RiDeleteBinLine } from "react-icons/ri";
-import { Dropdown, Tooltip, Popover } from "antd";
-import { DownOutlined } from "@ant-design/icons";
-import { FaPlus, FaRegImage } from "react-icons/fa6";
-import {
-  questionTypeItems,
-  timeLimitItems,
-  convertSecondsToMinutes,
   generateRandomString,
   checkQuizData,
   getCurrentFormattedDateTime,
   uploadImageToIPFS,
-  modalVariants,
 } from "../helper/helper";
-import { IoTriangleSharp } from "react-icons/io5";
-import { MdHexagon } from "react-icons/md";
-import { FaCircle, FaSquareFull } from "react-icons/fa";
-import { FaCircleQuestion } from "react-icons/fa6";
 import { useMediaQuery } from "react-responsive";
-import { HiDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import {
   _SERVICE,
@@ -40,10 +17,21 @@ import { useLocation } from "react-router-dom";
 import { LoadingLayover } from "@components/LoadingLayover";
 import {
   BottomQuizDataMobile,
+  DeleteModalComponent,
+  ExitKahootModalComponent,
+  MiddleComponentMobile,
+  MiddleComponentNonMobile,
   NavbarMobile,
   NavbarNonMobile,
+  QuestionModalComponent,
+  RightSidebar,
+  SidebarNonMobile,
+  TimeLimitModalComponent,
+  TitleModalComponent,
+  UploadImageModalComponent,
+  ValidateModalComponent,
 } from "../components/CreatePage";
-import { SidebarNonMobile } from "@components/CreatePage/SidebarNonMobile";
+import { BouncyModal, JiggleModal } from "../components";
 
 function Create() {
   const fileInputRef = useRef(null);
@@ -414,24 +402,6 @@ function Create() {
     previousImageCoverUrl,
   ]);
 
-  const handleUpdateQuestion = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      let quizDataTemp = [...quizData];
-      quizDataTemp[clickedQuizIndex].question = e.target.value;
-      setQuizData([...quizDataTemp]);
-    },
-    [quizData, clickedQuizIndex]
-  );
-
-  const handleUpdateText1 = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      let quizTemp = [...quizData];
-      quizTemp[clickedQuizIndex]["text1"] = e.target.value;
-      setQuizData([...quizTemp]);
-    },
-    [quizData, clickedQuizIndex]
-  );
-
   const handleNavigateProfile = useCallback(() => {
     navigate("/profile", {
       state: {
@@ -439,6 +409,41 @@ function Create() {
       },
     });
   }, []);
+
+  const handleDeleteQuizModal = useCallback(() => {
+    let quizTemp = [...quizData];
+    if (flexibleClickedQuizIndex !== -1) {
+      quizTemp.splice(flexibleClickedQuizIndex, 1);
+      if (clickedQuizIndex === flexibleClickedQuizIndex) {
+        setClickedQuizIndex((prevState) => {
+          setQuizData([...quizTemp]);
+          if (clickedQuizIndex === 0) {
+            return prevState;
+          }
+          return prevState - 1;
+        });
+      } else {
+        if (clickedQuizIndex < flexibleClickedQuizIndex) {
+          setQuizData([...quizTemp]);
+        } else if (clickedQuizIndex > flexibleClickedQuizIndex) {
+          setClickedQuizIndex((prevState) => {
+            setQuizData([...quizTemp]);
+            return prevState - 1;
+          });
+        }
+      }
+    } else {
+      quizTemp.splice(clickedQuizIndex, 1);
+      setClickedQuizIndex((prevState) => {
+        setQuizData([...quizTemp]);
+        if (clickedQuizIndex === 0) {
+          return prevState;
+        }
+        return prevState - 1;
+      });
+    }
+    toggleModalJiggle();
+  }, [isOpenModalJiggle, clickedQuizIndex, flexibleClickedQuizIndex, quizData]);
 
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -509,2102 +514,186 @@ function Create() {
           />
         )}
         {!isMobileOrTablet && (
-          <div className="middle-div flex-1">
-            <div className="question-div">
-              <div className="question-inner-div">
-                <div className="question-sub-inner-div">
-                  <div className="question-1-div">
-                    <div className="question-2-div">
-                      <input
-                        maxLength={120}
-                        value={quizData?.[clickedQuizIndex]?.question ?? ""}
-                        onChange={handleUpdateQuestion}
-                        placeholder="Start typing your question"
-                        className="w-full text-center question-p bg-transparent border-transparent outline-none"
-                        type="text"
-                      />
-                      <p className="absolute top-1 text-gray right-1 text-[14px] font-semibold">
-                        {120 - quizData?.[clickedQuizIndex].question?.length}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <div
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onClick={() => setIsOpen(true)}
-                className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
-              >
-                {quizData?.[clickedQuizIndex]?.imageUrl === "cdn.svg" ? (
-                  <div className="flex flex-col gap-y-[16px] justify-center items-center">
-                    <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
-                    <div className="btn-upload-div">
-                      <FaPlus
-                        size="32px"
-                        className="block mx-auto"
-                        color="black"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-black">
-                        <span className="text-gray font-semibold underline">
-                          Upload file
-                        </span>{" "}
-                        or drag here to upload
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <img
-                    src={quizData?.[clickedQuizIndex]?.imageUrl}
-                    className="w-[200px h-[200px]"
-                  />
-                )}
-                {dragging && (
-                  <div className="drop-zone flex flex-col gap-y-[24px]">
-                    <div className="arrow-down-div">
-                      <span className="arrow-down-span">
-                        <FaArrowDown size="88px" />
-                      </span>
-                    </div>
-                    <p className="text-[20px] font-bold">Drop your file here</p>
-                  </div>
-                )}
-              </div>
-            </div>
-            {quizData?.[clickedQuizIndex]?.questionType === "Quiz" && (
-              <div className="grid grid-cols-2 gap-[8px]">
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text1 ? "bg-red" : "bg-white"
-                  } flex gap-x-2 items-center relative`}
-                >
-                  <div className="shape-div bg-red">
-                    <IoTriangleSharp
-                      className="mx-[8px]"
-                      size="32px"
-                      color="white"
-                    />
-                  </div>
-                  <input
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
-                    onChange={handleUpdateText1}
-                    placeholder="Add answer 1"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text1
-                        ? "text-white"
-                        : "text-black"
-                    } w-full outline-none bg-transparent border-none`}
-                  />
-
-                  {quizData?.[clickedQuizIndex]?.text1 && (
-                    <button
-                      onClick={() => {
-                        let quizTemp = [...quizData];
-                        quizTemp[clickedQuizIndex].answer1Clicked =
-                          !quizTemp[clickedQuizIndex].answer1Clicked;
-                        setQuizData([...quizTemp]);
-                      }}
-                      onMouseEnter={() => setMouseEnter1(true)}
-                      onMouseLeave={() => setMouseEnter1(false)}
-                      className={`${
-                        quizData?.[clickedQuizIndex]?.answer1Clicked
-                          ? "check-btn-clicked"
-                          : `${
-                              !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                ? "check-btn-animation"
-                                : ""
-                            } check-btn`
-                      }`}
-                    >
-                      <span className={`centang-span`}>
-                        {(mouseEnter1 ||
-                          quizData?.[clickedQuizIndex]?.answer1Clicked) && (
-                          <img src="centang.svg" className="centang-img" />
-                        )}
-                      </span>
-                    </button>
-                  )}
-                  <p className="text-white absolute top-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text1?.length}
-                  </p>
-                </div>
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text2 ? "bg-blue" : "bg-white"
-                  } flex gap-x-2 items-center`}
-                >
-                  <div className="shape-div bg-blue">
-                    <MdHexagon className="mx-[8px]" size="32px" color="white" />
-                  </div>
-                  <input
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text2}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text2 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 2"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text2
-                        ? "text-white"
-                        : "text-black"
-                    } w-full outline-none bg-transparent border-none`}
-                  />
-
-                  {quizData?.[clickedQuizIndex]?.text2 && (
-                    <button
-                      onClick={() => {
-                        let quizTemp = [...quizData];
-                        quizTemp[clickedQuizIndex].answer2Clicked =
-                          !quizTemp[clickedQuizIndex].answer2Clicked;
-                        setQuizData([...quizTemp]);
-                      }}
-                      onMouseEnter={() => setMouseEnter2(true)}
-                      onMouseLeave={() => setMouseEnter2(false)}
-                      className={`${
-                        quizData?.[clickedQuizIndex]?.answer2Clicked
-                          ? "check-btn-clicked"
-                          : `${
-                              !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                ? "check-btn-animation"
-                                : ""
-                            } check-btn`
-                      }`}
-                    >
-                      <span className={`centang-span`}>
-                        {(mouseEnter2 ||
-                          quizData?.[clickedQuizIndex]?.answer2Clicked) && (
-                          <img src="centang.svg" className="centang-img" />
-                        )}
-                      </span>
-                    </button>
-                  )}
-                  <p className="text-white absolute top-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text2?.length}
-                  </p>
-                </div>
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text3
-                      ? "bg-orange"
-                      : "bg-white"
-                  } flex gap-x-2 items-center`}
-                >
-                  <div className="shape-div bg-orange">
-                    <FaCircle className="mx-[8px]" size="32px" color="white" />
-                  </div>
-                  <input
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text3}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text3 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 3 (optional)"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text3
-                        ? "text-white"
-                        : "text-black"
-                    } w-full outline-none bg-transparent border-none`}
-                  />
-
-                  {quizData?.[clickedQuizIndex]?.text3 && (
-                    <button
-                      onClick={() => {
-                        let quizTemp = [...quizData];
-                        quizTemp[clickedQuizIndex].answer3Clicked =
-                          !quizTemp[clickedQuizIndex].answer3Clicked;
-                        setQuizData([...quizTemp]);
-                      }}
-                      onMouseEnter={() => setMouseEnter3(true)}
-                      onMouseLeave={() => setMouseEnter3(false)}
-                      className={`${
-                        quizData?.[clickedQuizIndex]?.answer3Clicked
-                          ? "check-btn-clicked"
-                          : `${
-                              !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                ? "check-btn-animation"
-                                : ""
-                            } check-btn`
-                      }`}
-                    >
-                      <span className={`centang-span`}>
-                        {(mouseEnter3 ||
-                          quizData?.[clickedQuizIndex]?.answer3Clicked) && (
-                          <img src="centang.svg" className="centang-img" />
-                        )}
-                      </span>
-                    </button>
-                  )}
-                  <p className="text-white absolute top-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text3?.length}
-                  </p>
-                </div>
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text4
-                      ? "bg-dark-green"
-                      : "bg-white"
-                  } flex gap-x-2 items-center relative`}
-                >
-                  <div className="shape-div bg-dark-green">
-                    <FaSquareFull
-                      className="mx-[8px]"
-                      size="32px"
-                      color="white"
-                    />
-                  </div>
-                  <input
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text4}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text4 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 4 (optional)"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text4
-                        ? "text-white"
-                        : "text-black"
-                    } w-full outline-none bg-transparent border-none`}
-                  />
-
-                  {quizData?.[clickedQuizIndex]?.text4 && (
-                    <button
-                      onClick={() => {
-                        let quizTemp = [...quizData];
-                        quizTemp[clickedQuizIndex].answer4Clicked =
-                          !quizTemp[clickedQuizIndex].answer4Clicked;
-                        setQuizData([...quizTemp]);
-                      }}
-                      onMouseEnter={() => setMouseEnter4(true)}
-                      onMouseLeave={() => setMouseEnter4(false)}
-                      className={`${
-                        quizData?.[clickedQuizIndex]?.answer4Clicked
-                          ? "check-btn-clicked"
-                          : `${
-                              !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                              !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                ? "check-btn-animation"
-                                : ""
-                            } check-btn`
-                      }`}
-                    >
-                      <span className={`centang-span`}>
-                        {(mouseEnter4 ||
-                          quizData?.[clickedQuizIndex]?.answer4Clicked) && (
-                          <img src="centang.svg" className="centang-img" />
-                        )}
-                      </span>
-                    </button>
-                  )}
-                  <p className="text-white absolute top-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text4?.length}
-                  </p>
-                </div>
-              </div>
-            )}
-            {quizData?.[clickedQuizIndex]?.questionType === "True or false" && (
-              <div className="grid grid-cols-2 gap-[8px]">
-                <div
-                  className={`answer-card bg-red flex gap-x-2 items-center relative`}
-                >
-                  <div className="shape-div bg-red">
-                    <IoTriangleSharp
-                      className="mx-[8px]"
-                      size="32px"
-                      color="white"
-                    />
-                  </div>
-                  <p className="text-white w-full outline-none bg-transparent border-none">
-                    True
-                  </p>
-
-                  <button
-                    onClick={() => {
-                      let quizTemp = [...quizData];
-                      if (
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer === "true"
-                      ) {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "false";
-                      } else {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
-                      }
-                      setQuizData([...quizTemp]);
-                    }}
-                    onMouseEnter={() => setMouseEnter1(true)}
-                    onMouseLeave={() => setMouseEnter1(false)}
-                    className={`${
-                      quizData[clickedQuizIndex]?.trueOrFalseAnswer === "true"
-                        ? "check-btn-clicked"
-                        : `${
-                            !quizData[clickedQuizIndex]?.trueOrFalseAnswer
-                              ? "check-btn-animation"
-                              : ""
-                          } check-btn`
-                    }`}
-                  >
-                    <span className={`centang-span`}>
-                      {(mouseEnter1 ||
-                        quizData[clickedQuizIndex].trueOrFalseAnswer ===
-                          "true") && (
-                        <img src="centang.svg" className="centang-img" />
-                      )}
-                    </span>
-                  </button>
-                </div>
-                <div
-                  className={`answer-card bg-blue flex gap-x-2 items-center`}
-                >
-                  <div className="shape-div bg-blue">
-                    <MdHexagon className="mx-[8px]" size="32px" color="white" />
-                  </div>
-                  <p className="text-white w-full outline-none bg-transparent border-none">
-                    False
-                  </p>
-                  <button
-                    onClick={() => {
-                      let quizTemp = [...quizData];
-                      if (
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer === "false"
-                      ) {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
-                      } else {
-                        quizTemp[clickedQuizIndex].trueOrFalseAnswer = "false";
-                      }
-                      setQuizData([...quizTemp]);
-                    }}
-                    onMouseEnter={() => setMouseEnter2(true)}
-                    onMouseLeave={() => setMouseEnter2(false)}
-                    className={`${
-                      quizData[clickedQuizIndex].trueOrFalseAnswer === "false"
-                        ? "check-btn-clicked"
-                        : `${
-                            !quizData[clickedQuizIndex].trueOrFalseAnswer
-                              ? "check-btn-animation"
-                              : ""
-                          } check-btn`
-                    }`}
-                  >
-                    <span className={`centang-span`}>
-                      {(mouseEnter2 ||
-                        quizData[clickedQuizIndex].trueOrFalseAnswer ===
-                          "false") && (
-                        <img src="centang.svg" className="centang-img" />
-                      )}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            )}
-            {quizData?.[clickedQuizIndex]?.questionType === "Type answer" && (
-              <div className="flex justify-center flex-col gap-y-2 items-center w-full">
-                <div className="question-div">
-                  <div
-                    className={`question-inner-div-answer ${
-                      quizData[clickedQuizIndex]?.text1?.length > 0 && "bg-red"
-                    }`}
-                  >
-                    <div className="question-sub-inner-div">
-                      <div className="question-1-div-answer">
-                        <div className="question-2-div">
-                          <input
-                            maxLength={20}
-                            value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
-                            onChange={(e) => {
-                              let quizTemp = [...quizData];
-                              quizTemp[clickedQuizIndex].text1 = e.target.value;
-                              setQuizData([...quizTemp]);
-                            }}
-                            placeholder="Type an answer"
-                            className={`${
-                              quizData?.[clickedQuizIndex]?.text1?.length > 0
-                                ? "text-white"
-                                : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                            type="text"
-                          />
-                          <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                            {20 - quizData?.[clickedQuizIndex]?.text1?.length}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    if (quizData?.[clickedQuizIndex]?.additionalAnswers > 0)
-                      return;
-                    let quizTemp = [...quizData];
-                    quizTemp[clickedQuizIndex].additionalAnswers =
-                      quizTemp[clickedQuizIndex].additionalAnswers + 1;
-                    setQuizData([...quizTemp]);
-                  }}
-                  className="shadow-overlay-button"
-                >
-                  {(quizData?.[clickedQuizIndex]?.additionalAnswers ?? 0) <= 0
-                    ? "Add other accepted answers"
-                    : `Other accepted answers ${
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3
-                          ? "("
-                          : ""
-                      }${
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3
-                          ? 3 - quizData?.[clickedQuizIndex]?.additionalAnswers
-                          : ""
-                      }${
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3
-                          ? ")"
-                          : ""
-                      }`}
-                </button>
-                {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 && (
-                  <div className="grid grid-cols-3 gap-4">
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 && (
-                      <div className="question-div">
-                        <div
-                          className={`question-answer-full ${
-                            quizData?.[clickedQuizIndex]?.text2?.length > 0 &&
-                            "bg-blue"
-                          }`}
-                        >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
-                              <div className="question-2-div">
-                                <input
-                                  maxLength={20}
-                                  value={quizData?.[clickedQuizIndex]?.text2}
-                                  onChange={(e) => {
-                                    let quizTemp = [...quizData];
-                                    quizTemp[clickedQuizIndex].text2 =
-                                      e.target.value;
-                                    setQuizData([...quizTemp]);
-                                  }}
-                                  placeholder="Type an answer"
-                                  className={`${
-                                    quizData?.[clickedQuizIndex]?.text2
-                                      ?.length > 0
-                                      ? "text-white"
-                                      : "text-black"
-                                  } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                                  type="text"
-                                />
-                                <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                                  {20 -
-                                    quizData?.[clickedQuizIndex]?.text2?.length}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 1 && (
-                      <div className="question-div">
-                        <div
-                          className={`question-answer-full ${
-                            quizData?.[clickedQuizIndex]?.text3?.length > 0 &&
-                            "bg-orange"
-                          }`}
-                        >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
-                              <div className="question-2-div">
-                                <input
-                                  maxLength={20}
-                                  value={quizData?.[clickedQuizIndex]?.text3}
-                                  onChange={(e) => {
-                                    let quizTemp = [...quizData];
-                                    quizTemp[clickedQuizIndex].text3 =
-                                      e.target.value;
-                                    setQuizData([...quizTemp]);
-                                  }}
-                                  placeholder="Type an answer"
-                                  className={`${
-                                    quizData?.[clickedQuizIndex]?.text3
-                                      ?.length > 0
-                                      ? "text-white"
-                                      : "text-black"
-                                  } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                                  type="text"
-                                />
-                                <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                                  {20 -
-                                    quizData?.[clickedQuizIndex]?.text3?.length}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 2 && (
-                      <div className="question-div">
-                        <div
-                          className={`question-answer-full ${
-                            quizData?.[clickedQuizIndex]?.text4?.length > 0 &&
-                            "bg-green-only"
-                          }`}
-                        >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
-                              <div className="question-2-div">
-                                <input
-                                  maxLength={20}
-                                  value={quizData?.[clickedQuizIndex]?.text4}
-                                  onChange={(e) => {
-                                    let quizTemp = [...quizData];
-                                    quizTemp[clickedQuizIndex].text4 =
-                                      e.target.value;
-                                    setQuizData([...quizTemp]);
-                                  }}
-                                  placeholder="Type an answer"
-                                  className={`${
-                                    quizData?.[clickedQuizIndex]?.text4
-                                      ?.length > 0
-                                      ? "text-white"
-                                      : "text-black"
-                                  } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                                  type="text"
-                                />
-                                <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                                  {20 -
-                                    quizData?.[clickedQuizIndex]?.text4?.length}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 &&
-                      quizData?.[clickedQuizIndex]?.additionalAnswers < 3 && (
-                        <button
-                          onClick={() => {
-                            let quizTemp = [...quizData];
-                            quizTemp[clickedQuizIndex].additionalAnswers =
-                              quizTemp[clickedQuizIndex].additionalAnswers + 1;
-                            setQuizData([...quizTemp]);
-                          }}
-                          className="shadow-overlay-button"
-                        >
-                          Add more
-                        </button>
-                      )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <MiddleComponentNonMobile
+            quizData={quizData}
+            clickedQuizIndex={clickedQuizIndex}
+            setQuizData={setQuizData}
+            handleDragLeave={handleDragLeave}
+            handleDragOver={handleDragOver}
+            handleDrop={handleDrop}
+            setIsOpen={setIsOpen}
+            dragging={dragging}
+            setMouseEnter1={setMouseEnter1}
+            setMouseEnter2={setMouseEnter2}
+            setMouseEnter3={setMouseEnter3}
+            setMouseEnter4={setMouseEnter4}
+            mouseEnter1={mouseEnter1}
+            mouseEnter2={mouseEnter2}
+            mouseEnter3={mouseEnter3}
+            mouseEnter4={mouseEnter4}
+          />
         )}
         {isMobileOrTablet && (
-          <div className="middle-div-mobile min-h-[100vh] w-[100vw] mt-[56px] w-full flex flex-col gap-y-4">
-            <div className="question-div-main-question">
-              <div className="flex gap-x-2 items-center">
-                <div className="question-inner-div">
-                  <div className="question-sub-inner-div">
-                    <div className="question-1-div">
-                      <div className="question-2-div">
-                        <input
-                          maxLength={120}
-                          value={quizData?.[clickedQuizIndex]?.question ?? ""}
-                          onChange={(e) => {
-                            let quizDataTemp = [...quizData];
-                            quizDataTemp[clickedQuizIndex].question =
-                              e.target.value;
-                            setQuizData([...quizDataTemp]);
-                          }}
-                          placeholder="Start typing your question"
-                          className="w-full text-center question-p bg-transparent border-transparent outline-none"
-                          type="text"
-                        />
-                      </div>
-                      <p className="absolute top-1 text-gray right-1 text-[14px] font-semibold">
-                        {120 - quizData?.[clickedQuizIndex].question?.length}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <Popover
-                  placement="bottom"
-                  content={
-                    <div className="bg-white flex flex-col gap-y-4 p-[8px]">
-                      <div
-                        onClick={() => {
-                          setOpenModalQuestion(true);
-                          setIsChangingQuestionType(true);
-                          handleOpenChange(false);
-                        }}
-                        className="flex gap-x-2 items-center"
-                      >
-                        <p className="montserrat">Change question type</p>
-                      </div>
-                      <div
-                        onClick={() => {
-                          setCurrentTimeLimit(
-                            quizData?.[clickedQuizIndex]?.timeLimit
-                          );
-                          handleOpenChange(false);
-                          toggleModalTimeLimit();
-                        }}
-                        className="flex gap-x-2 items-center"
-                      >
-                        <p className="montserrat">Set time limit</p>
-                      </div>
-                      <div
-                        onClick={() => {
-                          let quizTemp = [...quizData];
-                          quizTemp.splice(clickedQuizIndex + 1, 0, {
-                            ...quizData?.[clickedQuizIndex],
-                            id: currentId + 1,
-                          });
-                          setCurrentId((prevState) => prevState + 1);
-                          if (clickedQuizIndex === quizData?.length - 1) {
-                            scrollToEnd();
-                          }
-                          setQuizData([...quizTemp]);
-                          handleOpenChange(false);
-                        }}
-                        className="flex gap-x-2 items-center"
-                      >
-                        <p className="montserrat">Duplicate</p>
-                      </div>
-                      {quizData?.length > 1 && (
-                        <div
-                          onClick={() => {
-                            if (quizData?.length === 1) {
-                              return;
-                            }
-                            toggleModalJiggle();
-                            handleOpenChange(false);
-                          }}
-                          className="flex gap-x-2 items-center"
-                        >
-                          <p className="montserrat">Delete</p>
-                        </div>
-                      )}
-                    </div>
-                  }
-                  trigger="click"
-                  open={open}
-                  onOpenChange={handleOpenChange}
-                >
-                  <div className="three-dots-container flex justify-center items-center">
-                    <HiDotsVertical size="24px" color="black" />
-                  </div>
-                </Popover>
-              </div>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <div
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onClick={() => setIsOpen(true)}
-                className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
-              >
-                {quizData?.[clickedQuizIndex]?.imageUrl === "cdn.svg" ? (
-                  <div className="flex flex-col gap-y-[16px] justify-center items-center">
-                    <img src="/walaoeh.svg" className="rounded-b-[0.25rem]" />
-                    <div className="btn-upload-div">
-                      <FaPlus
-                        size="32px"
-                        className="block mx-auto"
-                        color="black"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-black">
-                        <span className="text-gray font-semibold underline">
-                          Upload file
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <img
-                    className="h-[200px] w-[200px]"
-                    src={quizData?.[clickedQuizIndex]?.imageUrl}
-                  />
-                )}
-                {dragging && (
-                  <div className="drop-zone flex flex-col gap-y-[24px]">
-                    <div className="arrow-down-div">
-                      <span className="arrow-down-span">
-                        <FaArrowDown size="88px" />
-                      </span>
-                    </div>
-                    <p className="text-[20px] font-bold">Drop your file here</p>
-                  </div>
-                )}
-              </div>
-            </div>
-            {quizData?.[clickedQuizIndex]?.questionType === "Quiz" && (
-              <div className="grid grid-cols-2 gap-[8px]">
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text1 ? "bg-red" : "bg-white"
-                  } flex flex-col gap-x-2 items-center relative`}
-                >
-                  <div className="flex justify-between w-full mt-[8px]">
-                    <div className="shape-div-mobile bg-red p-[3px]">
-                      <IoTriangleSharp className="" size="16px" color="white" />
-                    </div>
-                    {quizData?.[clickedQuizIndex]?.text1 && (
-                      <button
-                        onClick={() => {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].answer1Clicked =
-                            !quizTemp[clickedQuizIndex].answer1Clicked;
-                          setQuizData([...quizTemp]);
-                        }}
-                        onMouseEnter={() => setMouseEnter1(true)}
-                        onMouseLeave={() => setMouseEnter1(false)}
-                        className={`${
-                          quizData?.[clickedQuizIndex]?.answer1Clicked
-                            ? "check-btn-mobile-clicked"
-                            : `${
-                                !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? "check-btn-animation"
-                                  : ""
-                              } check-btn-mobile`
-                        }`}
-                      >
-                        <span className={`centang-span-mobile`}>
-                          {quizData?.[clickedQuizIndex]?.answer1Clicked && (
-                            <img src="centang.svg" className="centang-img" />
-                          )}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                  <textarea
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text1 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 1"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text1
-                        ? "text-white"
-                        : "text-black"
-                    } w-full px-[6px] outline-none bg-transparent border-none`}
-                  />
-
-                  <p className="text-white absolute bottom-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text1?.length}
-                  </p>
-                </div>
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text2 ? "bg-blue" : "bg-white"
-                  } flex flex-col gap-x-2 items-center relative`}
-                >
-                  <div className="flex justify-between w-full mt-[8px]">
-                    <div className="shape-div-mobile bg-blue p-[3px]">
-                      <MdHexagon className="" size="16px" color="white" />
-                    </div>
-                    {quizData?.[clickedQuizIndex]?.text2 && (
-                      <button
-                        onClick={() => {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].answer2Clicked =
-                            !quizTemp[clickedQuizIndex].answer2Clicked;
-                          setQuizData([...quizTemp]);
-                        }}
-                        onMouseEnter={() => setMouseEnter2(true)}
-                        onMouseLeave={() => setMouseEnter2(false)}
-                        className={`${
-                          quizData?.[clickedQuizIndex]?.answer2Clicked
-                            ? "check-btn-mobile-clicked"
-                            : `${
-                                !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? "check-btn-animation"
-                                  : ""
-                              } check-btn-mobile`
-                        }`}
-                      >
-                        <span className={`centang-span-mobile`}>
-                          {quizData?.[clickedQuizIndex]?.answer2Clicked && (
-                            <img src="centang.svg" className="centang-img" />
-                          )}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                  <textarea
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text2 ?? ""}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text2 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 1"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text2
-                        ? "text-white"
-                        : "text-black"
-                    } w-full px-[6px] outline-none bg-transparent border-none`}
-                  />
-
-                  <p className="text-white absolute bottom-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text2?.length}
-                  </p>
-                </div>
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text3
-                      ? "bg-orange"
-                      : "bg-white"
-                  } flex flex-col gap-x-2 items-center relative`}
-                >
-                  <div className="flex justify-between w-full mt-[8px]">
-                    <div className="shape-div-mobile bg-orange p-[3px]">
-                      <FaCircle className="" size="16px" color="white" />
-                    </div>
-                    {quizData?.[clickedQuizIndex]?.text3 && (
-                      <button
-                        onClick={() => {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].answer3Clicked =
-                            !quizTemp[clickedQuizIndex].answer3Clicked;
-                          setQuizData([...quizTemp]);
-                        }}
-                        onMouseEnter={() => setMouseEnter2(true)}
-                        onMouseLeave={() => setMouseEnter2(false)}
-                        className={`${
-                          quizData?.[clickedQuizIndex]?.answer3Clicked
-                            ? "check-btn-mobile-clicked"
-                            : `${
-                                !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? "check-btn-animation"
-                                  : ""
-                              } check-btn-mobile`
-                        }`}
-                      >
-                        <span className={`centang-span-mobile`}>
-                          {quizData?.[clickedQuizIndex]?.answer3Clicked && (
-                            <img src="centang.svg" className="centang-img" />
-                          )}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                  <textarea
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text3 ?? ""}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text3 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 3 (optional)"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text3
-                        ? "text-white"
-                        : "text-black"
-                    } w-full px-[6px] outline-none bg-transparent border-none`}
-                  />
-
-                  <p className="text-white absolute bottom-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text3?.length}
-                  </p>
-                </div>
-                <div
-                  className={`answer-card ${
-                    quizData?.[clickedQuizIndex]?.text4
-                      ? "bg-dark-green"
-                      : "bg-white"
-                  } flex flex-col gap-x-2 items-center relative`}
-                >
-                  <div className="flex justify-between w-full mt-[8px]">
-                    <div className="shape-div-mobile bg-dark-green p-[3px]">
-                      <FaSquareFull className="" size="16px" color="white" />
-                    </div>
-                    {quizData?.[clickedQuizIndex]?.text4 && (
-                      <button
-                        onClick={() => {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].answer4Clicked =
-                            !quizTemp[clickedQuizIndex].answer4Clicked;
-                          setQuizData([...quizTemp]);
-                        }}
-                        onMouseEnter={() => setMouseEnter2(true)}
-                        onMouseLeave={() => setMouseEnter2(false)}
-                        className={`${
-                          quizData?.[clickedQuizIndex]?.answer4Clicked
-                            ? "check-btn-mobile-clicked"
-                            : `${
-                                !quizData?.[clickedQuizIndex]?.answer1Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer2Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer3Clicked &&
-                                !quizData?.[clickedQuizIndex]?.answer4Clicked
-                                  ? "check-btn-animation"
-                                  : ""
-                              } check-btn-mobile`
-                        }`}
-                      >
-                        <span className={`centang-span-mobile`}>
-                          {quizData?.[clickedQuizIndex]?.answer4Clicked && (
-                            <img src="centang.svg" className="centang-img" />
-                          )}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                  <textarea
-                    maxLength={75}
-                    value={quizData?.[clickedQuizIndex]?.text4 ?? ""}
-                    onChange={(e) => {
-                      let quizTemp = [...quizData];
-                      quizTemp[clickedQuizIndex].text4 = e.target.value;
-                      setQuizData([...quizTemp]);
-                    }}
-                    placeholder="Add answer 4 (optional)"
-                    className={`${
-                      quizData?.[clickedQuizIndex]?.text4
-                        ? "text-white"
-                        : "text-black"
-                    } w-full px-[6px] outline-none bg-transparent border-none`}
-                  />
-
-                  <p className="text-white absolute bottom-1 right-[10px]">
-                    {75 - quizData?.[clickedQuizIndex]?.text4?.length}
-                  </p>
-                </div>
-              </div>
-            )}
-            {quizData?.[clickedQuizIndex]?.questionType === "True or false" && (
-              <div className="grid grid-cols-2 gap-[8px]">
-                <div
-                  className={`answer-card bg-red flex flex-col gap-x-2 items-center relative`}
-                >
-                  <div className="flex justify-between w-full mt-[8px]">
-                    <div className="shape-div-mobile bg-red p-[3px]">
-                      <MdHexagon className="" size="16px" color="white" />
-                    </div>
-                    <button
-                      onClick={() => {
-                        let quizTemp = [...quizData];
-                        if (
-                          quizTemp[clickedQuizIndex].trueOrFalseAnswer ===
-                          "true"
-                        ) {
-                          quizTemp[clickedQuizIndex].trueOrFalseAnswer =
-                            "false";
-                        } else {
-                          quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
-                        }
-                        setQuizData([...quizTemp]);
-                      }}
-                      onMouseEnter={() => setMouseEnter2(true)}
-                      onMouseLeave={() => setMouseEnter2(false)}
-                      className={`${
-                        quizData[clickedQuizIndex].trueOrFalseAnswer === "true"
-                          ? "check-btn-mobile-clicked"
-                          : `${
-                              !quizData[clickedQuizIndex].trueOrFalseAnswer
-                                ? "check-btn-animation"
-                                : ""
-                            } check-btn-mobile`
-                      }`}
-                    >
-                      <span className={`centang-span-mobile`}>
-                        {quizData[clickedQuizIndex].trueOrFalseAnswer ===
-                          "true" && (
-                          <img
-                            src="centang.svg"
-                            className="centang-img-mobile"
-                          />
-                        )}
-                      </span>
-                    </button>
-                  </div>
-                  <p className="text-white w-full pl-[8px] outline-none bg-transparent border-none">
-                    True
-                  </p>
-                </div>
-                <div
-                  className={`answer-card bg-blue flex flex-col gap-x-2 items-center relative`}
-                >
-                  <div className="flex justify-between w-full mt-[8px]">
-                    <div className="shape-div-mobile bg-blue p-[3px]">
-                      <IoTriangleSharp className="" size="16px" color="white" />
-                    </div>
-                    <button
-                      onClick={() => {
-                        let quizTemp = [...quizData];
-                        if (
-                          quizTemp[clickedQuizIndex].trueOrFalseAnswer ===
-                          "false"
-                        ) {
-                          quizTemp[clickedQuizIndex].trueOrFalseAnswer = "true";
-                        } else {
-                          quizTemp[clickedQuizIndex].trueOrFalseAnswer =
-                            "false";
-                        }
-                        setQuizData([...quizTemp]);
-                      }}
-                      onMouseEnter={() => setMouseEnter2(true)}
-                      onMouseLeave={() => setMouseEnter2(false)}
-                      className={`${
-                        quizData[clickedQuizIndex].trueOrFalseAnswer === "false"
-                          ? "check-btn-mobile-clicked"
-                          : `${
-                              !quizData[clickedQuizIndex].trueOrFalseAnswer
-                                ? "check-btn-animation"
-                                : ""
-                            } check-btn-mobile`
-                      }`}
-                    >
-                      <span className={`centang-span-mobile`}>
-                        {quizData[clickedQuizIndex].trueOrFalseAnswer ===
-                          "false" && (
-                          <img
-                            src="centang.svg"
-                            className="centang-img-mobile"
-                          />
-                        )}
-                      </span>
-                    </button>
-                  </div>
-                  <p className="text-white w-full pl-[8px] outline-none bg-transparent border-none">
-                    False
-                  </p>
-                </div>
-              </div>
-            )}
-            {quizData?.[clickedQuizIndex]?.questionType === "Type answer" && (
-              <div className="flex justify-center flex-col gap-y-2 items-center w-full">
-                <div className="question-div">
-                  <div
-                    className={`question-inner-div-answer-mobile ${
-                      quizData[clickedQuizIndex]?.text1?.length > 0 && "bg-red"
-                    }`}
-                  >
-                    <div className="question-sub-inner-div">
-                      <div className="question-1-div-answer">
-                        <div className="question-2-div">
-                          <input
-                            maxLength={20}
-                            value={quizData?.[clickedQuizIndex]?.text1 ?? ""}
-                            onChange={(e) => {
-                              let quizTemp = [...quizData];
-                              quizTemp[clickedQuizIndex].text1 = e.target.value;
-                              setQuizData([...quizTemp]);
-                            }}
-                            placeholder="Type an answer"
-                            className={`${
-                              quizData?.[clickedQuizIndex]?.text1?.length > 0
-                                ? "text-white"
-                                : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                            type="text"
-                          />
-                          <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                            {20 - quizData?.[clickedQuizIndex]?.text1?.length}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    if (quizData?.[clickedQuizIndex]?.additionalAnswers > 0)
-                      return;
-                    let quizTemp = [...quizData];
-                    quizTemp[clickedQuizIndex].additionalAnswers =
-                      quizTemp[clickedQuizIndex].additionalAnswers + 1;
-                    setQuizData([...quizTemp]);
-                  }}
-                  className="shadow-overlay-button"
-                >
-                  {(quizData?.[clickedQuizIndex]?.additionalAnswers ?? 0) <= 0
-                    ? "Add other accepted answers"
-                    : `Other accepted answers ${
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3
-                          ? "("
-                          : ""
-                      }${
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3
-                          ? 3 - quizData?.[clickedQuizIndex]?.additionalAnswers
-                          : ""
-                      }${
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3
-                          ? ")"
-                          : ""
-                      }`}
-                </button>
-                {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 && (
-                  <div className="flex flex-col w-full gap-y-4">
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 && (
-                      <div className="question-div w-full">
-                        <div
-                          className={`question-answer-full ${
-                            quizData?.[clickedQuizIndex]?.text2?.length > 0 &&
-                            "bg-blue"
-                          }`}
-                        >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
-                              <div className="question-2-div">
-                                <input
-                                  maxLength={20}
-                                  value={quizData?.[clickedQuizIndex]?.text2}
-                                  onChange={(e) => {
-                                    let quizTemp = [...quizData];
-                                    quizTemp[clickedQuizIndex].text2 =
-                                      e.target.value;
-                                    setQuizData([...quizTemp]);
-                                  }}
-                                  placeholder="Type an answer"
-                                  className={`${
-                                    quizData?.[clickedQuizIndex]?.text2
-                                      ?.length > 0
-                                      ? "text-white"
-                                      : "text-black"
-                                  } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                                  type="text"
-                                />
-                                <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                                  {20 -
-                                    quizData?.[clickedQuizIndex]?.text2?.length}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 1 && (
-                      <div className="question-div">
-                        <div
-                          className={`question-answer-full ${
-                            quizData?.[clickedQuizIndex]?.text3?.length > 0 &&
-                            "bg-orange"
-                          }`}
-                        >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
-                              <div className="question-2-div">
-                                <input
-                                  maxLength={20}
-                                  value={quizData?.[clickedQuizIndex]?.text3}
-                                  onChange={(e) => {
-                                    let quizTemp = [...quizData];
-                                    quizTemp[clickedQuizIndex].text3 =
-                                      e.target.value;
-                                    setQuizData([...quizTemp]);
-                                  }}
-                                  placeholder="Type an answer"
-                                  className={`${
-                                    quizData?.[clickedQuizIndex]?.text3
-                                      ?.length > 0
-                                      ? "text-white"
-                                      : "text-black"
-                                  } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                                  type="text"
-                                />
-                                <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                                  {20 -
-                                    quizData?.[clickedQuizIndex]?.text3?.length}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {quizData?.[clickedQuizIndex]?.additionalAnswers > 2 && (
-                      <div className="question-div">
-                        <div
-                          className={`question-answer-full ${
-                            quizData?.[clickedQuizIndex]?.text4?.length > 0 &&
-                            "bg-dark-green"
-                          }`}
-                        >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
-                              <div className="question-2-div">
-                                <input
-                                  maxLength={20}
-                                  value={quizData?.[clickedQuizIndex]?.text4}
-                                  onChange={(e) => {
-                                    let quizTemp = [...quizData];
-                                    quizTemp[clickedQuizIndex].text4 =
-                                      e.target.value;
-                                    setQuizData([...quizTemp]);
-                                  }}
-                                  placeholder="Type an answer"
-                                  className={`${
-                                    quizData?.[clickedQuizIndex]?.text4
-                                      ?.length > 0
-                                      ? "text-white"
-                                      : "text-black"
-                                  } w-full text-center question-p bg-transparent border-transparent outline-none`}
-                                  type="text"
-                                />
-                                <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
-                                  {20 -
-                                    quizData?.[clickedQuizIndex]?.text4?.length}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex justify-center items-center">
-                      {quizData?.[clickedQuizIndex]?.additionalAnswers > 0 &&
-                        quizData?.[clickedQuizIndex]?.additionalAnswers < 3 && (
-                          <button
-                            onClick={() => {
-                              let quizTemp = [...quizData];
-                              quizTemp[clickedQuizIndex].additionalAnswers =
-                                quizTemp[clickedQuizIndex].additionalAnswers +
-                                1;
-                              setQuizData([...quizTemp]);
-                            }}
-                            className="shadow-overlay-button"
-                          >
-                            Add more
-                          </button>
-                        )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <MiddleComponentMobile
+            quizData={quizData}
+            clickedQuizIndex={clickedQuizIndex}
+            setQuizData={setQuizData}
+            handleDragLeave={handleDragLeave}
+            handleDragOver={handleDragOver}
+            handleDrop={handleDrop}
+            setIsOpen={setIsOpen}
+            dragging={dragging}
+            setMouseEnter1={setMouseEnter1}
+            setMouseEnter2={setMouseEnter2}
+            setOpenModalQuestion={setOpenModalQuestion}
+            setIsChangingQuestionType={setIsChangingQuestionType}
+            handleOpenChange={handleOpenChange}
+            setCurrentTimeLimit={setCurrentTimeLimit}
+            toggleModalTimeLimit={toggleModalTimeLimit}
+            currentId={currentId}
+            setCurrentId={setCurrentId}
+            scrollToEnd={scrollToEnd}
+            toggleModalJiggle={toggleModalJiggle}
+            open={open}
+          />
         )}
         {!isMobileOrTablet && (
-          <div className="right-sidebar">
-            <button className="right-sidebar-btn text-black">
-              <FaArrowRight className="absolute left-[20%]" />
-            </button>
-            <div className="inner-right-sidebar w-full">
-              <div className="flex gap-x-2 items-center">
-                <FaRegQuestionCircle
-                  className="w-[24px] h-[24px]"
-                  color="black"
-                />
-                <p className="text-[#333333] font-semibold">Question Type</p>
-              </div>
-              <Dropdown
-                className="dropdown-sidebar mt-3 w-full text-black"
-                menu={{
-                  items: questionTypeItems((questionType: string) => {
-                    let quizDataTemp = [...quizData];
-                    quizDataTemp[clickedQuizIndex].questionType = questionType;
-                    setQuizData([...quizDataTemp]);
-                  }),
-                }}
-                trigger={["click"]}
-              >
-                <a
-                  className="flex justify-between items-center px-[10px]"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <div className="flex items-center gap-x-2">
-                    {quizData?.[clickedQuizIndex]?.questionType === "Quiz" ? (
-                      <MdQuiz />
-                    ) : quizData?.[clickedQuizIndex]?.questionType ===
-                      "True or false" ? (
-                      <VscSymbolBoolean />
-                    ) : (
-                      <TiMessageTyping />
-                    )}
-                    <p className="text-black">
-                      {quizData?.[clickedQuizIndex]?.questionType}
-                    </p>
-                  </div>
-                  <DownOutlined />
-                </a>
-              </Dropdown>
-              <div className="horizontal-rule" />
-              <div className="flex gap-x-2 items-center">
-                <MdAccessTime className="w-[24px] h-[24px]" color="black" />
-                <p className="text-[#333333] font-semibold">Time Limit</p>
-              </div>
-              <Dropdown
-                className="dropdown-sidebar mt-3 w-full text-black"
-                menu={{
-                  items: timeLimitItems((timeLimit: number) => {
-                    let quizDataTemp = [...quizData];
-                    quizDataTemp[clickedQuizIndex].timeLimit = timeLimit;
-                    setQuizData([...quizDataTemp]);
-                  }),
-                }}
-                trigger={["click"]}
-              >
-                <a
-                  className="flex justify-between items-center px-[10px]"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <div className="flex items-center gap-x-2">
-                    {convertSecondsToMinutes(
-                      quizData?.[clickedQuizIndex]?.timeLimit
-                    )}
-                  </div>
-                  <DownOutlined />
-                </a>
-              </Dropdown>
-            </div>
-            <div className="right-sidebar-bottom mt-auto flex gap-x-2">
-              {quizData?.length > 1 && (
-                <button
-                  onClick={() => {
-                    if (quizData?.length === 1) return;
-                    toggleModalJiggle();
-                  }}
-                  className="delete-btn"
-                >
-                  Delete
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  let quizTemp = [...quizData];
-                  quizTemp.splice(clickedQuizIndex + 1, 0, {
-                    ...quizData?.[clickedQuizIndex],
-                    id: currentId + 1,
-                  });
-                  setCurrentId((prevState) => prevState + 1);
-                  if (clickedQuizIndex === quizData?.length - 1) {
-                    scrollToEnd();
-                  }
-                  setQuizData([...quizTemp]);
-                  handleOpenChange(false);
-                }}
-                className="duplicate-btn"
-              >
-                Duplicate
-              </button>
-            </div>
-          </div>
+          <RightSidebar
+            quizData={quizData}
+            clickedQuizIndex={clickedQuizIndex}
+            setQuizData={setQuizData}
+            toggleModalJiggle={toggleModalJiggle}
+            setCurrentId={setCurrentId}
+            currentId={currentId}
+            scrollToEnd={scrollToEnd}
+            handleOpenChange={handleOpenChange}
+          />
         )}
       </div>
-      <AnimatePresence>
-        {isOpen && (
-          <div
-            onClick={() => toggleModalSecond()}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg w-[712px] text-center"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="pb-[16px]">
-                <p className="text-[#333333] text-left font-semibold text-[24px] upload-image-p">
-                  Upload image
-                </p>
-              </div>
-              <div className="upload-modal-div relative">
-                <div className="inner-modal-div relative">
-                  <div className="flex gap-x-[15px] items-center">
-                    <FaUpload size="32px" color="black" />
-                    <div className="flex flex-col gap-y-1">
-                      <p className="text-[#333333] text-left font-semibold">
-                        Drop your files here
-                      </p>
-                      <div className="flex gap-x-2 items-center">
-                        <p className="text-[#6E6E6E] text-left">
-                          Max. file size: 80MB
-                        </p>
-                        <Tooltip
-                          className="z-infinite"
-                          placement="top"
-                          title={"Image: 80 MB"}
-                        >
-                          <FaCircleQuestion color="gray" />
-                        </Tooltip>
-                      </div>
-                      <div className="flex gap-x-2 items-center">
-                        <p className="text-[#6E6E6E] text-left">
-                          Drop your files here
-                        </p>
-                        <Tooltip
-                          className="z-infinite"
-                          placement="top"
-                          title={"Image: jpeg, jpg, png, gif and webp"}
-                        >
-                          <FaCircleQuestion color="gray" />
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </div>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <label htmlFor="file-upload" className="save-button">
-                    Upload Media
-                  </label>
-                </div>
-                {dragging && (
-                  <div className="drop-zone flex flex-col gap-y-[24px]">
-                    <div className="arrow-down-div">
-                      <span className="arrow-down-span">
-                        <FaArrowDown size="88px" />
-                      </span>
-                    </div>
-                    <p className="text-[20px] font-bold">Drop your file here</p>
-                  </div>
-                )}
-              </div>
-              <div className="close-toggle-button">
-                <button
-                  onClick={toggleModalSecond}
-                  className="toggle-close-btn"
-                >
-                  Close
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      {isOpenModalJiggle && (
-        <div
-          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
-          onClick={toggleModalJiggle}
-        >
-          <motion.div
-            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
-            onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 1, scale: 1 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              rotate: [0, -5, 5, -3, 3, 0],
-              x: [0, -10, 10, -5, 5, 0],
-            }}
-            exit={{ opacity: 0, scale: 1 }}
-            transition={{
-              duration: 0.6,
-              ease: "easeInOut",
-            }}
-          >
-            <button
-              onClick={toggleModalJiggle}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-            >
-              ✕
-            </button>
-            <h2 className="text-xl font-semibold mb-4 text-black">
-              Delete {quizData?.[flexibleClickedQuizIndex]?.questionType}{" "}
-              question
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to delete this question? This action can’t
-              be undone.
-            </p>
-            <div className="flex gap-x-2 items-center justify-center">
-              <button onClick={toggleModalJiggle} className="cancel-btn">
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  let quizTemp = [...quizData];
-                  if (flexibleClickedQuizIndex !== -1) {
-                    quizTemp.splice(flexibleClickedQuizIndex, 1);
-                    if (clickedQuizIndex === flexibleClickedQuizIndex) {
-                      setClickedQuizIndex((prevState) => {
-                        setQuizData([...quizTemp]);
-                        if (clickedQuizIndex === 0) {
-                          return prevState;
-                        }
-                        return prevState - 1;
-                      });
-                    } else {
-                      if (clickedQuizIndex < flexibleClickedQuizIndex) {
-                        setQuizData([...quizTemp]);
-                      } else if (clickedQuizIndex > flexibleClickedQuizIndex) {
-                        setClickedQuizIndex((prevState) => {
-                          setQuizData([...quizTemp]);
-                          return prevState - 1;
-                        });
-                      }
-                    }
-                  } else {
-                    quizTemp.splice(clickedQuizIndex, 1);
-                    setClickedQuizIndex((prevState) => {
-                      setQuizData([...quizTemp]);
-                      if (clickedQuizIndex === 0) {
-                        return prevState;
-                      }
-                      return prevState - 1;
-                    });
-                  }
-                  toggleModalJiggle();
-                }}
-                className="delete-modal-btn"
-              >
-                Delete
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-      <AnimatePresence>
-        {openModalQuestion && (
-          <div
-            onClick={() => toggleModalQuestion()}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg px-[32px] text-center"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="mt-[24px]">
-                <p className="text-black mb-[12px]">Choose Question Type:</p>
-                <div className="flex gap-x-4 lg:flex-row flex-col gap-y-4 items-center justify-center w-full">
-                  {((isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.questionType !== "Quiz") ||
-                    !isChangingQuestionType) && (
-                    <div
-                      onClick={() => {
-                        if (!isChangingQuestionType) {
-                          setQuizData((prevState) => [
-                            ...prevState,
-                            { ...newQuizData, questionType: "Quiz" },
-                          ]);
-                          setCurrentId((prevState) => prevState + 1);
-                          if (isMobileOrTablet) {
-                            scrollToEnd();
-                          } else {
-                            scrollToBottom();
-                          }
-                        } else {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].questionType = "Quiz";
-                          setQuizData([...quizTemp]);
-                        }
-                        setIsChangingQuestionType(false);
-                        toggleModalQuestion();
-                      }}
-                      className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
-                    >
-                      <MdQuiz color="black" size="30px" />
-                      <p className="text-black">Quiz</p>
-                    </div>
-                  )}
-                  {((isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.questionType !==
-                      "True or false") ||
-                    !isChangingQuestionType) && (
-                    <div
-                      onClick={() => {
-                        if (!isChangingQuestionType) {
-                          setQuizData((prevState) => [
-                            ...prevState,
-                            { ...newQuizData, questionType: "True or false" },
-                          ]);
-                          setCurrentId((prevState) => prevState + 1);
-                          if (isMobileOrTablet) {
-                            scrollToEnd();
-                          } else {
-                            scrollToBottom();
-                          }
-                        } else {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].questionType =
-                            "True or false";
-                          setQuizData([...quizTemp]);
-                        }
-                        setIsChangingQuestionType(false);
-                        toggleModalQuestion();
-                      }}
-                      className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
-                    >
-                      <VscSymbolBoolean color="black" size="30px" />
-                      <p className="text-black">True or false</p>
-                    </div>
-                  )}
-                  {((isChangingQuestionType &&
-                    quizData?.[clickedQuizIndex]?.questionType !==
-                      "Type answer") ||
-                    !isChangingQuestionType) && (
-                    <div
-                      onClick={() => {
-                        if (!isChangingQuestionType) {
-                          setQuizData((prevState) => [
-                            ...prevState,
-                            { ...newQuizData, questionType: "Type answer" },
-                          ]);
-                          setCurrentId((prevState) => prevState + 1);
-                          if (isMobileOrTablet) {
-                            scrollToEnd();
-                          } else {
-                            scrollToBottom();
-                          }
-                        } else {
-                          let quizTemp = [...quizData];
-                          quizTemp[clickedQuizIndex].questionType =
-                            "Type answer";
-                          setQuizData([...quizTemp]);
-                        }
-                        setIsChangingQuestionType(false);
-                        toggleModalQuestion();
-                      }}
-                      className="the-gray cursor-pointer mx-[8px] mt-[8px] rounded-[4px] py-[16px] w-[150px] flex flex-col gap-y-2 justify-center items-center"
-                    >
-                      <TiMessageTyping color="black" size="30px" />
-                      <p className="text-black">Type answer</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="close-toggle-button">
-                <button
-                  onClick={() => {
-                    toggleModalQuestion();
-                    setIsChangingQuestionType(false);
-                  }}
-                  className="duplicate-btn"
-                >
-                  Cancel
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {isOpenModalTitle && (
-          <div
-            onClick={() => {
-              setFromSaving(false);
-              toggleModalTitle();
-            }}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] md:w-[600px]"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="mt-[24px]">
-                <p className="text-gray mb-[12px] font-semibold text-left">
-                  Title
-                </p>
-                <p className="text-black text-left">
-                  Enter a title for your mawquiz.
-                </p>
-                <div className="relative">
-                  <input
-                    value={kahootTitleTemp}
-                    onChange={(e) => {
-                      setKahootTitleTemp(e.target.value);
-                    }}
-                    className="mt-[12px] title-input outline-none w-full"
-                    type="text"
-                    maxLength={95}
-                  />
-                  <p className="absolute top-[40%] text-[#6E6E6E] right-2">
-                    {95 - (kahootTitleTemp?.length ?? 0)}
-                  </p>
-                </div>
-                <p className="text-gray mb-[12px] mt-[20px] font-semibold text-left">
-                  Cover Image{" "}
-                  <span className="text-[#6E6E6E] font-normal">(optional)</span>
-                </p>
-                <div className="inner-modal-div-cover relative bg-blue">
-                  {!imageCoverUrlTemp ? (
-                    <div className="flex gap-x-[15px] items-center">
-                      <FaUpload size="32px" color="black" />
-                      <div className="flex flex-col gap-y-1">
-                        <div className="flex gap-x-2 items-center">
-                          <p className="text-[#6E6E6E] text-left">
-                            Max. file size: 80MB
-                          </p>
-                          <Tooltip
-                            className="z-infinite"
-                            placement="top"
-                            title={"Image: 80 MB"}
-                          >
-                            <FaCircleQuestion color="gray" />
-                          </Tooltip>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <img
-                      onClick={() => {
-                        (fileInputRef?.current as any)?.click();
-                      }}
-                      className="w-[200px] h-[100px]"
-                      src={imageCoverUrlTemp}
-                    />
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    id="file-upload"
-                    type="file"
-                    onChange={handleCoverImage}
-                    className="hidden"
-                  />
-                  {!imageCoverUrlTemp && (
-                    <label
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        (fileInputRef?.current as any)?.click();
-                      }}
-                      className="save-button"
-                    >
-                      Upload Media
-                    </label>
-                  )}
-                  {draggingCoverImage && (
-                    <div className="drop-zone flex flex-col gap-y-[24px]">
-                      <div className="arrow-down-div">
-                        <span className="arrow-down-span">
-                          <FaArrowDown size="88px" />
-                        </span>
-                      </div>
-                      <p className="text-[20px] font-bold">
-                        Drop your file here
-                      </p>
-                    </div>
-                  )}
-                </div>
-                <p className="text-gray mb-[12px] mt-[20px] font-semibold text-left">
-                  Description{" "}
-                  <span className="text-[#6E6E6E] font-normal">(optional)</span>
-                </p>
-                <p className="text-black text-left">
-                  Provide a short description for your mawquiz to increase
-                  visibility.
-                </p>
-                <div className="relative">
-                  <textarea
-                    value={kahootDescriptionTemp}
-                    onChange={(e) => setKahootDescriptionTemp(e.target.value)}
-                    rows={4}
-                    className="mt-[12px] textarea-input outline-none w-full"
-                    maxLength={500}
-                  />
-                  <p className="absolute top-[20%] text-[#6E6E6E] right-2">
-                    {500 - (kahootDescriptionTemp?.length ?? 0)}
-                  </p>
-                </div>
-              </div>
-              <div className="close-toggle-button gap-x-2">
-                <button
-                  onClick={() => {
-                    setFromSaving(false);
-                    toggleModalTitle();
-                    setKahootTitleTemp(previousKahootTitle);
-                    setKahootDescriptionTemp(previousKahootDescription);
-                    setImageCoverUrlTemp(previousImageCoverUrl);
-                  }}
-                  className="exit-button"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    if (fromSaving) {
-                      if (!kahootTitleTemp?.trim()) return;
-                    }
-                    setKahootTitleTemp((prevState: any) => {
-                      setKahootTitle(prevState.trim());
-                      setPreviousKahootTitle(prevState.trim());
-                      return prevState.trim();
-                    });
-                    setKahootDescriptionTemp((prevState: any) => {
-                      setKahootDescription(prevState.trim());
-                      setPreviousKahootDescription(prevState.trim());
-                      return prevState.trim();
-                    });
-                    setImageCoverUrlTemp((prevState: any) => {
-                      setImageCoverUrl(prevState.trim());
-                      setPreviousImageCoverUrl(prevState.trim());
-                      return prevState.trim();
-                    });
-                    toggleModalTitle();
-                    if (fromSaving) {
-                      setLoading(true);
-                      addOrUpdateGame();
-                    }
-                  }}
-                  className="save-button"
-                >
-                  Submit
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      {isOpenExitKahootModal && (
-        <div
-          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
-          onClick={toggleModalExitKahoot}
-        >
-          <motion.div
-            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
-            onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 1, scale: 1 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              rotate: [0, -5, 5, -3, 3, 0],
-              x: [0, -10, 10, -5, 5, 0],
-            }}
-            exit={{ opacity: 0, scale: 1 }}
-            transition={{
-              duration: 0.6,
-              ease: "easeInOut",
-            }}
-          >
-            <button
-              onClick={toggleModalExitKahoot}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-            >
-              ✕
-            </button>
-            <h2 className="text-xl font-semibold mb-4 text-black">Exit</h2>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to exit? Your changes will not be saved.
-            </p>
-            <div className="flex gap-x-2 items-center justify-center">
-              <button
-                onClick={() => {
-                  navigate("/profile", {
-                    state: {
-                      routerPrincipal: state.routerPrincipal,
-                    },
-                  });
-                }}
-                className="cancel-red-btn"
-              >
-                Exit
-              </button>
-              <button
-                onClick={() => {
-                  toggleModalExitKahoot();
-                }}
-                className="exit-kahoot-btn"
-              >
-                Keep Editing
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-      <AnimatePresence>
-        {isOpenModalValidate && (
-          <div
-            onClick={() => toggleModalValidate()}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg text-center h-full md:h-[95vh] flex flex-col gap-y-4 w-[100vw] md:w-[640px]"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="mt-[24px] px-[16px] md:px-[32px]">
-                <p className="text-gray mb-[12px] text-[24px] font-bold text-left">
-                  This mawquiz can't be played
-                </p>
-                <p className="text-black text-left">
-                  All questions need to be completed before you can start
-                  playing.
-                </p>
-              </div>
-              <div className="validate-div mt-[24px] h-full">
-                <ul className="validate-subdiv">
-                  {quizChecked?.map((theData) => (
-                    <li className="validate-li">
-                      <div className="top-part flex gap-x-2 items-center p-[2px]">
-                        <div className="dashed-part flex justify-center items-center">
-                          {quizData?.[theData?.index]?.imageUrl ===
-                          "cdn.svg" ? (
-                            <FaRegImage color="gray" size="30px" />
-                          ) : (
-                            <img
-                              className="w-[75px] h-[60px]"
-                              src={quizData?.[theData?.index]?.imageUrl ?? ""}
-                            />
-                          )}
-                        </div>
-                        <div className="flex flex-col items-start flex-1">
-                          <p className="text-black text-[14px]">
-                            {theData?.index + 1} -{" "}
-                            {quizData?.[theData?.index]?.questionType}
-                          </p>
-                          <p className="text-black font-bold text-[13px]">
-                            {quizData?.[theData?.index]?.question?.length > 12
-                              ? (quizData?.[theData?.index]?.question?.slice(
-                                  0,
-                                  12
-                                ) ?? "") + "..."
-                              : quizData?.[theData?.index]?.question ?? ""}
-                          </p>
-                        </div>
-                        <div className="mr-[10px]">
-                          <button
-                            onClick={() => {
-                              setClickedQuizIndex(theData?.index);
-                              toggleModalValidate();
-                            }}
-                            className="save-button"
-                          >
-                            Fix
-                          </button>
-                        </div>
-                      </div>
-                      <div className="bottom-part flex flex-col items-start">
-                        {theData?.messages?.map((value, index) => (
-                          <div
-                            className={`flex gap-x-2 py-[5px] px-[10px] ${
-                              index !== 0 && "border-t border-t-[#F2F2F2]"
-                            } w-full items-center`}
-                          >
-                            <img
-                              className="exclamation-ordinary"
-                              src="/exclamation.svg"
-                            />
-                            <p className="text-black text-[14px]">{value}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="close-toggle-button gap-x-2">
-                <button
-                  onClick={() => {
-                    toggleModalValidate();
-                  }}
-                  className="exit-button"
-                >
-                  Back to Edit
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {isOpenModalTimeLimit && (
-          <div
-            onClick={() => toggleModalTimeLimit()}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg text-center md:h-[95vh] flex flex-col gap-y-4 w-[90vw] md:w-[640px]"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="mt-[24px] px-[16px] md:px-[32px] the-box-shadow pb-[32px]">
-                <p className="text-gray mb-[12px] text-[24px] font-bold text-left">
-                  Time limit
-                </p>
-                <div className="flex gap-3 justify-center items-center flex-wrap">
-                  {timeLimitData?.map((theData) => (
-                    <button
-                      onClick={() => {
-                        setCurrentTimeLimit(theData);
-                      }}
-                      className={`${
-                        currentTimeLimit === theData
-                          ? "exit-button-blue"
-                          : "exit-button"
-                      }`}
-                    >
-                      {theData}&nbsp;sec
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="close-toggle-button gap-x-2">
-                <button
-                  onClick={() => {
-                    setCurrentTimeLimit(
-                      quizData?.[clickedQuizIndex]?.timeLimit
-                    );
-                    toggleModalTimeLimit();
-                  }}
-                  className="exit-button"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    let quizTemp = [...quizData];
-                    quizTemp[clickedQuizIndex].timeLimit = currentTimeLimit;
-                    setQuizData([...quizTemp]);
-                    toggleModalTimeLimit();
-                  }}
-                  className="done-button"
-                >
-                  Done
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <BouncyModal
+        isOpenModal={isOpen}
+        handleClose={() => toggleModalSecond()}
+        innerDivClassName="bg-white rounded-lg shadow-lg w-[712px] text-center"
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+        handleDragLeave={handleDragLeave}
+        handleDragOver={handleDragOver}
+        handleDrop={handleDrop}
+      >
+        <UploadImageModalComponent
+          handleFileChange={handleFileChange}
+          dragging={dragging}
+          toggleModalSecond={toggleModalSecond}
+        />
+      </BouncyModal>
+      <JiggleModal
+        isOpen={isOpenModalJiggle}
+        onClose={toggleModalJiggle}
+        outerDivClassName="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+        innerDivClassName="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+      >
+        <DeleteModalComponent
+          toggleModalJiggle={toggleModalJiggle}
+          quizData={quizData}
+          flexibleClickedQuizIndex={flexibleClickedQuizIndex}
+          handleDeleteQuizModal={handleDeleteQuizModal}
+        />
+      </JiggleModal>
+      <BouncyModal
+        isOpenModal={openModalQuestion}
+        handleClose={toggleModalQuestion}
+        innerDivClassName="bg-white rounded-lg shadow-lg px-[32px] text-center"
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+      >
+        <QuestionModalComponent
+          isChangingQuestionType={isChangingQuestionType}
+          quizData={quizData}
+          clickedQuizIndex={clickedQuizIndex}
+          setQuizData={setQuizData}
+          newQuizData={newQuizData}
+          setCurrentId={setCurrentId}
+          isMobileOrTablet={isMobileOrTablet}
+          scrollToEnd={scrollToEnd}
+          scrollToBottom={scrollToBottom}
+          setIsChangingQuestionType={setIsChangingQuestionType}
+          toggleModalQuestion={toggleModalQuestion}
+        />
+      </BouncyModal>
+      <BouncyModal
+        handleClose={() => {
+          setFromSaving(false);
+          toggleModalTitle();
+        }}
+        isOpenModal={isOpenModalTitle}
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+        innerDivClassName="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] md:w-[600px]"
+      >
+        <TitleModalComponent
+          kahootTitleTemp={kahootTitleTemp}
+          setKahootTitleTemp={setKahootTitleTemp}
+          imageCoverUrlTemp={imageCoverUrlTemp}
+          fileInputRef={fileInputRef}
+          handleCoverImage={handleCoverImage}
+          draggingCoverImage={draggingCoverImage}
+          kahootDescriptionTemp={kahootDescriptionTemp}
+          setKahootDescriptionTemp={setKahootDescriptionTemp}
+          setKahootTitle={setKahootTitle}
+          setPreviousKahootTitle={setPreviousKahootTitle}
+          setFromSaving={setFromSaving}
+          toggleModalTitle={toggleModalTitle}
+          setImageCoverUrlTemp={setImageCoverUrlTemp}
+          fromSaving={fromSaving}
+          previousKahootTitle={previousKahootTitle}
+          previousKahootDescription={previousKahootDescription}
+          previousImageCoverUrl={previousImageCoverUrl}
+          setKahootDescription={setKahootDescription}
+          setPreviousImageCoverUrl={setPreviousImageCoverUrl}
+          setImageCoverUrl={setImageCoverUrl}
+          setPreviousKahootDescription={setPreviousKahootDescription}
+          setLoading={setLoading}
+          addOrUpdateGame={addOrUpdateGame}
+        />
+      </BouncyModal>
+      <JiggleModal
+        isOpen={isOpenExitKahootModal}
+        onClose={toggleModalExitKahoot}
+        outerDivClassName="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+        innerDivClassName="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+      >
+        <ExitKahootModalComponent
+          toggleModalExitKahoot={toggleModalExitKahoot}
+          navigate={navigate}
+          state={state}
+        />
+      </JiggleModal>
+      <BouncyModal
+        isOpenModal={isOpenModalValidate}
+        handleClose={toggleModalValidate}
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+        innerDivClassName="bg-white rounded-lg shadow-lg text-center h-full md:h-[95vh] flex flex-col gap-y-4 w-[100vw] md:w-[640px]"
+      >
+        <ValidateModalComponent
+          quizChecked={quizChecked}
+          quizData={quizData}
+          setClickedQuizIndex={setClickedQuizIndex}
+          toggleModalValidate={toggleModalValidate}
+        />
+      </BouncyModal>
+      <BouncyModal
+        isOpenModal={isOpenModalTimeLimit}
+        handleClose={toggleModalTimeLimit}
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+        innerDivClassName="bg-white rounded-lg shadow-lg text-center md:h-[95vh] flex flex-col gap-y-4 w-[90vw] md:w-[640px]"
+      >
+        <TimeLimitModalComponent
+          timeLimitData={timeLimitData}
+          setCurrentTimeLimit={setCurrentTimeLimit}
+          currentTimeLimit={currentTimeLimit}
+          quizData={quizData}
+          clickedQuizIndex={clickedQuizIndex}
+          setQuizData={setQuizData}
+          toggleModalTimeLimit={toggleModalTimeLimit}
+        />
+      </BouncyModal>
     </main>
   );
 }
