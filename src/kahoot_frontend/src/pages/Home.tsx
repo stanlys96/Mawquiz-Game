@@ -109,36 +109,31 @@ function Home() {
     setNickname("");
   }, [isOpenModalNickname, nickname]);
 
-  const handleEnterRoom = useCallback(() => {
-    async () => {
-      if (!gamePin) return;
-      if (!currentUser?.owner) return;
-      try {
-        setLoading(true);
-        const result = await axios.post(
-          `https://mawquiz-backend-production.up.railway.app/joinGame/${gamePin}`,
-          {
-            player: { ...currentUser, admin: false },
-          }
-        );
-        const status = result?.data?.status;
-        if (status === 200) {
-          navigate(`/waiting?gameId=${gamePin}`, {
-            state: {
-              routerPrincipal: state.routerPrincipal,
-            },
-          });
+  const handleEnterRoom = useCallback(async () => {
+    if (!gamePin) return;
+    if (!currentUser?.owner) return;
+    try {
+      setLoading(true);
+      const result = await axios.post(
+        `https://mawquiz-backend-production.up.railway.app/joinGame/${gamePin}`,
+        {
+          player: { ...currentUser, admin: false },
         }
-        setLoading(false);
-      } catch (e: any) {
-        Swal.fire(
-          "There's a problem!",
-          e?.response?.data?.message ?? "",
-          "info"
-        );
-        setLoading(false);
+      );
+      const status = result?.data?.status;
+      if (status === 200) {
+        navigate(`/waiting?gameId=${gamePin}`, {
+          state: {
+            routerPrincipal: state.routerPrincipal,
+          },
+        });
       }
-    };
+      setLoading(false);
+    } catch (e: any) {
+      console.log(e);
+      Swal.fire("There's a problem!", e?.response?.data?.message ?? "", "info");
+      setLoading(false);
+    }
   }, [loading, gamePin, currentUser?.owner]);
 
   const handleLogout = useCallback(() => {

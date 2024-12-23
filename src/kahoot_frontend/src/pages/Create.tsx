@@ -14,7 +14,7 @@ import {
 import IC from "../utils/IC";
 import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
-import { LoadingLayover } from "@components/LoadingLayover";
+import { LoadingLayover } from "../components/LoadingLayover";
 import {
   BottomQuizDataMobile,
   DeleteModalComponent,
@@ -143,9 +143,9 @@ function Create() {
     const file = event.target.files[0];
     try {
       if (file && file.type.startsWith("image/")) {
+        setDragging(false);
         setLoadingFile(true);
         const imageIPFSURL = await uploadImageToIPFS(file);
-        setDragging(false);
         setIsOpen(false);
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -364,6 +364,7 @@ function Create() {
     quizData,
     principal,
     imageCoverUrlTemp,
+    state?.gamePin,
   ]);
 
   const handleSaveQuiz = useCallback(async () => {
@@ -385,6 +386,9 @@ function Create() {
     quizData,
     kahootTitle,
     isOpenModalValidate,
+    imageCoverUrlTemp,
+    kahootTitleTemp,
+    kahootDescriptionTemp,
   ]);
 
   const handleEditQuizTitle = useCallback(() => {
@@ -461,8 +465,8 @@ function Create() {
         description={
           loading
             ? state?.mode === "create"
-              ? "Saving"
-              : "Updating"
+              ? "Saving..."
+              : "Updating..."
             : "Uploading file... Please wait..."
         }
       />

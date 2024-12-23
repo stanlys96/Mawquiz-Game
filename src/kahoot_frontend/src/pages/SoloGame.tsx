@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Quiz from "../../public/lottie/quiz-2.json";
 import TrueOrFalse from "../../public/lottie/true-or-false.json";
 import TypeAnswer from "../../public/lottie/type-answer.json";
@@ -15,7 +15,6 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
-import { getOrdinalSuffix, getScoreLeaderboardHeight } from "../helper/helper";
 import GameFinished from "../../public/lottie/drum-roll.json";
 import Confetti from "react-confetti";
 
@@ -48,7 +47,6 @@ const AnimatedNumber = ({ from, to, duration }: any) => {
 
 function SoloGame() {
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
   const { search, state } = useLocation();
   const [showTitle, setShowTitle] = useState(false);
   const [count, setCount] = useState(-1);
@@ -68,8 +66,9 @@ function SoloGame() {
   const [previousScore, setPreviousScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
 
-  const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
-    useSelector((state: any) => state.user);
+  const { nickname, currentPickedKahoot, currentUniquePlayers } = useSelector(
+    (state: any) => state.user
+  );
   const [uniquePlayers, setUniquePlayers] = useState(currentUniquePlayers);
   const [playerAnswers, setPlayerAnswers] = useState<any>([]);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -77,19 +76,14 @@ function SoloGame() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [showDrumRoll, setShowDrumRoll] = useState(false);
 
-  const queryParams = new URLSearchParams(search);
-  const gamePin = queryParams.get("gameId");
   const variants = {
     hidden: { scale: 0, opacity: 0 },
     visible: { scale: 1, opacity: 1 },
     exit: { scale: 0, opacity: 0 },
   };
 
-  const [number, setNumber] = useState(0);
+  const [, setNumber] = useState(0);
   const currentKahootQuestion = theKahootQuestions?.[currentQuestionIndex];
-  const uniquePlayersSorted = [...uniquePlayers]?.sort(
-    (a: any, b: any) => (b?.totalScore ?? 0) - (a?.totalScore ?? 0)
-  );
   const MAX_SCORE = 1000;
   const MAX_TIME_MS = currentKahootQuestion?.timeLimit * 1000;
   const handleAnswer = useCallback(

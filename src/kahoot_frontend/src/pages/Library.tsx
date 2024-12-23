@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { settingKahoot, settingPrincipal } from "../../stores/user-slice";
@@ -10,6 +10,7 @@ import {
 import { IoPerson } from "react-icons/io5";
 import { Principal } from "@dfinity/principal";
 import { FaPencil } from "react-icons/fa6";
+import { LoadingLayover } from "../components/LoadingLayover";
 
 function Library() {
   const location = useLocation();
@@ -20,7 +21,43 @@ function Library() {
   const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [userGames, setUserGames] = useState<Game[]>([]);
-  const [currentUser, setCurrentUser] = useState<any>();
+  const [, setCurrentUser] = useState<any>();
+
+  const handleHostGameLive = useCallback(
+    async (userGame: Game) => {
+      try {
+        setLoading(true);
+        const theData = await fetch(
+          "https://mawquiz-backend-production.up.railway.app/games",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              gamePin: userGame?.gamePin,
+              questions: userGame?.questions,
+            }),
+          }
+        );
+
+        const createGame = await theData?.json();
+        if (createGame?.message !== "error") {
+          dispatch(settingKahoot(userGame));
+          navigate(`/live-game?gameId=${userGame?.gamePin}`, {
+            state: {
+              routerPrincipal: state.routerPrincipal,
+            },
+          });
+        }
+        setLoading(false);
+      } catch (e) {
+        setLoading(false);
+        console.log(e, "<< E");
+      }
+    },
+    [loading, state, userGames]
+  );
 
   useEffect(() => {
     IC.getBackend((result: any) => {
@@ -57,19 +94,7 @@ function Library() {
   }, [principal, backend]);
   return (
     <main className="h-[100vh]">
-      {loading && (
-        <div className="relative kahoot-container">
-          <div className="kahoot-spinner">
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-          <p className="montserrat medium text-[28px] leading-[0px]">
-            Loading data...
-          </p>
-        </div>
-      )}
+      <LoadingLayover loading={loading} description="Loading data..." />
       <div className="flex md:flex-row flex-col gap-y-2 items-center justify-center md:justify-between bg-[#FFF] h-[18vh] md:h-[10vh] border-b border-b-[#E9E8E9] py-[10px] px-[15px]">
         <img
           onClick={() => {
@@ -146,38 +171,7 @@ function Library() {
               </p>
               <div className="flex gap-x-2 items-center">
                 <button
-                  onClick={async () => {
-                    try {
-                      setLoading(true);
-                      const theData = await fetch(
-                        "https://mawquiz-backend-production.up.railway.app/games",
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            gamePin: userGame?.gamePin,
-                            questions: userGame?.questions,
-                          }),
-                        }
-                      );
-
-                      const createGame = await theData?.json();
-                      if (createGame?.message !== "error") {
-                        dispatch(settingKahoot(userGame));
-                        navigate(`/live-game?gameId=${userGame?.gamePin}`, {
-                          state: {
-                            routerPrincipal: state.routerPrincipal,
-                          },
-                        });
-                      }
-                      setLoading(false);
-                    } catch (e) {
-                      setLoading(false);
-                      console.log(e, "<< E");
-                    }
-                  }}
+                  onClick={() => handleHostGameLive(userGame)}
                   className="cursor-pointer exit-button"
                 >
                   Host live

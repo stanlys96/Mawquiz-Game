@@ -7,6 +7,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import multer from "multer";
 import FormData from "form-data";
+import { generateRandomString } from "./helper/helper";
 
 dotenv.config();
 const upload = multer({ dest: "uploads/" });
@@ -23,6 +24,7 @@ const corsOptions = {
   origin: [
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
     "https://smart-marketplace-web3.vercel.app",
+    "http://localhost:3000",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -103,11 +105,12 @@ app.post("/pinJSONToIPFS", async (req: any, res: any) => {
 app.post("/games", (req: any, res: any) => {
   try {
     const { gamePin, questions } = req.body;
-    games[gamePin] = { players: {}, questions };
-    res.json({ gamePin, message: "Game started successfully" });
+    const gameRoom = generateRandomString();
+    games[gameRoom] = { players: {}, questions };
+    res.json({ gamePin, gameRoom, message: "Game started successfully" });
   } catch (e) {
     console.log(e, "<< E");
-    res.json({ gamePin: "", message: "error" });
+    res.json({ gamePin: "", gameRoom: "", message: "error" });
   }
 });
 

@@ -1,25 +1,21 @@
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Quiz from "../../public/lottie/quiz-2.json";
 import TrueOrFalse from "../../public/lottie/true-or-false.json";
 import TypeAnswer from "../../public/lottie/type-answer.json";
 import GameFinished from "../../public/lottie/drum-roll.json";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
-import { MdHexagon } from "react-icons/md";
 import { FaAdjust, FaCircle, FaSquareFull, FaCheck } from "react-icons/fa";
-import { useSpring, animated } from "@react-spring/web";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
-import { io } from "socket.io-client";
 import {
   getOrdinalSuffix,
   getScoreLeaderboardHeight,
   getSocket,
 } from "../helper/helper";
 import Confetti from "react-confetti";
-import { Fireworks } from "fireworks-js";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {
   const [currentValue, setCurrentValue] = useState(from);
@@ -50,7 +46,6 @@ const AnimatedNumber = ({ from, to, duration }: any) => {
 
 function ShowQuizTitle() {
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
   const socket = getSocket();
   const { search, state } = useLocation();
   const [showTitle, setShowTitle] = useState(false);
@@ -67,8 +62,9 @@ function ShowQuizTitle() {
   const [gameFinished, setGameFinished] = useState(false);
   const [showDrumRoll, setShowDrumRoll] = useState(false);
 
-  const { principal, nickname, currentPickedKahoot, currentUniquePlayers } =
-    useSelector((state: any) => state.user);
+  const { currentPickedKahoot, currentUniquePlayers } = useSelector(
+    (state: any) => state.user
+  );
   const [uniquePlayers, setUniquePlayers] = useState(currentUniquePlayers);
   const [playerAnswers, setPlayerAnswers] = useState<any>([]);
 
@@ -81,7 +77,7 @@ function ShowQuizTitle() {
     exit: { scale: 0, opacity: 0 },
   };
 
-  const [number, setNumber] = useState(0);
+  const [, setNumber] = useState(0);
   const currentKahootQuestion = theKahootQuestions?.[currentQuestionIndex];
   const uniquePlayersSorted = [...uniquePlayers]?.sort(
     (a: any, b: any) => (b?.totalScore ?? 0) - (a?.totalScore ?? 0)
