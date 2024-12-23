@@ -142,33 +142,24 @@ function Library() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-y-4 bg-[#FAFAFA] min-h-[82vh]  md:min-h-[90vh]">
+      <div className="flex flex-col py-[50px] justify-center items-center gap-y-4 bg-[#FAFAFA] min-h-[82vh]  md:min-h-[90vh]">
         {userGames?.map((userGame, index) => (
           <div
             key={userGame?.gamePin}
             className="w-[70%] bg-white px-[20px] py-[12px] shadow-card rounded-[4px] flex md:flex-row gap-y-3 flex-col  justify-between items-center"
           >
-            <p className="text-black">{userGame?.title}</p>
-            <div className="flex flex-col md:flex-row gap-x-3 gap-y-3 items-center">
-              <div
-                onClick={() =>
-                  navigate("/profile", {
-                    state: {
-                      routerPrincipal: state.routerPrincipal,
-                    },
-                  })
+            <div className="flex gap-x-4 md:flex-row flex-col gap-y-2 items-center">
+              <img
+                className="w-[150px] h-[100px]"
+                src={
+                  userGame?.imageCoverUrl
+                    ? userGame?.imageCoverUrl
+                    : "/logo.png"
                 }
-                className="cursor-pointer p-[8px] rounded-full purple-bg"
-              >
-                <IoPerson size="22px" color="white" />
-              </div>
-              <p className="text-black">
-                {nickname
-                  ? nickname?.length > 8
-                    ? nickname?.slice(0, 8) + "..."
-                    : nickname
-                  : principal?.slice(0, 8) + "..."}
-              </p>
+              />
+              <p className="text-black">{userGame?.title}</p>
+            </div>
+            <div className="flex flex-col md:flex-row gap-x-3 gap-y-3 items-center">
               <div className="flex gap-x-2 items-center">
                 <button
                   onClick={() => handleHostGameLive(userGame)}
