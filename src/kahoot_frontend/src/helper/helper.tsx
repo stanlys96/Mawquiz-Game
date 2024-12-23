@@ -376,3 +376,29 @@ export const override: CSSProperties = {
   margin: "0 auto",
   borderColor: "red",
 };
+
+export function compareArrays(array1: any[], array2: any[]): boolean {
+  if (array1.length !== array2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < array1.length; i++) {
+    const obj1 = array1[i];
+    const obj2 = array2[i];
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (const key of keys1) {
+      if (obj1[key] !== obj2[key]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}

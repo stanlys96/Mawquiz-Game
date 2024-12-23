@@ -4,6 +4,7 @@ import {
   checkQuizData,
   getCurrentFormattedDateTime,
   uploadImageToIPFS,
+  compareArrays,
 } from "../helper/helper";
 import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
@@ -114,7 +115,7 @@ function Create() {
             ...defaultQuizData,
           },
         ]
-      : state?.data
+      : JSON.parse(JSON.stringify(state?.data))
   );
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -327,35 +328,44 @@ function Create() {
           console.log(error);
         });
     } else {
-      backend
-        ?.updateGame(
-          state?.gamePin,
-          kahootTitleTemp,
-          kahootDescriptionTemp,
-          quizData,
-          imageCoverUrlTemp
-        )
-        ?.then((result) => {
-          setLoading(false);
-          Swal.fire({
-            title: "Success!",
-            text: "You have successfully updated your quiz!",
-            icon: "success",
-          })
-            .then((res) => {
-              navigate("/profile", {
-                state: {
-                  routerPrincipal: state.routerPrincipal,
-                },
-              });
-            })
-            .catch((thisErr) => {
-              console.log(thisErr);
-            });
-        })
-        .catch((e) => {
-          console.log(e, "< Error");
+      const isIdentical = compareArrays(quizData, state?.data);
+      if (isIdentical) {
+        navigate("/profile", {
+          state: {
+            routerPrincipal: state.routerPrincipal,
+          },
         });
+      } else {
+        backend
+          ?.updateGame(
+            state?.gamePin,
+            kahootTitleTemp,
+            kahootDescriptionTemp,
+            quizData,
+            imageCoverUrlTemp
+          )
+          ?.then((result) => {
+            setLoading(false);
+            Swal.fire({
+              title: "Success!",
+              text: "You have successfully updated your quiz!",
+              icon: "success",
+            })
+              .then((res) => {
+                navigate("/profile", {
+                  state: {
+                    routerPrincipal: state.routerPrincipal,
+                  },
+                });
+              })
+              .catch((thisErr) => {
+                console.log(thisErr);
+              });
+          })
+          .catch((e) => {
+            console.log(e, "< Error");
+          });
+      }
     }
   }, [
     principal,
@@ -365,6 +375,7 @@ function Create() {
     principal,
     imageCoverUrlTemp,
     state?.gamePin,
+    state?.data,
   ]);
 
   const handleSaveQuiz = useCallback(async () => {
