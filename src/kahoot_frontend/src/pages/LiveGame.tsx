@@ -24,9 +24,7 @@ function LiveGame() {
   const [uniquePlayers, setUniquePlayers] = useState([]);
   const queryParams = new URLSearchParams(search);
   const gamePin = queryParams.get("gamePin");
-  const { principal, nickname, currentPickedKahoot } = useSelector(
-    (state: any) => state.user
-  );
+  const { currentPickedKahoot } = useSelector((state: any) => state.user);
 
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -35,7 +33,6 @@ function LiveGame() {
     }
     socket.emit("join_game", { gamePin: gamePin });
 
-    // Listen for the player_joined event
     socket.on("player_joined", (data: any) => {
       const thePlayer = {
         ...data.thePlayer,
@@ -150,7 +147,10 @@ function LiveGame() {
           <img className="w-[150px] md:w-[200px]" src="kahoot-2.png" />
           <div className="flex gap-x-2">
             <button
-              onClick={() => setLocked((prevState) => !prevState)}
+              onClick={() => {
+                setLocked((prevState) => !prevState);
+                socket.emit("toggle_lock_game", { gamePin });
+              }}
               className={`${!locked ? "lock-btn" : "lock-btn-lock"} font-bold`}
             >
               {locked ? <FaLock size="20px" /> : <FaUnlock size="20px" />}
@@ -168,7 +168,7 @@ function LiveGame() {
                   },
                 });
               }}
-              // disabled={uniqueOwners?.size <= 0}
+              disabled={uniquePlayers?.length <= 0}
               className="lock-btn font-bold"
             >
               Start

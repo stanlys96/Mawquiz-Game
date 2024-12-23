@@ -105,7 +105,7 @@ app.post("/games", (req: any, res: any) => {
   try {
     const { gamePin, questions } = req.body;
     const gameRoom = generateRandomString();
-    games[gameRoom] = { players: {}, questions };
+    games[gameRoom] = { players: {}, questions, locked: false };
     res.json({ gamePin, gameRoom, message: "Game started successfully" });
   } catch (e) {
     console.log(e, "<< E");
@@ -119,6 +119,12 @@ app.post("/joinGame/:gamePin", (req: any, res: any) => {
     return res.status(404).json({
       message: "Game room does not exist!",
       status: 404,
+    });
+  }
+  if (game?.locked) {
+    return res.status(400).json({
+      message: "Game is locked!",
+      status: 400,
     });
   }
   const thePlayer = req.body.player;
@@ -160,6 +166,10 @@ io.on("connection", (socket: any) => {
   socket.on("player_left", ({ gamePin, principal, nickname }: any) => {
     delete games?.[gamePin]?.players[principal];
     io.to(gamePin).emit("player_left", { principal, nickname });
+  });
+
+  socket.on("toggle_lock_game", ({ gamePin }: any) => {
+    games[gamePin].locked = !games[gamePin].locked;
   });
 
   socket.on("admin_left", ({ gamePin }: any) => {
