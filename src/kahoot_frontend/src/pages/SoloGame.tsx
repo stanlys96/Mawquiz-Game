@@ -873,7 +873,7 @@ function SoloGame() {
                 },
               });
             }}
-            className="custom-button-small z-infinite absolute top-[15%] md:top-[20px] right-2 z-infinite"
+            className="custom-button-small z-infinite absolute top-[2%] md:top-[20px] right-2 z-infinite"
           >
             Quit
           </button>
