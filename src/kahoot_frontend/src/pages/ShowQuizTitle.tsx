@@ -319,7 +319,7 @@ function ShowQuizTitle() {
       {!showQuestion && (
         <div className="flex justify-center items-center h-full relative">
           {showTitle && (
-            <motion.button
+            <motion.div
               variants={{
                 hidden: { scale: 0.5, opacity: 0 },
                 visible: {
@@ -336,10 +336,22 @@ function ShowQuizTitle() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="w-[95%] md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[48px] font-bold"
+              className="flex flex-col gap-y-4 items-center justify-center w-full"
             >
-              {currentPickedKahoot?.title}
-            </motion.button>
+              <img
+                className={`w-[85vw] md:w-[500px] h-[250px] ${
+                  !currentPickedKahoot?.imageCoverUrl && "bg-white"
+                }`}
+                src={
+                  currentPickedKahoot?.imageCoverUrl
+                    ? currentPickedKahoot?.imageCoverUrl
+                    : "/logo.png"
+                }
+              />
+              <button className="w-[95%] md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[30px] md:text-[48px] font-bold">
+                {currentPickedKahoot?.title}
+              </button>
+            </motion.div>
           )}
           {count > 0 && (
             <div className="countdown-container w-fit">
