@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaArrowRight,
@@ -6,12 +6,7 @@ import {
   FaArrowDown,
   FaUpload,
 } from "react-icons/fa";
-import {
-  MdOutlineFolderCopy,
-  MdQuiz,
-  MdAccessTime,
-  MdOutlineQuestionAnswer,
-} from "react-icons/md";
+import { MdOutlineFolderCopy, MdQuiz, MdAccessTime } from "react-icons/md";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import { TiMessageTyping } from "react-icons/ti";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -40,14 +35,16 @@ import {
   Question,
 } from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import IC from "../utils/IC";
-import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
+import { LoadingLayover } from "@components/LoadingLayover";
+import { NavbarMobile, NavbarNonMobile } from "@components/CreatePage";
 
 function Create() {
   const fileInputRef = useRef(null);
   const location = useLocation();
   const { state } = location;
+  const principal = state?.routerPrincipal;
   const navigate = useNavigate();
   const defaultQuizData = {
     question: "",
@@ -66,9 +63,6 @@ function Create() {
     imageUrl: "cdn.svg",
   };
   const timeLimitData = [5, 10, 20, 30, 45, 60, 90, 120, 180, 240];
-  const { principal, currentPickedKahoot } = useSelector(
-    (state: any) => state.user
-  );
   const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1024px)" });
   const [currentId, setCurrentId] = useState(1);
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
@@ -97,13 +91,13 @@ function Create() {
   const [previousKahootDescription, setPreviousKahootDescription] = useState(
     state?.mode === "create" ? "" : state?.description
   );
-  const [kahootDescription, setKahootDescription] = useState(
+  const [, setKahootDescription] = useState(
     state?.mode === "create" ? "" : state?.description
   );
   const [kahootDescriptionTemp, setKahootDescriptionTemp] = useState(
     state?.mode === "create" ? "" : state?.description
   );
-  const [imageCoverUrl, setImageCoverUrl] = useState(
+  const [, setImageCoverUrl] = useState(
     state?.mode === "create" ? "" : state?.imageCoverUrl
   );
   const [imageCoverUrlTemp, setImageCoverUrlTemp] = useState(
@@ -132,9 +126,6 @@ function Create() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [flexibleClickedQuizIndex, setFlexibleClickedQuizIndex] = useState(-1);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [fileImage, setFileImage] = useState();
-  const [previewUrl, setPreviewUrl] = useState("");
   const [loadingFile, setLoadingFile] = useState(false);
   const [currentTimeLimit, setCurrentTimeLimit] = useState(
     quizData?.[clickedQuizIndex]?.timeLimit ?? 20
@@ -142,16 +133,12 @@ function Create() {
   const [loadingCoverImage, setLoadingCoverImage] = useState(false);
   const [draggingCoverImage, setDraggingCoverImage] = useState(false);
 
-  const hide = () => {
-    setOpen(false);
-  };
-
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
   };
 
   const handleDragOver = (e: any) => {
-    e.preventDefault(); // Necessary to allow drop
+    e.preventDefault();
     setDragging(true);
   };
 
@@ -359,6 +346,50 @@ function Create() {
     imageCoverUrlTemp,
   ]);
 
+  const handleSaveQuiz = useCallback(async () => {
+    const checkingQuiz = checkQuizData(quizData);
+    if (checkingQuiz?.length > 0) {
+      setQuizChecked(checkingQuiz);
+      toggleModalValidate();
+    } else if (!kahootTitle) {
+      setFromSaving(true);
+      toggleModalTitle();
+    } else {
+      setLoading(true);
+      addOrUpdateGame();
+    }
+  }, [
+    quizChecked,
+    fromSaving,
+    loading,
+    quizData,
+    kahootTitle,
+    isOpenModalValidate,
+  ]);
+
+  const handleEditQuizTitle = useCallback(() => {
+    toggleModalTitle();
+    setPreviousKahootTitle(kahootTitleTemp);
+    setPreviousKahootDescription(kahootDescriptionTemp);
+    setPreviousImageCoverUrl(imageCoverUrlTemp);
+  }, [
+    isOpenModalTitle,
+    kahootTitleTemp,
+    kahootDescriptionTemp,
+    imageCoverUrlTemp,
+    previousKahootTitle,
+    previousKahootDescription,
+    previousImageCoverUrl,
+  ]);
+
+  const handleNavigateProfile = useCallback(() => {
+    navigate("/profile", {
+      state: {
+        routerPrincipal: state.routerPrincipal,
+      },
+    });
+  }, []);
+
   useEffect(() => {
     if (!state?.routerPrincipal) {
       navigate("/");
@@ -370,151 +401,32 @@ function Create() {
   }, []);
   return (
     <main className="background" ref={dropdownRef}>
-      {loading && (
-        <div className="kahoot-container z-moreinfinite overflow-hidden w-[100vw]">
-          <div className="kahoot-spinner">
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-          <p className="montserrat medium text-[28px] leading-[0px]">
-            {state?.mode === "create" ? "Saving" : "Updating"} game...
-          </p>
-        </div>
-      )}
-      {(loadingFile || loadingCoverImage) && (
-        <div className="kahoot-container z-moreinfinite h-[100%] w-[100vw]">
-          <div className="kahoot-spinner">
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-          <p className="montserrat medium text-[28px] leading-[0px]">
-            Uploading file... Please wait...
-          </p>
-        </div>
-      )}
+      <LoadingLayover
+        loading={loading || loadingFile || loadingCoverImage}
+        description={
+          loading
+            ? state?.mode === "create"
+              ? "Saving"
+              : "Updating"
+            : "Uploading file... Please wait..."
+        }
+      />
       {isMobileOrTablet && (
-        <nav className="navbar z-infinite fixed top-0 w-full">
-          <div className="flex gap-x-6 items-center w-full">
-            <img
-              onClick={() =>
-                navigate("/profile", {
-                  state: {
-                    routerPrincipal: state.routerPrincipal,
-                  },
-                })
-              }
-              className="h-[36px]"
-              src="/logo.png"
-            />
-            <div className="kahoot-input-container">
-              <button
-                onClick={() => {
-                  toggleModalTitle();
-                  setPreviousKahootTitle(kahootTitleTemp);
-                  setPreviousKahootDescription(kahootDescriptionTemp);
-                  setPreviousImageCoverUrl(imageCoverUrlTemp);
-                }}
-                className="kahoot-btn-title font-semibold"
-              >
-                {!kahootTitle ? "Enter mawquiz title..." : kahootTitle}
-              </button>
-              <button
-                onClick={() => {
-                  toggleModalTitle();
-                  setPreviousKahootTitle(kahootTitleTemp);
-                  setPreviousKahootDescription(kahootDescriptionTemp);
-                  setPreviousImageCoverUrl(imageCoverUrlTemp);
-                }}
-                className="settings-btn-mobile"
-              >
-                <FaGear size="16px" />
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <button
-              onClick={() => {
-                const checkingQuiz = checkQuizData(quizData);
-                if (checkingQuiz?.length > 0) {
-                  setQuizChecked(checkingQuiz);
-                  toggleModalValidate();
-                } else if (!kahootTitle) {
-                  setFromSaving(true);
-                  toggleModalTitle();
-                } else {
-                  setLoading(true);
-                  addOrUpdateGame();
-                }
-              }}
-              className="save-button"
-            >
-              Save
-            </button>
-          </div>
-        </nav>
+        <NavbarMobile
+          handleNavigateProfile={handleNavigateProfile}
+          handleEditQuizTitle={handleEditQuizTitle}
+          kahootTitle={kahootTitle}
+          handleSaveQuiz={handleSaveQuiz}
+        />
       )}
       {!isMobileOrTablet && (
-        <nav className="navbar">
-          <div className="flex gap-x-6 items-center w-full">
-            <img className="h-[48px]" src="/logo.png" />
-            <div className="kahoot-input-container">
-              <button
-                onClick={() => {
-                  toggleModalTitle();
-                  setPreviousKahootTitle(kahootTitleTemp);
-                  setPreviousKahootDescription(kahootDescriptionTemp);
-                  setPreviousImageCoverUrl(imageCoverUrlTemp);
-                }}
-                className="kahoot-btn-title font-semibold"
-              >
-                {!kahootTitle ? "Enter mawquiz title..." : kahootTitle}
-              </button>
-              <button
-                onClick={() => {
-                  toggleModalTitle();
-                  setPreviousKahootTitle(kahootTitleTemp);
-                  setPreviousKahootDescription(kahootDescriptionTemp);
-                  setPreviousImageCoverUrl(imageCoverUrlTemp);
-                }}
-                className="settings-btn"
-              >
-                Settings
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <button
-              onClick={() => {
-                toggleModalExitKahoot();
-              }}
-              className="exit-button mr-4"
-            >
-              Exit
-            </button>
-            <button
-              onClick={async () => {
-                const checkingQuiz = checkQuizData(quizData);
-                if (checkingQuiz?.length > 0) {
-                  setQuizChecked(checkingQuiz);
-                  toggleModalValidate();
-                } else if (!kahootTitle) {
-                  setFromSaving(true);
-                  toggleModalTitle();
-                } else {
-                  setLoading(true);
-                  addOrUpdateGame();
-                }
-              }}
-              className="save-button"
-            >
-              Save
-            </button>
-          </div>
-        </nav>
+        <NavbarNonMobile
+          handleNavigateProfile={handleNavigateProfile}
+          handleEditQuizTitle={handleEditQuizTitle}
+          kahootTitle={kahootTitle}
+          handleSaveQuiz={handleSaveQuiz}
+          handleExit={() => toggleModalExitKahoot()}
+        />
       )}
       <div className="flex justify-between">
         {isMobileOrTablet && (
@@ -612,12 +524,6 @@ function Create() {
                     />
                   </button>
                 </span>
-                {/* <button
-                onClick={toggleModalSecond}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md shadow-md hover:bg-purple-700 transition"
-              >
-                Open Bouncy Modal
-              </button> */}
               </div>
             </div>
           </div>
@@ -760,12 +666,6 @@ function Create() {
                     Add question
                   </button>
                 </span>
-                {/* <button
-                onClick={toggleModalSecond}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md shadow-md hover:bg-purple-700 transition"
-              >
-                Open Bouncy Modal
-              </button> */}
               </div>
             </div>
           </div>
