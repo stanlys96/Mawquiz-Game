@@ -20,6 +20,7 @@ function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { state } = location;
+  const principal = state?.routerPrincipal;
   const [backend, setBackend] = useState<_SERVICE>();
   const [loading, setLoading] = useState(false);
   const [nicknameLoading, setNicknameLoading] = useState(false);
@@ -29,8 +30,6 @@ function Home() {
   const [isOpenModalJiggle, setIsOpenModalJiggle] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [gamePin, setGamePin] = useState("");
-
-  const { principal } = useSelector((state: any) => state.user);
 
   const toggleModalJiggle = () => {
     setIsOpenModalJiggle((prevState) => !prevState);
@@ -48,7 +47,7 @@ function Home() {
   }, [currentUser, nickname, isOpenModalNickname]);
 
   useEffect(() => {
-    if (!state?.routerPrincipal) {
+    if (!principal) {
       navigate("/");
       return;
     }
@@ -58,7 +57,7 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    if (principal && backend) {
+    if (backend) {
       backend
         ?.getUser(Principal.fromText(principal))
         ?.then((result) => {
