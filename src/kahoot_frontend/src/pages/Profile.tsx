@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import IC from "../utils/IC";
 import { FaPlus } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   _SERVICE,
@@ -10,22 +10,30 @@ import {
 import { Principal } from "@dfinity/principal";
 import { FiEdit } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
-import { modalVariants, override } from "../helper/helper";
-import { BeatLoader } from "react-spinners";
+import { getUserNickname, modalVariants } from "../helper/helper";
 import { notification } from "antd";
 import { settingKahoot, settingPrincipal } from "../../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { ImCross } from "react-icons/im";
+import {
+  BouncyModal,
+  JiggleModal,
+  LoadingLayover,
+  LogoutComponent,
+  PlayGameComponent,
+  SquareAndCircleBg,
+  UpdateNickname,
+} from "../components";
 
 function Profile() {
   const location = useLocation();
   const { state } = location;
+  const principal = state?.routerPrincipal;
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { principal } = useSelector((state: any) => state.user);
   const [loading, setLoading] = useState(false);
   const [isHoveredKahoot, setIsHoveredKahoot] = useState(false);
   const [category, setCategory] = useState("kahoot");
@@ -38,7 +46,7 @@ function Profile() {
   const [nickname, setNickname] = useState("");
   const [userGames, setUserGames] = useState<Game[]>([]);
   const [isOpenModalKahoot, setIsOpenModalKahoot] = useState<boolean>(false);
-  const [currentPickedKahoot, setCurrentPickedKahoot] = useState<any>();
+  const [currentPickedKahoot, setCurrentPickedKahoot] = useState<Game>();
   const [initialLoading, setInitialLoading] = useState<boolean>(false);
 
   const toggleModalJiggle = () => {
@@ -49,8 +57,170 @@ function Profile() {
     if (userGames?.length > 4) {
       return 240;
     }
-    return userGames?.length * 60; // Fallback to 0 if userGames is undefined
+    return userGames?.length * 60;
   }, [userGames]);
+
+  const handleUpdateNickname = useCallback(() => {
+    if (nickname?.trim()?.length === 0) return;
+    if (nickname === currentUser?.nickname) return;
+    setNicknameLoading(true);
+    backend
+      ?.updateNickname(principal, nickname)
+      ?.then(async (result) => {
+        if (result) {
+          const theUser = await backend?.getUser(Principal.fromText(principal));
+          setCurrentUser(theUser?.[0]);
+          setIsOpenModalNickname(false);
+          setNicknameLoading(false);
+          notification.success({
+            message: "Success!",
+            description: "You have successfully updated your nickname!",
+            placement: isMobile ? "bottomLeft" : "topLeft",
+          });
+        } else {
+          setNicknameLoading(false);
+          setShowErrorMessage(true);
+          setTimeout(() => {
+            setShowErrorMessage(false);
+          }, 2500);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsOpenModalNickname(false);
+        setNicknameLoading(false);
+      });
+  }, [
+    nickname,
+    currentUser?.nickname,
+    nicknameLoading,
+    backend,
+    currentUser,
+    isOpenModalNickname,
+    notification,
+    showErrorMessage,
+  ]);
+
+  const handleCancelNickname = useCallback(() => {
+    setIsOpenModalNickname(false);
+    setNickname("");
+  }, [isOpenModalNickname, nickname]);
+
+  const handleCloseNickname = useCallback(() => {
+    if (nicknameLoading) return;
+    setIsOpenModalNickname(false);
+  }, [nicknameLoading, isOpenModalNickname]);
+
+  const handleLogout = useCallback(() => {
+    dispatch(settingPrincipal(""));
+    navigate("/");
+  }, []);
+
+  const handleNavigateHome = useCallback(() => {
+    navigate("/home", {
+      state: {
+        routerPrincipal: state.routerPrincipal,
+      },
+    });
+  }, []);
+
+  const handleNavigateCreate = useCallback(() => {
+    navigate("/create", {
+      state: {
+        mode: "create",
+        routerPrincipal: state.routerPrincipal,
+      },
+    });
+  }, []);
+
+  const handleNavigateLibrary = useCallback(() => {
+    navigate("/library", {
+      state: {
+        routerPrincipal: state.routerPrincipal,
+      },
+    });
+  }, []);
+
+  const handleOpenModalNickname = useCallback(() => {
+    if (!currentUser?.nickname) return;
+    if (currentUser?.nickname?.length > 35) {
+      setNickname("");
+    } else {
+      setNickname(currentUser?.nickname ?? "");
+    }
+    setIsOpenModalNickname(true);
+  }, [currentUser?.nickname, nickname, isOpenModalNickname]);
+
+  const handleClickCard = useCallback(
+    (userGame: Game) => {
+      setIsOpenModalKahoot(true);
+      setCurrentPickedKahoot(userGame);
+    },
+    [isOpenModalKahoot, currentPickedKahoot]
+  );
+
+  const handleCloseKahootModal = useCallback(() => {
+    if (nicknameLoading) return;
+    setIsOpenModalKahoot(false);
+  }, [nicknameLoading, isOpenModalKahoot]);
+
+  const handleEditGame = useCallback(() => {
+    dispatch(settingKahoot(currentPickedKahoot));
+    navigate("/create", {
+      state: {
+        mode: "edit",
+        data: currentPickedKahoot?.questions,
+        title: currentPickedKahoot?.title,
+        description: currentPickedKahoot?.description,
+        gamePin: currentPickedKahoot?.gamePin,
+        routerPrincipal: state.routerPrincipal,
+        imageCoverUrl: currentPickedKahoot?.imageCoverUrl,
+      },
+    });
+  }, [currentPickedKahoot]);
+
+  const handleSoloGame = useCallback(() => {
+    dispatch(settingKahoot(currentPickedKahoot));
+    navigate(`/solo-game?gameId=${currentPickedKahoot?.gamePin}`, {
+      state: {
+        routerPrincipal: principal,
+      },
+    });
+  }, [currentPickedKahoot, principal]);
+
+  const handleHostGameLive = useCallback(async () => {
+    try {
+      setLoading(true);
+      setIsOpenModalKahoot(false);
+      const theData = await fetch(
+        "https://mawquiz-backend-production.up.railway.app/games",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gamePin: currentPickedKahoot?.gamePin,
+            questions: currentPickedKahoot?.questions,
+          }),
+        }
+      );
+
+      const createGame = await theData?.json();
+      if (createGame?.message !== "error") {
+        dispatch(settingKahoot(currentPickedKahoot));
+        navigate(`/live-game?gameId=${currentPickedKahoot?.gamePin}`, {
+          state: {
+            routerPrincipal: state.routerPrincipal,
+          },
+        });
+      }
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      console.log(e, "<< E");
+    }
+  }, [loading, isOpenModalKahoot, currentPickedKahoot]);
 
   useEffect(() => {
     if (!state?.routerPrincipal) {
@@ -63,7 +233,7 @@ function Profile() {
   }, []);
 
   useEffect(() => {
-    if (principal && backend) {
+    if (backend) {
       setInitialLoading(true);
       backend
         ?.getUser(Principal.fromText(principal))
@@ -87,42 +257,14 @@ function Profile() {
   }, [principal, backend]);
   return (
     <main className="background flex justify-center items-center">
-      {loading && (
-        <div className="relative z-moreinfinite kahoot-container">
-          <div className="kahoot-spinner">
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-          <p className="montserrat medium text-[28px] leading-[0px]">
-            Creating game room!
-          </p>
-        </div>
-      )}
-      {initialLoading && (
-        <div className="relative z-moreinfinite kahoot-container">
-          <div className="kahoot-spinner">
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-          <p className="montserrat medium text-[28px] leading-[0px]">
-            Loading data...
-          </p>
-        </div>
-      )}
+      <LoadingLayover
+        loading={loading || initialLoading}
+        description={loading ? "Creating game room!" : "Loading data..."}
+      />
       <div className="flex main-profile flex-col justify-center items-center gap-y-3">
         <div className="absolute z-infinite top-[10px] right-[10px] p-[16px] identity-container flex gap-x-2 items-center">
           <div
-            onClick={() => {
-              navigate("/home", {
-                state: {
-                  routerPrincipal: state.routerPrincipal,
-                },
-              });
-            }}
+            onClick={handleNavigateHome}
             className="cursor-pointer p-[8px] bg-blue rounded-full flex items-center justify-center"
           >
             <FaHome color="white" />
@@ -134,35 +276,15 @@ function Profile() {
             <RiLogoutCircleLine color="white" />
           </div>
           <div
-            onClick={() => {
-              if (!currentUser?.nickname) return;
-              if (currentUser?.nickname?.length > 35) {
-                setNickname("");
-              } else {
-                setNickname(currentUser?.nickname ?? "");
-              }
-              setIsOpenModalNickname(true);
-            }}
+            onClick={handleOpenModalNickname}
             className="flex gap-x-2 items-center cursor-pointer"
           >
             <p className="dark-text">
-              {currentUser?.nickname
-                ? currentUser?.nickname?.length > 20
-                  ? currentUser?.nickname?.slice(0, 20) + "..."
-                  : currentUser?.nickname ?? ""
-                : currentUser?.owner?.slice(0, 20) + "..."}
+              {getUserNickname(currentUser?.nickname, currentUser?.owner)}
             </p>
           </div>
           <div
-            onClick={() => {
-              if (!currentUser?.nickname) return;
-              if (currentUser?.nickname?.length > 35) {
-                setNickname("");
-              } else {
-                setNickname(currentUser?.nickname ?? "");
-              }
-              setIsOpenModalNickname(true);
-            }}
+            onClick={handleOpenModalNickname}
             className="cursor-pointer p-[8px] bg-dark-green rounded-full flex items-center justify-center"
           >
             <FiEdit color="white" />
@@ -193,11 +315,7 @@ function Profile() {
               {userGames?.length > 0 ? (
                 userGames?.map((userGame) => (
                   <div
-                    onClick={() => {
-                      setIsOpenModalKahoot(true);
-                      setCurrentPickedKahoot(userGame);
-                      console.log(userGame);
-                    }}
+                    onClick={() => handleClickCard(userGame)}
                     className="game-card"
                   >
                     <div className="game-card-inner cursor-pointer">
@@ -239,13 +357,7 @@ function Profile() {
             </div>
             {userGames?.length > 0 && (
               <p
-                onClick={() => {
-                  navigate("/library", {
-                    state: {
-                      routerPrincipal: state.routerPrincipal,
-                    },
-                  });
-                }}
+                onClick={handleNavigateLibrary}
                 className="text-see-all text-center font-bold cursor-pointer my-[16px] underline"
               >
                 See all ({userGames?.length})
@@ -253,14 +365,7 @@ function Profile() {
             )}
           </div>
           <div
-            onClick={() =>
-              navigate("/create", {
-                state: {
-                  mode: "create",
-                  routerPrincipal: state.routerPrincipal,
-                },
-              })
-            }
+            onClick={handleNavigateCreate}
             className="kahoot-card cursor-pointer"
           >
             <a className="kahoot-card-title">
@@ -282,286 +387,44 @@ function Profile() {
           </div>
         </div>
       </div>
-      <div className="circle-bg" />
-      <div className="square-bg" />
-      <AnimatePresence>
-        {isOpenModalNickname && (
-          <div
-            onClick={() => {
-              if (nicknameLoading) return;
-              setIsOpenModalNickname(false);
-            }}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] lg:w-[50vw]"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="mt-[24px]">
-                <p className="text-gray mb-[12px] font-semibold text-center">
-                  Nickname
-                </p>
-                <p className="text-black text-center">
-                  Enter a nickname for your profile.
-                </p>
-                <div className="relative">
-                  <input
-                    value={nickname}
-                    onChange={(e) => {
-                      setNickname(e.target.value);
-                    }}
-                    className="mt-[12px] text-center title-input outline-none w-full"
-                    type="text"
-                    maxLength={35}
-                  />
-                  <p className="absolute top-[40%] text-[#6E6E6E] right-2">
-                    {35 - (nickname?.length ?? 0)}
-                  </p>
-                </div>
-                {showErrorMessage && (
-                  <p className="text-red font-medium mt-2">
-                    Nickname is already picked
-                  </p>
-                )}
-              </div>
-              {nicknameLoading ? (
-                <div className="py-[20px]">
-                  <BeatLoader
-                    color={"#97E8D4"}
-                    loading={nicknameLoading}
-                    cssOverride={override}
-                    size={35}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
-                  />
-                </div>
-              ) : (
-                <div className="close-toggle-button gap-x-2">
-                  <button
-                    onClick={() => {
-                      setIsOpenModalNickname(false);
-                      setNickname("");
-                    }}
-                    className="exit-button"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (nickname?.trim()?.length === 0) return;
-                      if (nickname === currentUser?.nickname) return;
-                      setNicknameLoading(true);
-                      backend
-                        ?.updateNickname(principal, nickname)
-                        ?.then(async (result) => {
-                          if (result) {
-                            const theUser = await backend?.getUser(
-                              Principal.fromText(principal)
-                            );
-                            setCurrentUser(theUser?.[0]);
-                            setIsOpenModalNickname(false);
-                            setNicknameLoading(false);
-                            notification.success({
-                              message: "Success!",
-                              description:
-                                "You have successfully updated your nickname!",
-                              placement: isMobile ? "bottomLeft" : "topLeft",
-                            });
-                          } else {
-                            setNicknameLoading(false);
-                            setShowErrorMessage(true);
-                            setTimeout(() => {
-                              setShowErrorMessage(false);
-                            }, 2500);
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                          setIsOpenModalNickname(false);
-                          setNicknameLoading(false);
-                        });
-                    }}
-                    className="save-button"
-                  >
-                    Submit
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      {isOpenModalJiggle && (
-        <div
-          className="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
-          onClick={toggleModalJiggle}
-        >
-          <motion.div
-            className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
-            onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 1, scale: 1 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              rotate: [0, -5, 5, -3, 3, 0],
-              x: [0, -10, 10, -5, 5, 0],
-            }}
-            exit={{ opacity: 0, scale: 1 }}
-            transition={{
-              duration: 0.6,
-              ease: "easeInOut",
-            }}
-          >
-            <button
-              onClick={toggleModalJiggle}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-            >
-              ✕
-            </button>
-            <h2 className="text-xl font-semibold mb-4 text-black">Logout</h2>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to logout?
-            </p>
-            <div className="flex gap-x-2 items-center justify-center">
-              <button onClick={toggleModalJiggle} className="cancel-btn">
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  dispatch(settingPrincipal(""));
-                  navigate("/");
-                }}
-                className="delete-modal-btn"
-              >
-                Logout
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-      <AnimatePresence>
-        {isOpenModalKahoot && (
-          <div
-            onClick={() => {
-              if (nicknameLoading) return;
-              setIsOpenModalKahoot(false);
-            }}
-            className="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
-          >
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] relative lg:w-[50vw]"
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div className="mt-[24px]">
-                <p className="text-gray mb-[12px] font-semibold text-center">
-                  Play the game!
-                </p>
-                <p className="text-black text-center">
-                  Do you want to play {currentPickedKahoot?.title}?
-                </p>
-              </div>
-              <div className="close-toggle-button gap-x-2 md:flex-row flex-col gap-y-2">
-                <button
-                  onClick={() => {
-                    dispatch(settingKahoot(currentPickedKahoot));
-                    navigate("/create", {
-                      state: {
-                        mode: "edit",
-                        data: currentPickedKahoot?.questions,
-                        title: currentPickedKahoot?.title,
-                        description: currentPickedKahoot?.description,
-                        gamePin: currentPickedKahoot?.gamePin,
-                        routerPrincipal: state.routerPrincipal,
-                        imageCoverUrl: currentPickedKahoot?.imageCoverUrl,
-                      },
-                    });
-                  }}
-                  className="save-button"
-                >
-                  Edit Game
-                </button>
-                <button
-                  onClick={async () => {
-                    try {
-                      setLoading(true);
-                      setIsOpenModalKahoot(false);
-                      const theData = await fetch(
-                        "https://mawquiz-backend-production.up.railway.app/games",
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            gamePin: currentPickedKahoot?.gamePin,
-                            questions: currentPickedKahoot?.questions,
-                          }),
-                        }
-                      );
-
-                      const createGame = await theData?.json();
-                      if (createGame?.message !== "error") {
-                        dispatch(settingKahoot(currentPickedKahoot));
-                        navigate(
-                          `/live-game?gameId=${currentPickedKahoot?.gamePin}`,
-                          {
-                            state: {
-                              routerPrincipal: state.routerPrincipal,
-                            },
-                          }
-                        );
-                      }
-                      setLoading(false);
-                    } catch (e) {
-                      setLoading(false);
-                      console.log(e, "<< E");
-                    }
-                  }}
-                  className="done-button"
-                >
-                  Host Game Live
-                </button>
-                <button
-                  onClick={() => {
-                    dispatch(settingKahoot(currentPickedKahoot));
-                    navigate(
-                      `/solo-game?gameId=${currentPickedKahoot?.gamePin}`,
-                      {
-                        state: {
-                          routerPrincipal: state.routerPrincipal,
-                        },
-                      }
-                    );
-                  }}
-                  className="the-orange-answer-bg shadow-md min-h-[42px] min-w-[42px] rounded-[4px] px-[16px] relative"
-                >
-                  Play Solo
-                </button>
-              </div>
-              <a
-                onClick={() => {
-                  setIsOpenModalKahoot(false);
-                }}
-                className="cursor-pointer"
-              >
-                <ImCross
-                  size="16px"
-                  color="#000"
-                  className="absolute top-4 right-4"
-                />
-              </a>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <SquareAndCircleBg />
+      <BouncyModal
+        isOpenModal={isOpenModalNickname}
+        handleClose={handleCloseNickname}
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+        innerDivClassName="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] lg:w-[50vw]"
+      >
+        <UpdateNickname
+          nickname={nickname}
+          setNickname={setNickname}
+          showErrorMessage={showErrorMessage}
+          nicknameLoading={nicknameLoading}
+          handleCancelModal={handleCancelNickname}
+          handleUpdateNickname={handleUpdateNickname}
+        />
+      </BouncyModal>
+      <JiggleModal
+        isOpen={isOpenModalJiggle}
+        onClose={toggleModalJiggle}
+        outerDivClassName="fixed z-infinite inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-10000"
+        innerDivClassName="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 relative"
+      >
+        <LogoutComponent onClose={toggleModalJiggle} onLogout={handleLogout} />
+      </JiggleModal>
+      <BouncyModal
+        isOpenModal={isOpenModalKahoot}
+        handleClose={handleCloseKahootModal}
+        outerDivClassName="fixed z-infinite top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+        innerDivClassName="bg-white rounded-lg shadow-lg px-[16px] md:px-[32px] text-center w-[90vw] relative lg:w-[50vw]"
+      >
+        <PlayGameComponent
+          currentPickedKahoot={currentPickedKahoot}
+          handleClose={() => setIsOpenModalKahoot(false)}
+          handleEditGame={handleEditGame}
+          handleHostGameLive={handleHostGameLive}
+          handleSoloGame={handleSoloGame}
+        />
+      </BouncyModal>
     </main>
   );
 }
