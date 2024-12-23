@@ -115,7 +115,7 @@ function Home() {
     try {
       setLoading(true);
       const result = await axios.post(
-        `http://localhost:3001/joinGame/${gamePin}`,
+        `https://mawquiz-backend-production.up.railway.app/joinGame/${gamePin}`,
         {
           player: { ...currentUser, admin: false },
         }

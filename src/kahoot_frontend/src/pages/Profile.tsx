@@ -192,16 +192,19 @@ function Profile() {
     try {
       setLoading(true);
       setIsOpenModalKahoot(false);
-      const theData = await fetch("http://localhost:3001/games", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          gamePin: currentPickedKahoot?.gamePin,
-          questions: currentPickedKahoot?.questions,
-        }),
-      });
+      const theData = await fetch(
+        "https://mawquiz-backend-production.up.railway.app/games",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gamePin: currentPickedKahoot?.gamePin,
+            questions: currentPickedKahoot?.questions,
+          }),
+        }
+      );
 
       const createGame = await theData?.json();
       if (createGame?.message !== "error") {
