@@ -1,35 +1,20 @@
 import { useLocation } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { IoPersonCircle, IoTriangleSharp } from "react-icons/io5";
-import RotateLoader from "react-spinners/RotateLoader";
 import { getOrdinalSuffix, getSocket, override } from "../helper/helper";
-import {
-  HashLoader,
-  PacmanLoader,
-  PropagateLoader,
-  RingLoader,
-  SquareLoader,
-} from "react-spinners";
-import {
-  MdOutlineFolderCopy,
-  MdQuiz,
-  MdAccessTime,
-  MdOutlineQuestionAnswer,
-} from "react-icons/md";
+import { PacmanLoader } from "react-spinners";
+import { MdQuiz } from "react-icons/md";
 import {
   FaAdjust,
   FaCheck,
   FaCircle,
-  FaCross,
   FaFireAlt,
   FaSquareFull,
 } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import { ImCross } from "react-icons/im";
-import { FiRewind } from "react-icons/fi";
 import { VscSymbolBoolean } from "react-icons/vsc";
 import Confetti from "react-confetti";
 import GameFinished from "../../public/lottie/drum-roll.json";
