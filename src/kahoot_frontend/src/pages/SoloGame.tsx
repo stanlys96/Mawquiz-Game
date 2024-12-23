@@ -576,7 +576,7 @@ function SoloGame() {
                     ).map((i: any) => (
                       <div className="question-div">
                         <div
-                          className={`question-answer-full ${
+                          className={`question-answer-90 md:question-answer-full ${
                             i === 0
                               ? "bg-red"
                               : i === 1
@@ -586,8 +586,8 @@ function SoloGame() {
                               : "bg-green-only"
                           }`}
                         >
-                          <div className="question-sub-inner-div">
-                            <div className="question-1-div-answer">
+                          <div className="question-sub-inner-div w-[90vw]">
+                            <div className="question-1-div-answer w-[90vw]">
                               <div className="question-2-div">
                                 <input
                                   disabled
