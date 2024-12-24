@@ -41,9 +41,9 @@ export const MiddleComponentNonMobile = ({
 }: Props) => {
   return (
     <div className="middle-div flex-1">
-      <div className="question-div">
-        <div className="question-inner-div">
-          <div className="question-sub-inner-div">
+      <div className="question-div glowing-container">
+        <div className="question-inner-div ">
+          <div className="question-sub-inner-div ">
             <div className="question-1-div">
               <div className="question-2-div">
                 <input
@@ -55,7 +55,7 @@ export const MiddleComponentNonMobile = ({
                     setQuizData([...quizDataTemp]);
                   }}
                   placeholder="Start typing your question"
-                  className="w-full text-center question-p bg-transparent border-transparent outline-none"
+                  className="w-full text-center text-[25px] font-bold  question-p bg-transparent border-transparent outline-none"
                   type="text"
                 />
                 <p className="absolute top-1 text-gray right-1 text-[14px] font-semibold">
@@ -72,7 +72,7 @@ export const MiddleComponentNonMobile = ({
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => setIsOpen(true)}
-          className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
+          className={`upload-div ${"upload-div-quiz"} glowing-container px-[40px] cursor-pointer gap-y-[16px]`}
         >
           {quizData?.[clickedQuizIndex]?.imageUrl === "cdn.svg" ? (
             <div className="flex flex-col gap-y-[16px] justify-center items-center">
@@ -130,7 +130,7 @@ export const MiddleComponentNonMobile = ({
                 quizData?.[clickedQuizIndex]?.text1
                   ? "text-white"
                   : "text-black"
-              } w-full outline-none bg-transparent border-none`}
+              } w-full outline-none bg-transparent border-none text-[25px] font-bold`}
             />
 
             {quizData?.[clickedQuizIndex]?.text1 && (
@@ -189,7 +189,7 @@ export const MiddleComponentNonMobile = ({
                 quizData?.[clickedQuizIndex]?.text2
                   ? "text-white"
                   : "text-black"
-              } w-full outline-none bg-transparent border-none`}
+              } w-full outline-none bg-transparent border-none text-[25px] font-bold`}
             />
 
             {quizData?.[clickedQuizIndex]?.text2 && (
@@ -248,7 +248,7 @@ export const MiddleComponentNonMobile = ({
                 quizData?.[clickedQuizIndex]?.text3
                   ? "text-white"
                   : "text-black"
-              } w-full outline-none bg-transparent border-none`}
+              } w-full outline-none bg-transparent border-none text-[25px] font-bold`}
             />
 
             {quizData?.[clickedQuizIndex]?.text3 && (
@@ -307,7 +307,7 @@ export const MiddleComponentNonMobile = ({
                 quizData?.[clickedQuizIndex]?.text4
                   ? "text-white"
                   : "text-black"
-              } w-full outline-none bg-transparent border-none`}
+              } w-full outline-none bg-transparent border-none text-[25px] font-bold`}
             />
 
             {quizData?.[clickedQuizIndex]?.text4 && (
@@ -355,7 +355,7 @@ export const MiddleComponentNonMobile = ({
             <div className="shape-div bg-red">
               <IoTriangleSharp className="mx-[8px]" size="32px" color="white" />
             </div>
-            <p className="text-white w-full outline-none bg-transparent border-none">
+            <p className="text-white w-full outline-none bg-transparent border-none text-[36px] font-bold">
               True
             </p>
 
@@ -393,7 +393,7 @@ export const MiddleComponentNonMobile = ({
             <div className="shape-div bg-blue">
               <MdHexagon className="mx-[8px]" size="32px" color="white" />
             </div>
-            <p className="text-white w-full outline-none bg-transparent border-none">
+            <p className="text-white w-full outline-none bg-transparent border-none text-[36px] font-bold">
               False
             </p>
             <button
@@ -452,7 +452,7 @@ export const MiddleComponentNonMobile = ({
                         quizData?.[clickedQuizIndex]?.text1?.length > 0
                           ? "text-white"
                           : "text-black"
-                      } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                      } w-full text-center question-p bg-transparent text-[25px] font-bold border-transparent outline-none`}
                       type="text"
                     />
                     <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -511,7 +511,7 @@ export const MiddleComponentNonMobile = ({
                               quizData?.[clickedQuizIndex]?.text2?.length > 0
                                 ? "text-white"
                                 : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                            } w-full text-center question-p text-[25px] font-bold  bg-transparent border-transparent outline-none`}
                             type="text"
                           />
                           <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -547,7 +547,7 @@ export const MiddleComponentNonMobile = ({
                               quizData?.[clickedQuizIndex]?.text3?.length > 0
                                 ? "text-white"
                                 : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                            } w-full text-center question-p text-[25px] font-bold  bg-transparent border-transparent outline-none`}
                             type="text"
                           />
                           <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -583,7 +583,7 @@ export const MiddleComponentNonMobile = ({
                               quizData?.[clickedQuizIndex]?.text4?.length > 0
                                 ? "text-white"
                                 : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                            } w-full text-center question-p text-[25px] font-bold  bg-transparent border-transparent outline-none`}
                             type="text"
                           />
                           <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">

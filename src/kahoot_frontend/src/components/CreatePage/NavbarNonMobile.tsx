@@ -1,3 +1,4 @@
+import { GradientButton } from "@components/GradientButton";
 import { NavbarProps } from "./NavbarMobile";
 
 export const NavbarNonMobile = ({

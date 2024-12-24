@@ -296,7 +296,7 @@ function GamePlayer() {
               aria-label="Loading Spinner"
               data-testid="loader"
             />
-            <p className="text-[36px] font-semibold text-center px-[15px]">
+            <p className="text-[36px] glowing-container px-[20px] py-[10px] font-semibold text-center px-[15px]">
               Loading...
             </p>
           </div>
@@ -318,17 +318,19 @@ function GamePlayer() {
                   animationData={GameFinished}
                 />
               )}
-              <p className="text-[36px] font-semibold text-center px-[15px]">
-                Drum roll...
+              <p className="w-[90vw] glowing-container md:w-[50vw] text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
+                Drum roll....
               </p>
             </motion.div>
           )}
         </AnimatePresence>
         {questionReady && (
           <div className="flex justify-center items-center flex-col gap-y-2 h-full relative">
-            <p className="text-[60px] font-bold">Question 1</p>
+            <p className="text-[60px] font-bold">
+              Question {questionIndex + 1}
+            </p>
             {count > 0 && (
-              <div className="circle-countdown-container rounded-full w-fit">
+              <div className="px-[100px] py-[20px] glowing-container rounded-full w-fit">
                 <div key={count} className="countdown-number w-fit">
                   {count}
                 </div>
@@ -499,7 +501,7 @@ function GamePlayer() {
               aria-label="Loading Spinner"
               data-testid="loader"
             />
-            <p className="text-[36px] font-semibold text-center px-[15px]">
+            <p className="text-[36px] glowing-container font-semibold text-center px-[25px] py-[10px]">
               You are doing well!
             </p>
           </div>
@@ -510,13 +512,13 @@ function GamePlayer() {
               {!checkAnswer(answer) ? "Incorrect!" : "Correct!"}
             </p>
             {!checkAnswer(answer) ? (
-              <button className="cross-btn-clicked-game">
+              <button className="cross-btn-clicked-game glowing-container p-[30px]">
                 <span className="centang-span-game">
                   <ImCross size="40px" className="centang-img" />
                 </span>
               </button>
             ) : (
-              <button className="check-btn-clicked-game">
+              <button className="check-btn-clicked-game glowing-container p-[30px]">
                 <span className="centang-span-game">
                   <FaCheck size="40px" className="centang-img" />
                 </span>

@@ -46,7 +46,7 @@ export const TimeLimitModalComponent = ({
             setCurrentTimeLimit(quizData?.[clickedQuizIndex]?.timeLimit);
             toggleModalTimeLimit();
           }}
-          className="exit-button"
+          className="save-button w-fit"
         >
           Cancel
         </button>

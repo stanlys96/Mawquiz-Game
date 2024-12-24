@@ -216,7 +216,7 @@ function LiveGame() {
           <div className="flex flex-wrap w-full items-start justify-center h-full">
             {uniquePlayers?.length > 0 ? (
               uniquePlayers?.map((owner: any, index: number) => (
-                <div className="mt-4 flex items-center flex-wrap relative user-container overflow-y-auto">
+                <div className="mt-4 flex items-center glowing-container flex-wrap relative user-container overflow-y-auto">
                   <button className="user-button">
                     <div className="user-avatar">
                       <IoPersonCircle size={isMobile ? "25px" : "45px"} />
@@ -245,7 +245,7 @@ function LiveGame() {
               ))
             ) : (
               <div className="flex justify-center items-center h-full">
-                <div className="bg-[#47178F] p-[5px] rounded-[5px]">
+                <div className="glowing-container p-[15px] rounded-[5px]">
                   <p className="text-[20px] md:text-[24px]">
                     Waiting for other players...
                   </p>

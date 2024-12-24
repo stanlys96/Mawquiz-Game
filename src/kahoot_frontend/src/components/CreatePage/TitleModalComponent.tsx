@@ -75,7 +75,7 @@ export const TitleModalComponent = ({
           Cover Image{" "}
           <span className="text-[#6E6E6E] font-normal">(optional)</span>
         </p>
-        <div className="inner-modal-div-cover relative bg-blue">
+        <div className="inner-modal-div-cover relative">
           {!imageCoverUrlTemp ? (
             <div className="flex gap-x-[15px] items-center">
               <FaUpload size="32px" color="black" />

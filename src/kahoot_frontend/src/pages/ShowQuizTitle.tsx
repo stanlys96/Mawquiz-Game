@@ -337,25 +337,27 @@ function ShowQuizTitle() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="flex flex-col gap-y-4 items-center justify-center w-full"
+              className="flex flex-col px-[20px] gap-y-4 items-center justify-center w-full"
             >
-              <img
-                className={`w-[85vw] md:w-[500px] h-[250px] ${
-                  !currentPickedKahoot?.imageCoverUrl && "bg-white"
-                }`}
-                src={
-                  currentPickedKahoot?.imageCoverUrl
-                    ? currentPickedKahoot?.imageCoverUrl
-                    : "/logo.png"
-                }
-              />
-              <button className="w-[95%] md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[30px] md:text-[48px] font-bold">
+              <div className="glowing-container p-[20px] mb-[20px]">
+                <img
+                  className={`w-[85vw] md:w-[500px] h-[250px] ${
+                    !currentPickedKahoot?.imageCoverUrl && "bg-white"
+                  }`}
+                  src={
+                    currentPickedKahoot?.imageCoverUrl
+                      ? currentPickedKahoot?.imageCoverUrl
+                      : "/logo.png"
+                  }
+                />
+              </div>
+              <button className="w-[95%] glowing-container md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[30px] md:text-[48px] font-bold">
                 {currentPickedKahoot?.title}
               </button>
             </motion.div>
           )}
           {count > 0 && (
-            <div className="countdown-container w-fit">
+            <div className="px-[100px] py-[20px] glowing-container w-fit">
               <div key={count} className="countdown-number w-fit">
                 {count}
               </div>
@@ -398,7 +400,7 @@ function ShowQuizTitle() {
                     animationData={GameFinished}
                   />
                 )}
-                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
+                <p className="w-[90vw] glowing-container md:w-[50vw] text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
                   {showDrumRoll
                     ? "Drum roll...."
                     : currentKahootQuestion?.questionType}
@@ -426,7 +428,7 @@ function ShowQuizTitle() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white text-black text-[1rem] text-center md:text-[54px] font-bold py-[10px] px-[20px] rounded-[5px]"
+                  className="text-black glowing-container text-[1rem] text-center md:text-[54px] font-bold py-[10px] px-[20px] rounded-[5px]"
                 >
                   {currentKahootQuestion?.question}
                 </motion.div>
@@ -450,9 +452,9 @@ function ShowQuizTitle() {
               className="absolute bottom-[10%] px-[5vw]"
             >
               <div
+                className="glowing-container"
                 style={{
                   width: `${progress}%`,
-                  backgroundColor: "#47178f",
                   borderRadius: "100px",
                   overflow: "hidden",
                   transition: "width 0.1s linear",
@@ -462,7 +464,7 @@ function ShowQuizTitle() {
                   style={{
                     width: `${progress}%`,
                     height: "30px",
-                    backgroundColor: "#47178f",
+                    // backgroundColor: "#47178f",
                     transition: "width 0.1s linear",
                   }}
                 ></div>
@@ -495,14 +497,22 @@ function ShowQuizTitle() {
             <p className="answer-round">{playerAnswers?.length}</p>
             <p className="answer-title-round">Answers</p>
           </div>
-          <div className="bg-white text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="glowing-container text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
             {currentKahootQuestion?.question}
           </div>
           {questionFinished && (
             <div className="absolute inset-0 bg-black/50"></div>
           )}
           {!questionFinished && showQuestion ? (
-            <div className="img-container flex justify-center items-center">
+            <div
+              className={`img-container flex ${
+                currentKahootQuestion?.questionType !== "Type answer" &&
+                "flex-1"
+              } ${
+                currentKahootQuestion?.imageUrl !== "cdn.svg" &&
+                "glowing-container"
+              } justify-center items-center`}
+            >
               {currentKahootQuestion?.imageUrl &&
                 currentKahootQuestion?.imageUrl !== "cdn.svg" && (
                   <img
@@ -690,7 +700,7 @@ function ShowQuizTitle() {
                                       : currentKahootQuestion?.text4
                                   }
                                   placeholder="Type an answer"
-                                  className={`${"text-white"} w-full text-center question-p bg-transparent border-transparent outline-none`}
+                                  className={`${"text-white"} w-full font-bold text-[30px] text-center question-p bg-transparent border-transparent outline-none`}
                                   type="text"
                                 />
                               </div>
@@ -705,7 +715,7 @@ function ShowQuizTitle() {
             </div>
           )}
           {currentKahootQuestion?.questionType === "Quiz" && (
-            <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px] pb-[25px]">
+            <div className="grid grid-cols-2 w-full mt-auto px-[10px] gap-[10px] h-[25vh] mt-[0px]">
               {currentKahootQuestion?.text1 && (
                 <div
                   className={`${
@@ -718,7 +728,9 @@ function ShowQuizTitle() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <IoTriangleSharp size="32px" />
-                    <p>{currentKahootQuestion?.text1}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text1}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer1Clicked ? (
@@ -741,7 +753,9 @@ function ShowQuizTitle() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaAdjust size="32px" />
-                    <p>{currentKahootQuestion?.text2}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text2}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer2Clicked ? (
@@ -764,7 +778,9 @@ function ShowQuizTitle() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaCircle size="32px" />
-                    <p>{currentKahootQuestion?.text3}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text3}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer3Clicked ? (
@@ -787,7 +803,9 @@ function ShowQuizTitle() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaSquareFull size="32px" />
-                    <p>{currentKahootQuestion?.text4}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text4}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer4Clicked ? (
@@ -813,7 +831,7 @@ function ShowQuizTitle() {
               >
                 <div className="flex gap-x-2 items-center ml-[10px]">
                   <FaAdjust size="32px" />
-                  <p>True</p>
+                  <p className="text-[36px] font-bold">True</p>
                 </div>
                 {questionFinished ? (
                   currentKahootQuestion?.trueOrFalseAnswer === "true" ? (
@@ -834,7 +852,7 @@ function ShowQuizTitle() {
               >
                 <div className="flex gap-x-2 items-center ml-[10px]">
                   <IoTriangleSharp size="32px" />
-                  <p>False</p>
+                  <p className="text-[36px] font-bold">False</p>
                 </div>
                 {questionFinished ? (
                   currentKahootQuestion?.trueOrFalseAnswer === "false" ? (
@@ -910,7 +928,7 @@ function ShowQuizTitle() {
           >
             Next
           </button>
-          <div className="bg-white mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="glowing-container mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
             Scoreboard
           </div>
           <div className="flex flex-col gap-y-5 overflow-y-auto w-full justify-start items-center mb-[25px]">
@@ -958,7 +976,7 @@ function ShowQuizTitle() {
           >
             Quit
           </button>
-          <div className="bg-white mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="glowing-container mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
             Game is finished!
           </div>
           <Confetti

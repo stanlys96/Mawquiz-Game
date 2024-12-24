@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { settingPrincipal } from "../../stores/user-slice";
 import IC from "../utils/IC";
 import { _SERVICE } from "../../../declarations/kahoot_backend/kahoot_backend.did";
-import { LoadingLayover } from "../components/LoadingLayover";
+import { LoadingLayover, GradientButton } from "../components";
 
 function ConnectWallet() {
   const dispatch = useDispatch();
@@ -50,10 +50,13 @@ function ConnectWallet() {
       <LoadingLayover loading={loading} description="Connecting to Mawquiz" />
       <div className="flex flex-col justify-center items-center gap-y-2 main-profile">
         <img className="w-[200px] mx-auto img-home bg-white" src="logo.png" />
-        <div className="main-container">
-          <button onClick={handleConnectWallet} className="custom-button">
-            Connect Wallet
-          </button>
+        <div className="glowing-container py-[20px] px-[60px] flex justify-center items-center">
+          <GradientButton
+            text="Connect Wallet"
+            onClick={handleConnectWallet}
+            gradient="linear-gradient(90deg, #42e695, #3bb2b8)"
+            className="w-full"
+          />
         </div>
       </div>
     </main>

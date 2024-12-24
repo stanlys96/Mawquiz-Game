@@ -5,7 +5,6 @@ import { settingNickname, settingPrincipal } from "../../stores/user-slice";
 import { Principal } from "@dfinity/principal";
 import IC from "../utils/IC";
 import { _SERVICE } from "../../../declarations/kahoot_backend/kahoot_backend.did";
-import { FiEdit } from "react-icons/fi";
 import { notification } from "antd";
 import { getUserNickname } from "../helper/helper";
 import { RiLogoutCircleLine } from "react-icons/ri";
@@ -17,6 +16,7 @@ import {
   UpdateNickname,
   JiggleModal,
   LogoutComponent,
+  GradientButton,
 } from "../components";
 
 function Home() {
@@ -115,7 +115,7 @@ function Home() {
     try {
       setLoading(true);
       const result = await axios.post(
-        `https://mawquiz-backend-production.up.railway.app/joinGame/${gamePin}`,
+        `http://localhost:3001/joinGame/${gamePin}`,
         {
           player: { ...currentUser, admin: false },
         }
@@ -171,56 +171,51 @@ function Home() {
       <div className="circle-bg" />
       <div className="square-bg" />
       <LoadingLayover loading={loading} description="Connecting to Mawquiz!" />
-      <div className="flex flex-col justify-center items-center gap-y-2 main-profile">
+      <div className="flex flex-col justify-center items-center gap-y-2">
         <img className="w-[200px] mx-auto img-home bg-white" src="logo.png" />
-        <div className="main-container">
-          <div className="flex flex-col justify-center items-center gap-y-2">
+        <div className="glowing-container px-[40px] py-[40px]">
+          <div className="flex flex-col justify-center items-center gap-y-2 w-full">
             <div className="flex gap-x-2 items-center">
-              <div
-                onClick={handleEdit}
-                className="cursor-pointer p-[8px] flex lg:hidden bg-dark-green rounded-full flex items-center justify-center"
-              >
-                <FiEdit color="white" />
-              </div>
-              <div
+              <GradientButton
+                icon={<RiLogoutCircleLine color="white" />}
+                text="Logout"
+                gradient="linear-gradient(90deg, #ff9966, #ff5e62)"
                 onClick={toggleModalJiggle}
-                className="cursor-pointer p-[8px] purple-bg rounded-full flex items-center justify-center"
-              >
-                <RiLogoutCircleLine color="white" />
-              </div>
+                className="flex gap-x-2 items-center"
+              />
             </div>
             <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 items-center">
-              <div
+              <GradientButton
                 onClick={handleEdit}
-                className="cursor-pointer p-[8px] bg-dark-green rounded-full hidden lg:flex items-center justify-center"
-              >
-                <FiEdit color="white" />
-              </div>
-              <p
-                onClick={handleEdit}
-                className="cursor-pointer text-black text-center"
-              >
-                {getUserNickname(currentUser?.nickname, currentUser?.owner)}
-              </p>
+                text={getUserNickname(
+                  currentUser?.nickname,
+                  currentUser?.owner
+                )}
+                gradient="linear-gradient(90deg, #a18cd1, #fbc2eb)"
+              />
             </div>
             <input
               value={gamePin}
               onChange={(e) => setGamePin(e.target.value)}
-              className="game-pin-input mt-[10px] w-[100px]"
+              className="glowing-input text-center mt-[10px] md:w-[300px]"
               placeholder="Game Pin"
             />
-            <button onClick={handleEnterRoom} className="custom-button w-full">
-              Enter
-            </button>
+            <GradientButton
+              onClick={handleEnterRoom}
+              text="Enter"
+              gradient="linear-gradient(90deg, #134e5e, #71b280)"
+              className="w-full"
+            />
           </div>
         </div>
         <div className="mt-[40px]">
-          <p className="text-center">
-            Create your own mawquiz for FREE{" "}
-            <a onClick={handleAddQuiz} className="underline cursor-pointer">
-              here
-            </a>
-          </p>
+          <GradientButton
+            gradient="linear-gradient(90deg, #ff9966, #ff5e62)"
+            text="Create your own mawquiz for FREE"
+            className="cursor-pointer text-black"
+            onClick={handleAddQuiz}
+            textColor="#fff"
+          />
         </div>
       </div>
       <BouncyModal

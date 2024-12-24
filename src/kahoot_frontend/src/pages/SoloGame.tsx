@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
 import GameFinished from "../../public/lottie/drum-roll.json";
 import Confetti from "react-confetti";
+import { GradientButton } from "../components/GradientButton";
 
 const AnimatedNumber = ({ from, to, duration }: any) => {
   const [currentValue, setCurrentValue] = useState(from);
@@ -329,23 +330,25 @@ function SoloGame() {
               exit="exit"
               className="flex flex-col gap-y-4 items-center justify-center w-full"
             >
-              <img
-                className={`w-[85vw] md:w-[500px] h-[250px] ${
-                  !currentPickedKahoot?.imageCoverUrl && "bg-white"
-                }`}
-                src={
-                  currentPickedKahoot?.imageCoverUrl
-                    ? currentPickedKahoot?.imageCoverUrl
-                    : "/logo.png"
-                }
-              />
-              <button className="w-[95%] md:w-[80%] rounded-[10px] bg-white text-black py-[24px] text-[30px] md:text-[48px] font-bold">
+              <div className="glowing-container p-[30px] mb-[20px]">
+                <img
+                  className={`w-[85vw] md:w-[500px] h-[250px] ${
+                    !currentPickedKahoot?.imageCoverUrl && "bg-white"
+                  }`}
+                  src={
+                    currentPickedKahoot?.imageCoverUrl
+                      ? currentPickedKahoot?.imageCoverUrl
+                      : "/logo.png"
+                  }
+                />
+              </div>
+              <button className="w-[95%] glowing-container md:w-[80%] rounded-[10px] text-black py-[24px] text-[30px] md:text-[48px] font-bold">
                 {currentPickedKahoot?.title}
               </button>
             </motion.div>
           )}
           {count > 0 && (
-            <div className="countdown-container w-fit">
+            <div className="glowing-container px-[100px] py-[20px] w-fit">
               <div key={count} className="countdown-number w-fit">
                 {count}
               </div>
@@ -388,7 +391,7 @@ function SoloGame() {
                     animationData={GameFinished}
                   />
                 )}
-                <p className="w-[90vw] md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
+                <p className="w-[90vw] glowing-container md:w-[50vw] dark-purple-bg text-[3rem] py-[10px] px-[15px] text-white text-center rounded-[10px]">
                   {showDrumRoll
                     ? "Drum roll...."
                     : currentKahootQuestion?.questionType}
@@ -416,7 +419,7 @@ function SoloGame() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white text-black text-[1rem] text-center md:text-[54px] font-bold py-[10px] px-[20px] rounded-[5px]"
+                  className="bg-white glowing-container text-black text-[1rem] text-center md:text-[54px] font-bold py-[10px] px-[20px] rounded-[5px]"
                 >
                   {currentKahootQuestion?.question}
                 </motion.div>
@@ -440,9 +443,10 @@ function SoloGame() {
               className="absolute bottom-[10%] px-[5vw]"
             >
               <div
+                className="glowing-container"
                 style={{
                   width: `${progress}%`,
-                  backgroundColor: "#47178f",
+                  // backgroundColor: "#47178f",
                   borderRadius: "100px",
                   overflow: "hidden",
                   transition: "width 0.1s linear",
@@ -452,7 +456,7 @@ function SoloGame() {
                   style={{
                     width: `${progress}%`,
                     height: "30px",
-                    backgroundColor: "#47178f",
+                    // backgroundColor: "#47178f",
                     transition: "width 0.1s linear",
                   }}
                 ></div>
@@ -485,24 +489,28 @@ function SoloGame() {
             <p className="answer-round">{currentAnswer !== -1 ? 1 : 0}</p>
             <p className="answer-title-round">Answers</p>
           </div>
-          <div className="bg-white text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="bg-white text-black text-center glowing-container z-infinite text-[30px] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
             {currentKahootQuestion?.question}
           </div>
           {questionFinished && (
             <div className="absolute inset-0 bg-black/50"></div>
           )}
           {!questionFinished && showQuestion ? (
-            <div className="img-container-answer gap-y-[100px] flex justify-center items-center">
+            <div
+              className={`img-container-answer flex-1 w-fit gap-y-[50px] flex justify-center items-center`}
+            >
               {currentKahootQuestion?.imageUrl &&
                 currentKahootQuestion?.imageUrl !== "cdn.svg" && (
-                  <img
-                    src={currentKahootQuestion?.imageUrl}
-                    className="w-[300px] md:w-[400px] h-[250px]"
-                  />
+                  <div className="glowing-container p-[20px] mb-[20px]">
+                    <img
+                      src={currentKahootQuestion?.imageUrl}
+                      className="w-[300px] md:w-[400px] h-[250px]"
+                    />
+                  </div>
                 )}
               {currentKahootQuestion?.questionType === "Type answer" && (
                 <div className="h-fit pb-[10vh] w-full flex flex-col gap-y-4 justify-center items-center px-[20px]">
-                  <div className="md:w-[75%] w-full flex justify-center items-center">
+                  <div className="md:w-[100%] w-full flex justify-center items-center">
                     <div
                       className={`question-answer-full ${
                         typeAnswer?.length > 0 && "bg-blue"
@@ -533,12 +541,12 @@ function SoloGame() {
                       </div>
                     </div>
                   </div>
-                  <button
+                  <GradientButton
+                    text="Submit"
                     onClick={() => handleAnswer(typeAnswer)}
-                    className="custom-button text-center md:w-[300px] w-[50vw]"
-                  >
-                    Submit
-                  </button>
+                    gradient="linear-gradient(90deg, #42e695, #3bb2b8)"
+                    className="w-[200px]"
+                  />
                 </div>
               )}
             </div>
@@ -550,13 +558,13 @@ function SoloGame() {
                     {!checkAnswer(currentAnswer) ? "Incorrect!" : "Correct!"}
                   </p>
                   {!checkAnswer(currentAnswer) ? (
-                    <button className="cross-btn-clicked-game">
+                    <button className="cross-btn-clicked-game glowing-container p-[30px]">
                       <span className="centang-span-game">
                         <ImCross size="40px" className="centang-img" />
                       </span>
                     </button>
                   ) : (
-                    <button className="check-btn-clicked-game">
+                    <button className="check-btn-clicked-game glowing-container p-[30px]">
                       <span className="centang-span-game">
                         <FaCheck size="40px" className="centang-img" />
                       </span>
@@ -629,7 +637,7 @@ function SoloGame() {
             </div>
           )}
           {currentKahootQuestion?.questionType === "Quiz" && (
-            <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px] pb-[25px]">
+            <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px]">
               {currentKahootQuestion?.text1 && (
                 <div
                   onClick={() => {
@@ -645,7 +653,9 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <IoTriangleSharp size="32px" />
-                    <p>{currentKahootQuestion?.text1}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text1}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer1Clicked ? (
@@ -671,7 +681,9 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaAdjust size="32px" />
-                    <p>{currentKahootQuestion?.text2}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text2}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer2Clicked ? (
@@ -697,7 +709,9 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaCircle size="32px" />
-                    <p>{currentKahootQuestion?.text3}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text3}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer3Clicked ? (
@@ -723,7 +737,9 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaSquareFull size="32px" />
-                    <p>{currentKahootQuestion?.text4}</p>
+                    <p className="font-bold text-[30px]">
+                      {currentKahootQuestion?.text4}
+                    </p>
                   </div>
                   {questionFinished ? (
                     currentKahootQuestion?.answer4Clicked ? (
@@ -737,7 +753,7 @@ function SoloGame() {
             </div>
           )}
           {currentKahootQuestion?.questionType === "True or false" && (
-            <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px] pb-[25px]">
+            <div className="grid grid-cols-2 w-full px-[10px] gap-[10px] h-[25vh] mt-[0px]">
               <div
                 onClick={() => {
                   handleAnswer(0);
@@ -752,7 +768,7 @@ function SoloGame() {
               >
                 <div className="flex gap-x-2 items-center ml-[10px]">
                   <FaAdjust size="32px" />
-                  <p>True</p>
+                  <p className="font-bold text-[36px]">True</p>
                 </div>
                 {questionFinished ? (
                   currentKahootQuestion?.trueOrFalseAnswer === "true" ? (
@@ -776,7 +792,7 @@ function SoloGame() {
               >
                 <div className="flex gap-x-2 items-center ml-[10px]">
                   <IoTriangleSharp size="32px" />
-                  <p>False</p>
+                  <p className="font-bold text-[36px]">False</p>
                 </div>
                 {questionFinished ? (
                   currentKahootQuestion?.trueOrFalseAnswer === "false" ? (
@@ -845,7 +861,7 @@ function SoloGame() {
           >
             Next
           </button>
-          <div className="bg-white mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="bg-white mb-[25px] glowing-container text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
             Scoreboard
           </div>
           <div className="flex flex-col gap-y-5 overflow-y-auto w-full justify-start items-center mb-[25px]">
@@ -889,7 +905,7 @@ function SoloGame() {
           >
             Quit
           </button>
-          <div className="bg-white mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="glowing-container mb-[25px] text-black text-center z-infinite text-[1rem] mt-[20px] mx-[20px] md:text-[40px] w-fit font-bold py-[10px] px-[20px] rounded-[5px]">
             Game is finished!
           </div>
           <Confetti

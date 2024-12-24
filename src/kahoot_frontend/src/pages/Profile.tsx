@@ -9,14 +9,12 @@ import {
 } from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import { Principal } from "@dfinity/principal";
 import { FiEdit } from "react-icons/fi";
-import { AnimatePresence, motion } from "framer-motion";
-import { getUserNickname, modalVariants } from "../helper/helper";
+import { getUserNickname } from "../helper/helper";
 import { notification } from "antd";
 import { settingKahoot, settingPrincipal } from "../../stores/user-slice";
 import { FaHome } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
-import { ImCross } from "react-icons/im";
 import {
   BouncyModal,
   JiggleModal,
@@ -192,19 +190,16 @@ function Profile() {
     try {
       setLoading(true);
       setIsOpenModalKahoot(false);
-      const theData = await fetch(
-        "https://mawquiz-backend-production.up.railway.app/games",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            gamePin: currentPickedKahoot?.gamePin,
-            questions: currentPickedKahoot?.questions,
-          }),
-        }
-      );
+      const theData = await fetch("http://localhost:3001/games", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gamePin: currentPickedKahoot?.gamePin,
+          questions: currentPickedKahoot?.questions,
+        }),
+      });
 
       const createGame = await theData?.json();
       if (createGame?.message !== "error") {
@@ -256,7 +251,7 @@ function Profile() {
     }
   }, [principal, backend]);
   return (
-    <main className="background flex justify-center items-center">
+    <main className="background flex h-min-[100vh] justify-center items-center">
       <LoadingLayover
         loading={loading || initialLoading}
         description={loading ? "Creating game room!" : "Loading data..."}
@@ -291,17 +286,17 @@ function Profile() {
           </div>
         </div>
         <div
-          className={`flex gap-x-4 md:pt-0 md:flex-row flex-col-reverse gap-y-4 items-center md:items-start`}
+          className={`flex gap-x-4 md:pt-0 md:flex-row flex-col-reverse gap-y-4 items-center`}
           style={isMobile ? { paddingTop: `${getPaddingTop()}px` } : {}}
         >
-          <div className="your-kahoots h-fit">
+          <div className="basic-card-container h-fit mb-[60px] md:mb-0 mx-[10px]">
             <div className="your-kahoots-top">
               <div className="flex gap-x-4">
                 <p
                   onClick={() => setCategory("kahoot")}
                   onMouseEnter={() => setIsHoveredKahoot(true)}
                   onMouseLeave={() => setIsHoveredKahoot(false)}
-                  className={`text-[#6E6E6E] ${
+                  className={`text-white ${
                     category === "kahoot" || isHoveredKahoot
                       ? "text-container"
                       : "text-ordinary"
@@ -334,14 +329,14 @@ function Profile() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-between w-[200px]">
+                      <div className="flex flex-col border-l border-l-gray border-t border-t-gray border-r border-r-gray justify-between w-[200px]">
                         <p className="py-[8px] px-[12px] text-black font-semibold">
                           {userGame?.title?.length > 15
                             ? (userGame?.title?.slice(0, 15) ?? "") + "..."
                             : userGame?.title ?? ""}
                         </p>
-                        <div className="px-[12px] py-[2px] bottom-game-card flex justify-between items-center gap-x-[50px]">
-                          <p className="dark-text font-semibold">
+                        <div className="px-[12px] py-[2px] border-t-[1px] border-t-gray bottom-game-card flex justify-center items-center gap-x-[50px]">
+                          <p className="dark-text text-center font-semibold">
                             {userGame?.played} plays
                           </p>
                         </div>
@@ -358,7 +353,7 @@ function Profile() {
             {userGames?.length > 0 && (
               <p
                 onClick={handleNavigateLibrary}
-                className="text-see-all text-center font-bold cursor-pointer my-[16px] underline"
+                className="text-see-all text-center text-black font-bold cursor-pointer my-[16px] underline"
               >
                 See all ({userGames?.length})
               </p>
@@ -366,12 +361,10 @@ function Profile() {
           </div>
           <div
             onClick={handleNavigateCreate}
-            className="kahoot-card cursor-pointer"
+            className="glowing-container w-[199px] h-[260px] cursor-pointer mt-[40px] md:mt-0"
           >
             <a className="kahoot-card-title">
-              <div className="card-top">
-                <img src="/card-kahoot.svg" />
-              </div>
+              <div className="card-top"></div>
               <div className="card-bot">
                 <div className="card-mid">
                   <span className="card-span flex justify-center items-center">

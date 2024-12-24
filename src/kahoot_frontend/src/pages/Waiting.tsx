@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { settingQuestions } from "../../stores/user-slice";
 
-const socket = io("https://mawquiz-backend-production.up.railway.app/", {
+const socket = io("http://localhost:3001/", {
   transports: ["websocket", "polling"],
 });
 
@@ -75,7 +75,7 @@ function Waiting() {
               </div>
             </div>
           </button>
-          <p className="text-[36px] font-semibold px-[15px] text-center">
+          <p className="text-[36px] glowing-container font-semibold px-[25px] py-[5px] text-center">
             {nickname
               ? (nickname?.length > 15
                   ? nickname?.slice(0, 15) + "..."

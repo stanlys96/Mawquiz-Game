@@ -51,7 +51,7 @@ export const MiddleComponentMobile = ({
 }: Props) => {
   return (
     <div className="middle-div-mobile min-h-[100vh] w-[100vw] mt-[56px] w-full flex flex-col gap-y-4">
-      <div className="question-div-main-question">
+      <div className="question-div-main-question glowing-container">
         <div className="flex gap-x-2 items-center">
           <div className="question-inner-div">
             <div className="question-sub-inner-div">
@@ -66,7 +66,7 @@ export const MiddleComponentMobile = ({
                       setQuizData([...quizDataTemp]);
                     }}
                     placeholder="Start typing your question"
-                    className="w-full text-center question-p bg-transparent border-transparent outline-none"
+                    className="w-full font-bold text-[20px] text-center question-p bg-transparent border-transparent outline-none"
                     type="text"
                   />
                 </div>
@@ -152,7 +152,7 @@ export const MiddleComponentMobile = ({
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => setIsOpen(true)}
-          className={`upload-div ${"upload-div-quiz"} cursor-pointer gap-y-[16px]`}
+          className={`upload-div ${"upload-div-quiz"} glowing-container cursor-pointer gap-y-[16px]`}
         >
           {quizData?.[clickedQuizIndex]?.imageUrl === "cdn.svg" ? (
             <div className="flex flex-col gap-y-[16px] justify-center items-center">
@@ -241,7 +241,7 @@ export const MiddleComponentMobile = ({
                 quizData?.[clickedQuizIndex]?.text1
                   ? "text-white"
                   : "text-black"
-              } w-full px-[6px] outline-none bg-transparent border-none`}
+              } w-full px-[6px] font-bold text-[20px] outline-none bg-transparent border-none`}
             />
 
             <p className="text-white absolute bottom-1 right-[10px]">
@@ -301,7 +301,7 @@ export const MiddleComponentMobile = ({
                 quizData?.[clickedQuizIndex]?.text2
                   ? "text-white"
                   : "text-black"
-              } w-full px-[6px] outline-none bg-transparent border-none`}
+              } w-full px-[6px] font-bold text-[20px] outline-none bg-transparent border-none`}
             />
 
             <p className="text-white absolute bottom-1 right-[10px]">
@@ -361,7 +361,7 @@ export const MiddleComponentMobile = ({
                 quizData?.[clickedQuizIndex]?.text3
                   ? "text-white"
                   : "text-black"
-              } w-full px-[6px] outline-none bg-transparent border-none`}
+              } w-full px-[6px] font-bold text-[20px]  outline-none bg-transparent border-none`}
             />
 
             <p className="text-white absolute bottom-1 right-[10px]">
@@ -421,7 +421,7 @@ export const MiddleComponentMobile = ({
                 quizData?.[clickedQuizIndex]?.text4
                   ? "text-white"
                   : "text-black"
-              } w-full px-[6px] outline-none bg-transparent border-none`}
+              } w-full px-[6px] font-bold text-[20px] outline-none bg-transparent border-none`}
             />
 
             <p className="text-white absolute bottom-1 right-[10px]">
@@ -468,7 +468,7 @@ export const MiddleComponentMobile = ({
                 </span>
               </button>
             </div>
-            <p className="text-white w-full pl-[8px] outline-none bg-transparent border-none">
+            <p className="text-white w-full pl-[8px] font-bold text-[25px] outline-none bg-transparent border-none">
               True
             </p>
           </div>
@@ -510,7 +510,7 @@ export const MiddleComponentMobile = ({
                 </span>
               </button>
             </div>
-            <p className="text-white w-full pl-[8px] outline-none bg-transparent border-none">
+            <p className="text-white w-full pl-[8px] font-bold text-[25px] outline-none bg-transparent border-none">
               False
             </p>
           </div>
@@ -540,7 +540,7 @@ export const MiddleComponentMobile = ({
                         quizData?.[clickedQuizIndex]?.text1?.length > 0
                           ? "text-white"
                           : "text-black"
-                      } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                      } w-full text-center font-bold text-[25px] question-p bg-transparent border-transparent outline-none`}
                       type="text"
                     />
                     <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -599,7 +599,7 @@ export const MiddleComponentMobile = ({
                               quizData?.[clickedQuizIndex]?.text2?.length > 0
                                 ? "text-white"
                                 : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                            } w-full text-center font-bold text-[25px] question-p bg-transparent border-transparent outline-none`}
                             type="text"
                           />
                           <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -635,7 +635,7 @@ export const MiddleComponentMobile = ({
                               quizData?.[clickedQuizIndex]?.text3?.length > 0
                                 ? "text-white"
                                 : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                            } w-full text-center font-bold text-[25px] question-p bg-transparent border-transparent outline-none`}
                             type="text"
                           />
                           <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">
@@ -671,7 +671,7 @@ export const MiddleComponentMobile = ({
                               quizData?.[clickedQuizIndex]?.text4?.length > 0
                                 ? "text-white"
                                 : "text-black"
-                            } w-full text-center question-p bg-transparent border-transparent outline-none`}
+                            } w-full text-center font-bold text-[25px] question-p bg-transparent border-transparent outline-none`}
                             type="text"
                           />
                           <p className="absolute top-[25%] text-white right-1 text-[14px] font-semibold">

@@ -1172,7 +1172,7 @@
 }
 
 body {
-  background: rgb(56, 18, 114);
+  /* background: rgb(114, 56, 18); */
 }
 
 ul {
@@ -1304,17 +1304,21 @@ html {
 
 .background {
   position: relative;
-  background: rgb(56, 18, 114);
+  background: rgb(114, 56, 18);
   min-height: 100vh;
   min-width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
+  background-image: url("mawquiz-bg.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .profile > * {
   z-index: 100;
 }
 
-.circle-bg {
+/* .circle-bg {
   position: fixed;
   pointer-events: none;
   border-radius: 50%;
@@ -1322,7 +1326,7 @@ html {
   opacity: 0.1;
   min-width: 75cqmin;
   min-height: 75cqmin;
-  bottom: -15cqmin;
+  top: -15cqmin;
   right: -15cqmin;
   z-index: 1;
 }
@@ -1331,13 +1335,13 @@ html {
   position: fixed;
   pointer-events: none;
   background-color: rgb(0, 0, 0);
-  transform: rotate(45deg);
+  transform: rotate(135deg);
   opacity: 0.1;
-  top: -15cqmin;
+  bottom: -15cqmin;
   left: -15cqmin;
   min-width: 75cqmin;
   min-height: 75cqmin;
-}
+} */
 
 .montserrat {
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
@@ -1356,7 +1360,7 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: rgb(51, 51, 51);
+  background: linear-gradient(90deg, #2c3e50, #4ca1af);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 0.875rem;
@@ -1384,7 +1388,7 @@ html {
   padding: 16px;
   border-radius: 4px;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px;
-  width: 350px;
+  width: 300px;
 }
 
 @media (max-width: 400px) {
@@ -1525,15 +1529,15 @@ html {
 }
 
 .card-top {
-  background-color: rgb(233, 233, 233);
+  /* background-color: rgb(233, 233, 233); */
   width: 100%;
-  min-height: 133px;
+  min-height: 100px;
   display: flex;
   -webkit-box-align: center;
   align-items: center;
   -webkit-box-pack: center;
   justify-content: center;
-  flex: 2 1 0%;
+  /* flex: 2 1 0%; */
   border-top-right-radius: 0.5rem;
   border-top-left-radius: 0.5rem;
   overflow: hidden;
@@ -1605,7 +1609,6 @@ html {
 
 .your-kahoots-top {
   padding: 8px 16px;
-  border-bottom: 1px solid rgb(242, 242, 242);
 }
 
 .text-container {
@@ -1643,6 +1646,7 @@ html {
 .game-card-inner {
   min-height: 74px;
   display: flex;
+  background-color: #f2f2f2;
 }
 
 .bottom-game-card {
@@ -1676,7 +1680,7 @@ html {
 }
 
 .text-see-all {
-  color: rgb(19, 104, 206);
+  color: black;
 }
 
 .toggle-button {
@@ -1742,7 +1746,7 @@ html {
   cursor: pointer;
   justify-content: center;
   vertical-align: bottom;
-  background: rgb(19, 104, 206);
+  background: linear-gradient(90deg, #2b5876, #4e4376);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
@@ -1792,8 +1796,8 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: #fff;
-  color: rgb(0, 0, 0);
+  background: linear-gradient(90deg, #2c3e50, #4ca1af);
+  color: white;
   border-radius: 4px;
   font-size: 0.875rem;
   font-weight: bold;
@@ -1823,8 +1827,8 @@ html {
   border: 0px;
   cursor: pointer;
   vertical-align: bottom;
-  background: rgb(242, 242, 242);
-  color: rgb(51, 51, 51);
+  background: linear-gradient(90deg, #ff758c, #ff7eb3);
+  color: white;
   border-radius: 4px;
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
     Arial, "Bai Jamjuree", sans-serif;
@@ -1849,7 +1853,7 @@ html {
   border: 0px;
   cursor: pointer;
   vertical-align: bottom;
-  background: #26890c;
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
   color: white;
   border-radius: 4px;
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
@@ -1975,7 +1979,7 @@ html {
   cursor: pointer;
   display: inline-block;
   vertical-align: bottom;
-  background: rgb(242, 242, 242);
+  background: linear-gradient(90deg, #fceabb, #f8b500);
   color: rgb(0, 0, 0);
   border-radius: 4px;
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
@@ -2121,7 +2125,7 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: rgb(19, 104, 206);
+  background: linear-gradient(90deg, #89f7fe, #66a6ff);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 0.875rem;
@@ -2145,7 +2149,7 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: rgb(19, 104, 206);
+  background: linear-gradient(90deg, #1fd1f9, #b621fe);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 0.875rem;
@@ -2169,7 +2173,7 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background-color: rgb(38, 137, 12);
+  background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 0.875rem;
@@ -2253,7 +2257,7 @@ html {
   height: 24px;
   width: 24px;
   margin-bottom: 0.25rem;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   border-radius: 50%;
   border: 2px solid rgb(255, 255, 255);
   text-align: center;
@@ -2263,7 +2267,7 @@ html {
 .exclamation-ordinary {
   height: 24px;
   width: 24px;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   border-radius: 50%;
   border: 2px solid rgb(255, 255, 255);
   text-align: center;
@@ -2505,8 +2509,8 @@ html {
   cursor: pointer;
   display: inline-block;
   vertical-align: bottom;
-  background: rgb(255, 255, 255);
-  color: rgb(51, 51, 51);
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  color: white;
   border-radius: 4px;
   font-family: Montserrat, "Noto Sans Arabic", "Helvetica Neue", Helvetica,
     Arial, "Bai Jamjuree", sans-serif;
@@ -2520,8 +2524,8 @@ html {
   padding: 0px 16px 4px;
   line-height: 32px;
   position: relative;
-  border-width: 1px;
-  border-color: rgb(110, 110, 110);
+  /* border-width: 1px;
+  border-color: rgb(110, 110, 110); */
 }
 
 .question-div {
@@ -2709,12 +2713,12 @@ html {
 }
 
 .bg-blue {
-  background-color: rgb(19, 104, 206);
+  background: linear-gradient(90deg, #89f7fe, #66a6ff);
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
 .bg-orange {
-  background-color: rgb(216, 158, 0);
+  background: linear-gradient(90deg, #bdc3c7, #2c3e50);
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
@@ -2724,12 +2728,12 @@ html {
 }
 
 .bg-red {
-  background-color: rgb(226, 27, 60);
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
 .bg-green-only {
-  background-color: rgb(102, 191, 57);
+  background: linear-gradient(90deg, #134e5e, #71b280);
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
@@ -2740,7 +2744,7 @@ html {
 }
 
 .bg-dark-green {
-  background-color: rgb(38, 137, 12);
+  background: linear-gradient(90deg, #134e5e, #71b280);
   transition: box-shadow 0.2s, background 0.2s, opacity 0.2s;
 }
 
@@ -2839,8 +2843,8 @@ html {
   background: rgb(102, 191, 57);
   flex: 0 0 auto;
   margin: 0px 0.5rem;
-  width: 5rem;
-  height: 5rem;
+  width: 6.5rem;
+  height: 6.5rem;
   border: 0.25rem solid rgb(255, 255, 255);
   transition: background 0.2s;
   transform-origin: center bottom;
@@ -2848,7 +2852,7 @@ html {
     rgba(0, 0, 0, 0.35) 0px 0.125rem 0.125rem,
     rgba(0, 0, 0, 0.35) 0px 0px 0px 0.0625rem;
   transform: translateY(0px) scaleX(1) scaleY(1);
-  padding: 0;
+  /* padding: 0; */
   color: white;
   border-radius: 50%;
   cursor: pointer;
@@ -2858,8 +2862,8 @@ html {
   background: #ff3355;
   flex: 0 0 auto;
   margin: 0px 0.5rem;
-  width: 5rem;
-  height: 5rem;
+  width: 6.5rem;
+  height: 6.5rem;
   border: 0.25rem solid rgb(255, 255, 255);
   transition: background 0.2s;
   transform-origin: center bottom;
@@ -2867,7 +2871,7 @@ html {
     rgba(0, 0, 0, 0.35) 0px 0.125rem 0.125rem,
     rgba(0, 0, 0, 0.35) 0px 0px 0px 0.0625rem;
   transform: translateY(0px) scaleX(1) scaleY(1);
-  padding: 0;
+  /* padding: 0; */
   color: white;
   border-radius: 50%;
   cursor: pointer;
@@ -3131,8 +3135,8 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: rgb(242, 242, 242);
-  color: rgb(0, 0, 0);
+  background: linear-gradient(90deg, #bdc3c7, #2c3e50);
+  color: white;
   border-radius: 4px;
   font-size: 0.875rem;
   font-weight: bold;
@@ -3148,7 +3152,7 @@ html {
 }
 
 .cancel-red-btn {
-  background-color: rgb(226, 27, 60);
+  background: linear-gradient(90deg, #f12711, #f5af19);
   margin: 0px;
   border: 0px;
   cursor: pointer;
@@ -3178,7 +3182,7 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: rgb(226, 27, 60);
+  background: linear-gradient(90deg, #43cea2, #185a9d);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 0.875rem;
@@ -3245,7 +3249,7 @@ html {
   display: inline-block;
   vertical-align: bottom;
   box-shadow: rgba(0, 0, 0, 0.25) 0px -4px inset;
-  background: rgb(19, 104, 206);
+  background: linear-gradient(90deg, #7f00ff, #e100ff);
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 0.875rem;
@@ -3497,7 +3501,7 @@ html {
   box-sizing: border-box;
   display: inline-flex;
   flex: 0 1 auto;
-  background-color: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   border-radius: 0.4vmin;
   animation: 1s ease 0s 1 normal none running rBqQd;
 }
@@ -3661,7 +3665,7 @@ html {
   opacity: 1;
   margin: 0px 0px 16px;
   overflow: visible;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   outline: none;
   color: inherit;
   font-style: inherit;
@@ -3774,7 +3778,7 @@ html {
   justify-content: center;
   width: 28cqmin;
   height: 28cqmin;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   border-radius: 100%;
   font-weight: bold;
   font-style: normal;
@@ -3837,7 +3841,7 @@ html {
 }
 
 .dark-purple-bg {
-  background-color: #47178f;
+  background: linear-gradient(90deg, #654ea3, #eaafc8);
 }
 
 .answer-div {
@@ -3913,7 +3917,7 @@ html {
   justify-content: center;
   -webkit-box-align: center;
   align-items: center;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   color: rgb(255, 255, 255);
   padding: 0.5vmin;
   border-radius: 50%;
@@ -3932,7 +3936,7 @@ html {
   justify-content: center;
   width: 14cqmin;
   height: 14cqmin;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   border-radius: 100%;
   font-weight: bold;
   font-style: normal;
@@ -3945,7 +3949,7 @@ html {
   font-size: 2cqmin;
   border-radius: 1.5cqmin 1.5cqmin 1.5cqmin 1.5cqmin / 1.5cqmin 1.5cqmin
     1.5cqmin 1.5cqmin;
-  background: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   color: rgb(255, 255, 255);
   padding: 0.25cqmin 1cqmin;
   margin-top: 8px;
@@ -3970,7 +3974,8 @@ html {
   flex-direction: row;
   -webkit-box-pack: center;
   justify-content: center;
-  padding: 1rem 1rem 0px;
+  padding: 40px;
+  margin: 30px 0;
   width: auto;
   display: flex;
   -webkit-box-align: center;
@@ -3978,7 +3983,7 @@ html {
   min-height: 0px;
   position: relative;
   /* height: 100%; */
-  flex: 1;
+  /* flex: 1; */
 }
 
 .img-container-answer {
@@ -3986,7 +3991,7 @@ html {
   -webkit-box-pack: center;
   justify-content: center;
   padding: 1rem 1rem 0px;
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   -webkit-box-align: center;
   align-items: center;
@@ -4067,7 +4072,7 @@ html {
 }
 
 .the-red-answer-bg {
-  background-color: rgb(226, 27, 60);
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
 }
 
 .the-red-darker-answer-bg {
@@ -4075,7 +4080,7 @@ html {
 }
 
 .the-blue-answer-bg {
-  background-color: rgb(19, 104, 206);
+  background: linear-gradient(90deg, #89f7fe, #66a6ff);
 }
 
 .the-blue-darker-answer-bg {
@@ -4083,15 +4088,15 @@ html {
 }
 
 .the-orange-answer-bg {
-  background-color: rgb(216, 158, 0);
+  background: linear-gradient(90deg, #bdc3c7, #2c3e50);
 }
 
 .the-orange-darker-answer-bg {
-  background-color: #a77a00;
+  background: #888888;
 }
 
 .the-green-answer-bg {
-  background-color: rgb(38, 137, 12);
+  background: linear-gradient(90deg, #134e5e, #71b280);
 }
 
 .the-green-darker-answer-bg {
@@ -4117,7 +4122,7 @@ html {
 
 .scoreboard-div {
   width: 100%;
-  background-color: rgb(70, 23, 143);
+  background: linear-gradient(90deg, #ff0080, #7928ca);
   min-height: 9vmin;
   height: 9vmin;
   border-radius: 0.5rem;
@@ -4212,6 +4217,149 @@ html {
 
 .shadow-card {
   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px;
+}
+
+.glowing-container {
+  /* padding: 50px 60px; */
+  text-align: center;
+  color: #fff;
+  font-family: Arial, sans-serif;
+
+  background: linear-gradient(135deg, #141e30, #243b55);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+
+  position: relative;
+  z-index: 1;
+}
+
+.glowing-container:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+
+  background: linear-gradient(
+    45deg,
+    #ff0080,
+    #ff8c00,
+    #40e0d0,
+    #1e90ff,
+    #ff0080
+  );
+  background-size: 400% 400%;
+
+  filter: blur(10px);
+  z-index: -1;
+  animation: glow-animation 6s infinite;
+}
+
+.glowing-container-2 {
+  text-align: center;
+  color: #fff;
+  font-family: Arial, sans-serif;
+
+  background: linear-gradient(135deg, #141e30, #243b55);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+
+  position: relative;
+  z-index: 1;
+}
+
+.glowing-container-2:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+
+  background: linear-gradient(
+    45deg,
+    #ff0080,
+    #ff8c00,
+    #40e0d0,
+    #1e90ff,
+    #ff0080
+  );
+  background-size: 400% 400%;
+
+  filter: blur(10px);
+  z-index: -1;
+  animation: glow-animation 6s infinite;
+}
+
+.input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #141e30; /* Background for better contrast */
+}
+
+.glowing-input {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #243b55;
+  border-radius: 5px;
+  background: #1e293b;
+  color: #ffffff;
+  outline: none;
+
+  /* Transition for smooth glowing effect */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Glowing Effect on Focus */
+.glowing-input:focus {
+  border-color: #4facfe; /* Base glow color */
+  box-shadow: 0 0 10px #4facfe, 0 0 20px #4facfe, 0 0 40px #4facfe;
+}
+
+.glowing-input::placeholder {
+  color: #9ca3af; /* Light gray placeholder */
+}
+
+.basic-card-container {
+  padding: 15px;
+  text-align: center;
+  color: #fff;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ff5e5e, #ffcc41, #5e9eff, #41cc66);
+  background-size: 200% 200%;
+  animation: gradient-shift 5s infinite;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Arial", sans-serif;
+  /* margin: 50px auto; */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes glow-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @media (max-width: 500px) {
