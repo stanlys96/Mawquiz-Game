@@ -489,7 +489,7 @@ function SoloGame() {
             <p className="answer-round">{currentAnswer !== -1 ? 1 : 0}</p>
             <p className="answer-title-round">Answers</p>
           </div>
-          <div className="bg-white text-black text-center glowing-container z-infinite text-[30px] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
+          <div className="bg-white text-black text-center glowing-container z-infinite text-[18px] mt-[20px] mx-[20px] md:text-[40px] w-[80vw] font-bold py-[10px] px-[20px] rounded-[5px]">
             {currentKahootQuestion?.question}
           </div>
           {questionFinished && (
@@ -653,7 +653,7 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <IoTriangleSharp size="32px" />
-                    <p className="font-bold text-[30px]">
+                    <p className="font-bold text-[1rem] md:text-[30px]">
                       {currentKahootQuestion?.text1}
                     </p>
                   </div>
@@ -681,7 +681,7 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaAdjust size="32px" />
-                    <p className="font-bold text-[30px]">
+                    <p className="font-bold text-[1rem] md:text-[30px]">
                       {currentKahootQuestion?.text2}
                     </p>
                   </div>
@@ -709,7 +709,7 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaCircle size="32px" />
-                    <p className="font-bold text-[30px]">
+                    <p className="font-bold text-[1rem] md:text-[30px]">
                       {currentKahootQuestion?.text3}
                     </p>
                   </div>
@@ -737,7 +737,7 @@ function SoloGame() {
                 >
                   <div className="flex gap-x-2 items-center ml-[10px]">
                     <FaSquareFull size="32px" />
-                    <p className="font-bold text-[30px]">
+                    <p className="font-bold text-[1rem] md:text-[30px]">
                       {currentKahootQuestion?.text4}
                     </p>
                   </div>
