@@ -402,3 +402,11 @@ export function compareArrays(array1: any[], array2: any[]): boolean {
 
   return true;
 }
+
+export function formatGamePin(pin?: string) {
+  if (!pin) return "";
+  if (typeof pin !== "string") {
+    pin = String(pin);
+  }
+  return pin.slice(0, 3) + " " + pin.slice(3);
+}

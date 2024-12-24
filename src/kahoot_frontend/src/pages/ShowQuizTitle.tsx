@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImCross } from "react-icons/im";
 import {
+  formatGamePin,
   getOrdinalSuffix,
   getScoreLeaderboardHeight,
   getSocket,
@@ -850,7 +851,8 @@ function ShowQuizTitle() {
               {currentQuestionIndex + 1}/{theKahootQuestions?.length}
             </p>
             <p className="">
-              Game PIN: <span className="font-bold">{gamePin}</span>
+              Game PIN:{" "}
+              <span className="font-bold">{formatGamePin(gamePin ?? "")}</span>
             </p>
           </div>
         </div>
@@ -937,7 +939,8 @@ function ShowQuizTitle() {
               {currentQuestionIndex + 1}/{theKahootQuestions?.length}
             </p>
             <p className="">
-              Game PIN: <span className="font-bold">{gamePin}</span>
+              Game PIN:{" "}
+              <span className="font-bold">{formatGamePin(gamePin ?? "")}</span>
             </p>
           </div>
         </div>
@@ -988,7 +991,8 @@ function ShowQuizTitle() {
               {currentQuestionIndex + 1}/{theKahootQuestions?.length}
             </p>
             <p className="">
-              Game PIN: <span className="font-bold">{gamePin}</span>
+              Game PIN:{" "}
+              <span className="font-bold">{formatGamePin(gamePin ?? "")}</span>
             </p>
           </div>
         </div>

@@ -5,12 +5,19 @@ import { useEffect, useState } from "react";
 import { FaUnlock, FaLock } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { settingUniquePlayers } from "../../stores/user-slice";
-import { getSocket } from "../helper/helper";
+import { formatGamePin, getSocket } from "../helper/helper";
+import Swal from "sweetalert2";
 
-interface Player {
-  nickname: string;
-  owner: string;
-}
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.onmouseenter = Swal.close as any;
+  },
+});
 
 function LiveGame() {
   const dispatch = useDispatch();
@@ -90,11 +97,24 @@ function LiveGame() {
               </span>
             </p>
             <p className="text-black text-[14px]">
-              with game code: <span className="font-bold">{gamePin}</span>
+              with game code:{" "}
+              <span
+                onClick={async () => {
+                  await navigator.clipboard.writeText(gamePin ?? "");
+                  Toast.fire({
+                    icon: "success",
+                    title: "Successfully copied the game pin!",
+                    position: "bottom-end",
+                  });
+                }}
+                className="font-bold cursor-pointer"
+              >
+                {formatGamePin(gamePin ?? "")}
+              </span>
             </p>
           </div>
         ) : (
-          <div className="text-black text-center text-[14px] px-[10px] flex flex-col items-center gap-y-1 gap-x-2">
+          <div className="text-black text-center text-[14px] font-semibold px-[10px] gap-y-2 flex flex-col items-center gap-y-1 gap-x-2">
             This game is now locked - no one else can join <FaLock />
           </div>
         )}
@@ -115,13 +135,30 @@ function LiveGame() {
                 {!locked ? (
                   <div className="gamepin-right flex items-start flex-col gap-y-4">
                     <p className="gamepin-text-right">Game Code:</p>
-                    <p className="the-pin">{gamePin}</p>
+                    <p
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(gamePin ?? "");
+                        Toast.fire({
+                          icon: "success",
+                          title: "Successfully copied the game pin!",
+                          position: "top-right",
+                        });
+                      }}
+                      className="cursor-pointer the-pin"
+                    >
+                      {formatGamePin(gamePin ?? "")}
+                    </p>
                   </div>
                 ) : (
-                  <div className="gamepin-right flex items-start flex-col gap-y-4">
-                    <div className="the-dark-bg w-full h-full flex justify-center items-center px-[50px] rounded-[8px]">
+                  <div className="gamepin-right flex items-center justify-center gap-y-4">
+                    <div className="the-dark-bg h-full flex flex-col justify-center items-center px-[10px] mr-[10px] rounded-[8px]">
                       <FaLock size="30px" color="white" />
                     </div>
+                    <p className="text-[16px] text-black monserrat font-semibold">
+                      This game is now locked
+                      <br />
+                      no one else can join
+                    </p>
                   </div>
                 )}
               </div>

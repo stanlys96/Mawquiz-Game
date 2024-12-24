@@ -104,7 +104,7 @@ app.post("/pinJSONToIPFS", async (req: any, res: any) => {
 app.post("/games", (req: any, res: any) => {
   try {
     const { gamePin, questions } = req.body;
-    const gameRoom = generateRandomString();
+    const gameRoom = generateRandomString(7, games);
     games[gameRoom] = { players: {}, questions, locked: false };
     res.json({ gamePin, gameRoom, message: "Game started successfully" });
   } catch (e) {
@@ -223,5 +223,6 @@ io.on("connection", (socket: any) => {
 
   socket.on("game_finished", ({ gamePin, uniquePlayers }: any) => {
     io.to(gamePin).emit("game_finished", { gamePin, uniquePlayers });
+    delete games[gamePin];
   });
 });
