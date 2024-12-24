@@ -295,7 +295,7 @@ function Profile() {
           className={`flex gap-x-4 md:pt-0 md:flex-row flex-col-reverse gap-y-4 items-center`}
           style={isMobile ? { paddingTop: `${getPaddingTop()}px` } : {}}
         >
-          <div className="basic-card-container h-fit mb-[60px] md:mb-0 mx-[10px]">
+          <div className="glowing-container-2 px-[10px] pt-[10px] pb-[20px] h-fit mb-[60px] md:mb-0 mx-[10px]">
             <div className="your-kahoots-top">
               <div className="flex gap-x-4 justify-center">
                 <GradientButton

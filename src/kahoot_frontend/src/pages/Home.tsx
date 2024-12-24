@@ -196,14 +196,14 @@ function Home() {
                   currentUser?.nickname,
                   currentUser?.owner
                 )}
-                gradient="linear-gradient(90deg, #a18cd1, #fbc2eb)"
+                gradient="linear-gradient(90deg, #0f2027, #203a43, #2c5364)"
               />
             </div>
             <input
               value={gamePin}
               onChange={(e) => setGamePin(e.target.value)}
               className="glowing-input text-center md:w-[300px] my-[8px] h-full"
-              placeholder="Game Pin"
+              placeholder="Enter Game Pin"
             />
             <GradientButton
               icon={<FaDoorOpen size="26px" />}
