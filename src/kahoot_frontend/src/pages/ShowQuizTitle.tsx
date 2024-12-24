@@ -715,7 +715,7 @@ function ShowQuizTitle() {
             </div>
           )}
           {currentKahootQuestion?.questionType === "Quiz" && (
-            <div className="grid grid-cols-2 w-full mt-auto px-[10px] gap-[10px] h-[25vh] mt-[0px]">
+            <div className="grid grid-cols-2 w-full mt-auto px-[10px] gap-[10px] h-[25vh] mt-[0px] pb-[10px]">
               {currentKahootQuestion?.text1 && (
                 <div
                   className={`${
