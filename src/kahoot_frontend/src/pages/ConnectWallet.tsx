@@ -5,6 +5,7 @@ import { settingPrincipal } from "../../stores/user-slice";
 import IC from "../utils/IC";
 import { _SERVICE } from "../../../declarations/kahoot_backend/kahoot_backend.did";
 import { LoadingLayover, GradientButton } from "../components";
+import { FaWallet } from "react-icons/fa";
 
 function ConnectWallet() {
   const dispatch = useDispatch();
@@ -52,10 +53,11 @@ function ConnectWallet() {
         <img className="w-[200px] mx-auto img-home bg-white" src="logo.png" />
         <div className="glowing-container py-[20px] px-[60px] flex justify-center items-center">
           <GradientButton
+            icon={<FaWallet size="26px" />}
             text="Connect Wallet"
             onClick={handleConnectWallet}
             gradient="linear-gradient(90deg, #42e695, #3bb2b8)"
-            className="w-full"
+            className="w-full flex gap-x-2 items-center"
           />
         </div>
       </div>

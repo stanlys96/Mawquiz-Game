@@ -328,7 +328,11 @@ function Create() {
           console.log(error);
         });
     } else {
-      const isIdentical = compareArrays(quizData, state?.data);
+      const isIdentical =
+        compareArrays(quizData, state?.data) &&
+        kahootTitleTemp === state?.title &&
+        kahootDescriptionTemp === state?.description &&
+        imageCoverUrlTemp === state?.imageCoverUrl;
       if (isIdentical) {
         navigate("/profile", {
           state: {
@@ -371,6 +375,9 @@ function Create() {
     principal,
     kahootTitleTemp,
     kahootDescriptionTemp,
+    previousKahootTitle,
+    previousKahootDescription,
+    previousImageCoverUrl,
     quizData,
     principal,
     imageCoverUrlTemp,
@@ -400,6 +407,10 @@ function Create() {
     imageCoverUrlTemp,
     kahootTitleTemp,
     kahootDescriptionTemp,
+    kahootTitle,
+    imageCoverUrlTemp,
+    previousImageCoverUrl,
+    previousKahootTitle,
   ]);
 
   const handleEditQuizTitle = useCallback(() => {

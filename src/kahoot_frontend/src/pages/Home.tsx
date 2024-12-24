@@ -18,6 +18,9 @@ import {
   LogoutComponent,
   GradientButton,
 } from "../components";
+import { FaDoorOpen } from "react-icons/fa6";
+import { IoPerson } from "react-icons/io5";
+import { MdQuiz } from "react-icons/md";
 
 function Home() {
   const location = useLocation();
@@ -177,15 +180,17 @@ function Home() {
           <div className="flex flex-col justify-center items-center gap-y-2 w-full">
             <div className="flex gap-x-2 items-center">
               <GradientButton
-                icon={<RiLogoutCircleLine color="white" />}
+                icon={<RiLogoutCircleLine size="26px" color="white" />}
                 text="Logout"
                 gradient="linear-gradient(90deg, #ff9966, #ff5e62)"
                 onClick={toggleModalJiggle}
                 className="flex gap-x-2 items-center"
               />
             </div>
-            <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 items-center">
+            <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 mt-2 items-center">
               <GradientButton
+                className="flex gap-x-2 items-center"
+                icon={<IoPerson size="26px" />}
                 onClick={handleEdit}
                 text={getUserNickname(
                   currentUser?.nickname,
@@ -197,22 +202,24 @@ function Home() {
             <input
               value={gamePin}
               onChange={(e) => setGamePin(e.target.value)}
-              className="glowing-input text-center mt-[10px] md:w-[300px]"
+              className="glowing-input text-center md:w-[300px] my-[8px] h-full"
               placeholder="Game Pin"
             />
             <GradientButton
+              icon={<FaDoorOpen size="26px" />}
               onClick={handleEnterRoom}
               text="Enter"
               gradient="linear-gradient(90deg, #134e5e, #71b280)"
-              className="w-full"
+              className="w-full flex gap-x-2 items-center justify-center"
             />
           </div>
         </div>
         <div className="mt-[40px]">
           <GradientButton
+            icon={<MdQuiz size="26px" />}
             gradient="linear-gradient(90deg, #ff9966, #ff5e62)"
             text="Create your own mawquiz for FREE"
-            className="cursor-pointer text-black"
+            className="cursor-pointer text-black flex gap-x-2 items-center"
             onClick={handleAddQuiz}
             textColor="#fff"
           />

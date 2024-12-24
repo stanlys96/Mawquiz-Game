@@ -7,6 +7,7 @@ interface Props {
   className?: string;
   textColor?: string;
   icon?: ReactElement;
+  padding?: string;
 }
 
 export const GradientButton = ({
@@ -16,6 +17,7 @@ export const GradientButton = ({
   className,
   textColor = "#fff",
   icon,
+  padding = "12px 24px",
 }: Props) => {
   return (
     <button
@@ -23,7 +25,7 @@ export const GradientButton = ({
         background: gradient,
         border: "none",
         borderRadius: "12px",
-        padding: "12px 24px",
+        padding: padding,
         color: textColor,
         fontWeight: "bold",
         fontSize: "16px",

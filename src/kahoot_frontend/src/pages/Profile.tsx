@@ -17,6 +17,7 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import {
   BouncyModal,
+  GradientButton,
   JiggleModal,
   LoadingLayover,
   LogoutComponent,
@@ -24,6 +25,8 @@ import {
   SquareAndCircleBg,
   UpdateNickname,
 } from "../components";
+import { MdQuiz } from "react-icons/md";
+import { FaEye } from "react-icons/fa6";
 
 function Profile() {
   const location = useLocation();
@@ -294,19 +297,14 @@ function Profile() {
         >
           <div className="basic-card-container h-fit mb-[60px] md:mb-0 mx-[10px]">
             <div className="your-kahoots-top">
-              <div className="flex gap-x-4">
-                <p
-                  onClick={() => setCategory("kahoot")}
-                  onMouseEnter={() => setIsHoveredKahoot(true)}
-                  onMouseLeave={() => setIsHoveredKahoot(false)}
-                  className={`text-white ${
-                    category === "kahoot" || isHoveredKahoot
-                      ? "text-container"
-                      : "text-ordinary"
-                  } cursor-pointer font-semibold kahoot-text`}
-                >
-                  Your mawquizes
-                </p>
+              <div className="flex gap-x-4 justify-center">
+                <GradientButton
+                  icon={<MdQuiz size="26px" />}
+                  className="flex gap-x-2 items-center"
+                  gradient="linear-gradient(90deg, #2c3e50, #4ca1af)"
+                  text="Your mawquizes"
+                  onClick={() => {}}
+                />
               </div>
             </div>
             <div className="game-card-container">
@@ -354,12 +352,13 @@ function Profile() {
               )}
             </div>
             {userGames?.length > 0 && (
-              <p
+              <GradientButton
+                icon={<FaEye size="26px" />}
                 onClick={handleNavigateLibrary}
-                className="text-see-all text-center text-black font-bold cursor-pointer my-[16px] underline"
-              >
-                See all ({userGames?.length})
-              </p>
+                className="mt-[10px] self-center flex gap-x-2 items-center mx-auto justify-center"
+                gradient="linear-gradient(90deg, #ff9966, #ff5e62)"
+                text={`See all (${userGames?.length})`}
+              />
             )}
           </div>
           <div
@@ -377,7 +376,7 @@ function Profile() {
                     />
                   </span>
                 </div>
-                <div className="card-desc text-black">Create a new mawquiz</div>
+                <div className="card-desc text-white">Create a new mawquiz</div>
               </div>
             </a>
           </div>
