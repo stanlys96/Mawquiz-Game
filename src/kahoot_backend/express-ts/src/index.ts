@@ -7,7 +7,10 @@ import axios from "axios";
 import dotenv from "dotenv";
 import multer from "multer";
 import FormData from "form-data";
-import { generateRandomString } from "./helper/helper";
+import { generateRandomString, objectToArray } from "./helper/helper";
+import fs from "fs";
+import path from "path";
+import bodyParser from "body-parser";
 
 dotenv.config();
 const upload = multer({ dest: "uploads/" });
@@ -24,6 +27,7 @@ const corsOptions = {
   origin: [
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
     "https://smart-marketplace-web3.vercel.app",
+    "http://localhost:3000",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -31,6 +35,7 @@ const corsOptions = {
 };
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
+app.use(bodyParser.json());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -50,8 +55,36 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+const gamesFilePath = path.join(__dirname, "games.json");
+let games: any = {};
+if (fs.existsSync(gamesFilePath)) {
+  try {
+    const data = fs.readFileSync(gamesFilePath, "utf-8");
+    games = JSON.parse(data);
+    console.log("Games loaded successfully");
+  } catch (error) {
+    console.error("Error reading games.json:", error);
+  }
+}
 
-const games: any = {};
+function saveGamesToFile() {
+  try {
+    fs.writeFileSync(gamesFilePath, JSON.stringify(games, null, 2), "utf-8");
+    console.log("Games saved successfully");
+  } catch (error) {
+    console.error("Error saving games.json:", error);
+  }
+}
+
+function getGamesData() {
+  try {
+    const fileData = fs.readFileSync(gamesFilePath, "utf-8");
+    const games = JSON.parse(fileData);
+    return games;
+  } catch (error) {
+    console.error("Error reading the file:", error);
+  }
+}
 
 app.post(
   "/pinFileToIPFS",
@@ -103,9 +136,30 @@ app.post("/pinJSONToIPFS", async (req: any, res: any) => {
 
 app.post("/games", (req: any, res: any) => {
   try {
-    const { gamePin, questions } = req.body;
+    const {
+      gamePin,
+      questions,
+      owner,
+      nickname,
+      title,
+      imageCoverUrl,
+      description,
+    } = req.body;
     const gameRoom = generateRandomString(7, games);
-    games[gameRoom] = { players: {}, questions, locked: false };
+    games[gameRoom] = {
+      owner: owner,
+      nickname: nickname,
+      title: title,
+      imageCoverUrl: imageCoverUrl,
+      description: description,
+      players: {},
+      questions,
+      locked: false,
+    };
+    saveGamesToFile();
+    io.emit("games_data_changed", {
+      games: objectToArray(getGamesData(), "gameRoom"),
+    });
     res.json({ gamePin, gameRoom, message: "Game started successfully" });
   } catch (e) {
     console.log(e, "<< E");
@@ -128,6 +182,11 @@ app.post("/joinGame/:gamePin", (req: any, res: any) => {
     });
   }
   const thePlayer = req.body.player;
+  if (game?.owner === thePlayer?.owner) {
+    return res
+      .status(400)
+      .json({ message: "You are the owner of this game room!", status: 400 });
+  }
   for (const key in game.players) {
     for (const secondKey in game.players[key]) {
       if (
@@ -147,12 +206,26 @@ app.post("/joinGame/:gamePin", (req: any, res: any) => {
     admin: thePlayer?.admin,
   };
   res.json({ message: "Successfully joined", status: 200 });
+  saveGamesToFile();
   io.to(req.params.gamePin).emit("player_joined", { thePlayer });
+  io.emit("games_data_changed", {
+    games: objectToArray(getGamesData(), "gameRoom"),
+  });
 });
 
-app.get("/playersJoined/:gamePin", (req: any, res: any) => {
-  const game = games[req.params.gamePin];
-  res.json({ message: "success", players: game.players });
+app.get("/getLiveGames", (req: any, res: any) => {
+  const result = objectToArray(games, "gameRoom");
+  res.json({ message: "success", games: result });
+});
+
+app.post("/deleteGameRoom", (req: any, res: any) => {
+  const gameRoom = req.body.gameRoom;
+  delete games[gameRoom];
+  saveGamesToFile();
+  io.emit("games_data_changed", {
+    games: objectToArray(getGamesData(), "gameRoom"),
+  });
+  res.json({ message: "success", gameRoom: gameRoom });
 });
 
 io.on("connection", (socket: any) => {
@@ -165,7 +238,11 @@ io.on("connection", (socket: any) => {
 
   socket.on("player_left", ({ gamePin, principal, nickname }: any) => {
     delete games?.[gamePin]?.players[principal];
+    saveGamesToFile();
     io.to(gamePin).emit("player_left", { principal, nickname });
+    io.emit("games_data_changed", {
+      games: objectToArray(getGamesData(), "gameRoom"),
+    });
   });
 
   socket.on("toggle_lock_game", ({ gamePin }: any) => {
@@ -175,11 +252,19 @@ io.on("connection", (socket: any) => {
   socket.on("kick_player", ({ gamePin, principal, nickname }: any) => {
     delete games?.[gamePin]?.players[principal];
     io.to(gamePin).emit("kick_player", { principal, nickname });
+    saveGamesToFile();
+    io.emit("games_data_changed", {
+      games: objectToArray(getGamesData(), "gameRoom"),
+    });
   });
 
   socket.on("admin_left", ({ gamePin }: any) => {
     delete games?.[gamePin];
+    saveGamesToFile();
     io.to(gamePin).emit("admin_has_left");
+    io.emit("games_data_changed", {
+      games: objectToArray(getGamesData(), "gameRoom"),
+    });
   });
 
   socket.on("game_started", ({ gamePin, questions }: any) => {
@@ -224,5 +309,9 @@ io.on("connection", (socket: any) => {
   socket.on("game_finished", ({ gamePin, uniquePlayers }: any) => {
     io.to(gamePin).emit("game_finished", { gamePin, uniquePlayers });
     delete games[gamePin];
+    saveGamesToFile();
+    io.emit("games_data_changed", {
+      games: objectToArray(getGamesData(), "gameRoom"),
+    });
   });
 });

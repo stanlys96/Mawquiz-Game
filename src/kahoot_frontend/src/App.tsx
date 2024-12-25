@@ -10,6 +10,7 @@ import ShowQuizTitle from "./pages/ShowQuizTitle";
 import GamePlayer from "./pages/GamePlayer";
 import SoloGame from "./pages/SoloGame";
 import Library from "./pages/Library";
+import LiveGames from "./pages/LiveGames";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/game-player/:gamePin?" element={<GamePlayer />} />
         <Route path="/solo-game/:gamePin?" element={<SoloGame />} />
         <Route path="/library" element={<Library />} />
+        <Route path="/live-games" element={<LiveGames />} />
       </Routes>
     </Router>
   );

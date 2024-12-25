@@ -4223,7 +4223,7 @@ html {
   /* padding: 50px 60px; */
   text-align: center;
   color: #fff;
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
 
   background: linear-gradient(135deg, #141e30, #243b55);
   border-radius: 20px;
@@ -4295,7 +4295,7 @@ html {
   background: linear-gradient(135deg, #141e30, #243b55);
   background-size: 200% 200%;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  font-family: "Arial", sans-serif;
+  /* font-family: "Arial", sans-serif; */
   box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
   animation: box-shadow-glow 3s infinite alternate;
 
@@ -4332,7 +4332,7 @@ html {
   /* padding: 50px 60px; */
   text-align: center;
   color: #fff;
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
 
   background: linear-gradient(
     135deg,
@@ -4369,6 +4369,10 @@ html {
   filter: blur(10px);
   z-index: -1;
   animation: glow-animation 6s infinite;
+}
+
+.ant-empty-description {
+  color: white !important;
 }
 
 /* Box-shadow pulsating glow animation */

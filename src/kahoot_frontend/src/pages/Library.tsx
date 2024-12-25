@@ -37,6 +37,11 @@ function Library() {
             body: JSON.stringify({
               gamePin: userGame?.gamePin,
               questions: userGame?.questions,
+              owner: state.routerPrincipal,
+              nickname: nickname,
+              title: userGame?.title,
+              description: userGame?.description,
+              imageCoverUrl: userGame?.imageCoverUrl,
             }),
           }
         );
@@ -142,7 +147,10 @@ function Library() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col py-[50px] glowing-container-2 justify-center items-center gap-y-4 bg-[#FAFAFA] min-h-[82vh]  md:min-h-[90vh]">
+      <div
+        style={{ borderRadius: 0 }}
+        className="flex flex-col py-[50px] glowing-container-2 justify-center items-center gap-y-4 bg-[#FAFAFA] min-h-[82vh]  md:min-h-[90vh]"
+      >
         {userGames?.map((userGame, index) => (
           <div
             key={userGame?.gamePin}

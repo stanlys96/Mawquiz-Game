@@ -21,6 +21,7 @@ import {
 import { FaDoorOpen } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { MdQuiz } from "react-icons/md";
+import { IoGameController } from "react-icons/io5";
 
 function Home() {
   const location = useLocation();
@@ -55,6 +56,14 @@ function Home() {
 
   const handleAddQuiz = useCallback(async () => {
     navigate("/profile", {
+      state: {
+        routerPrincipal: state.routerPrincipal,
+      },
+    });
+  }, []);
+
+  const handleViewLiveGames = useCallback(async () => {
+    navigate("/live-games", {
       state: {
         routerPrincipal: state.routerPrincipal,
       },
@@ -147,6 +156,11 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    axios
+      .get("https://mawquiz-backend-production.up.railway.app/getLiveGames")
+      .then((result) => {
+        console.log(result.data);
+      });
     if (!principal) {
       navigate("/");
       return;
@@ -214,7 +228,15 @@ function Home() {
             />
           </div>
         </div>
-        <div className="mt-[40px]">
+        <div className="mt-[20px] flex flex-col gap-y-4 items-center">
+          <GradientButton
+            icon={<IoGameController size="26px" />}
+            gradient="linear-gradient(90deg, #43cea2, #185a9d)"
+            text="View live games!"
+            className="cursor-pointer text-black flex gap-x-2 items-center"
+            onClick={handleViewLiveGames}
+            textColor="#fff"
+          />
           <GradientButton
             icon={<MdQuiz size="26px" />}
             gradient="linear-gradient(90deg, #ff9966, #ff5e62)"

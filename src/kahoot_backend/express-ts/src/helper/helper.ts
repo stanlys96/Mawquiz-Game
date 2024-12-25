@@ -26,3 +26,15 @@ export function generateRandomString(
 
   return helper();
 }
+
+type InputObject = Record<string, any>;
+
+export function objectToArray(
+  obj: InputObject,
+  keyName: string
+): Array<Record<string, any>> {
+  return Object.keys(obj).map((key) => ({
+    [keyName]: key,
+    ...obj[key],
+  }));
+}

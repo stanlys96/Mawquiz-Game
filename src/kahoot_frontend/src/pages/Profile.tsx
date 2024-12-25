@@ -188,7 +188,6 @@ function Profile() {
       },
     });
   }, [currentPickedKahoot, principal]);
-
   const handleHostGameLive = useCallback(async () => {
     try {
       setLoading(true);
@@ -203,6 +202,11 @@ function Profile() {
           body: JSON.stringify({
             gamePin: currentPickedKahoot?.gamePin,
             questions: currentPickedKahoot?.questions,
+            owner: state.routerPrincipal,
+            nickname: currentUser?.nickname,
+            title: currentPickedKahoot?.title,
+            description: currentPickedKahoot?.description,
+            imageCoverUrl: currentPickedKahoot?.imageCoverUrl,
           }),
         }
       );
