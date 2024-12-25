@@ -350,7 +350,7 @@ function Profile() {
                   </div>
                 ))
               ) : (
-                <p className="text-black text-center">
+                <p className="text-white text-center">
                   You have not created any games...
                 </p>
               )}

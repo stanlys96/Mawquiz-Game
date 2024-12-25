@@ -12,7 +12,7 @@ import { Principal } from "@dfinity/principal";
 import { LoadingLayover } from "../components/LoadingLayover";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { getSocket } from "../helper/helper";
+import { getSocket, getUserNickname } from "../helper/helper";
 import { Empty } from "antd";
 
 function LiveGames() {
@@ -29,7 +29,7 @@ function LiveGames() {
   const filterLiveGames = (theGame: any) => {
     return theGame?.owner !== state?.routerPrincipal;
   };
-  const finalLiveGames = liveGames?.filter(filterLiveGames);
+  const finalLiveGames = liveGames;
   useEffect(() => {
     setLoading(true);
     axios
@@ -127,6 +127,12 @@ function LiveGames() {
                   }
                 />
                 <div className="flex flex-col items-center md:items-start">
+                  <div className="flex gap-x-2 mb-2 md:mb-0 items-center">
+                    <IoPerson color="black" size="20px" />
+                    <p className="font-semibold underline text-black">
+                      {getUserNickname(liveGame?.nickname, liveGame?.owner)}
+                    </p>
+                  </div>
                   <p className="text-black font-bold text-[20px] md:text-left text-center">
                     {liveGame?.title} ({liveGame?.gameRoom})
                   </p>
