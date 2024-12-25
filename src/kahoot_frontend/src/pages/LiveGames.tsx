@@ -137,43 +137,50 @@ function LiveGames() {
               </div>
               <div className="flex flex-col md:flex-row gap-x-3 gap-y-3 items-center">
                 <div className="flex gap-x-2 items-center">
-                  <button
-                    onClick={async () => {
-                      try {
-                        setLoading(true);
-                        const currentUser = {
-                          owner: state.routerPrincipal,
-                          nickname: nickname,
-                        };
-                        const result = await axios.post(
-                          `https://mawquiz-backend-production.up.railway.app/joinGame/${liveGame?.gameRoom}`,
-                          {
-                            player: { ...currentUser, admin: false },
-                          }
-                        );
-                        const status = result?.data?.status;
-                        if (status === 200) {
-                          navigate(`/waiting?gamePin=${liveGame?.gameRoom}`, {
-                            state: {
-                              routerPrincipal: state.routerPrincipal,
-                            },
-                          });
-                        }
-                        setLoading(false);
-                      } catch (e: any) {
-                        console.log(e);
-                        Swal.fire(
-                          "There's a problem!",
-                          e?.response?.data?.message ?? "",
-                          "info"
-                        );
-                        setLoading(false);
-                      }
-                    }}
-                    className="save-button"
+                  <div
+                    className={`${"glowing-container-2"} font-bold px-[25px] py-[10px]`}
                   >
-                    Join Game
-                  </button>
+                    {!liveGame?.started ? "Waiting" : "Game has started!"}
+                  </div>
+                  {!liveGame?.started && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          setLoading(true);
+                          const currentUser = {
+                            owner: state.routerPrincipal,
+                            nickname: nickname,
+                          };
+                          const result = await axios.post(
+                            `https://mawquiz-backend-production.up.railway.app/joinGame/${liveGame?.gameRoom}`,
+                            {
+                              player: { ...currentUser, admin: false },
+                            }
+                          );
+                          const status = result?.data?.status;
+                          if (status === 200) {
+                            navigate(`/waiting?gamePin=${liveGame?.gameRoom}`, {
+                              state: {
+                                routerPrincipal: state.routerPrincipal,
+                              },
+                            });
+                          }
+                          setLoading(false);
+                        } catch (e: any) {
+                          console.log(e);
+                          Swal.fire(
+                            "There's a problem!",
+                            e?.response?.data?.message ?? "",
+                            "info"
+                          );
+                          setLoading(false);
+                        }
+                      }}
+                      className="save-button"
+                    >
+                      Join Game
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

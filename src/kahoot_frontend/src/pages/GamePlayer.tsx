@@ -330,8 +330,8 @@ function GamePlayer() {
               Question {questionIndex + 1}
             </p>
             {count > 0 && (
-              <div className="px-[100px] py-[20px] glowing-container rounded-full w-fit">
-                <div key={count} className="countdown-number w-fit">
+              <div className="px-[100px] py-[20px] glowing-container-count rounded-full w-fit">
+                <div key={count} className="countdown-number w-[85px]">
                   {count}
                 </div>
               </div>

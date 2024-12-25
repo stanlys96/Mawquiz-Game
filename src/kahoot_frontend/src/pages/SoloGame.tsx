@@ -348,8 +348,8 @@ function SoloGame() {
             </motion.div>
           )}
           {count > 0 && (
-            <div className="glowing-container px-[100px] py-[20px] w-fit">
-              <div key={count} className="countdown-number w-fit">
+            <div className="glowing-container-count px-[100px] py-[20px] w-fit">
+              <div key={count} className="countdown-number w-[85px]">
                 {count}
               </div>
             </div>

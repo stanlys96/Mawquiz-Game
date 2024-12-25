@@ -357,8 +357,8 @@ function ShowQuizTitle() {
             </motion.div>
           )}
           {count > 0 && (
-            <div className="px-[100px] py-[20px] glowing-container w-fit">
-              <div key={count} className="countdown-number w-fit">
+            <div className="px-[100px] py-[20px] glowing-container-count w-fit">
+              <div key={count} className="countdown-number w-[85px]">
                 {count}
               </div>
             </div>

@@ -155,6 +155,7 @@ app.post("/games", (req: any, res: any) => {
       players: {},
       questions,
       locked: false,
+      started: false,
     };
     saveGamesToFile();
     io.emit("games_data_changed", {
@@ -178,6 +179,12 @@ app.post("/joinGame/:gamePin", (req: any, res: any) => {
   if (game?.locked) {
     return res.status(400).json({
       message: "Game is locked!",
+      status: 400,
+    });
+  }
+  if (game?.started) {
+    return res.status(400).json({
+      message: "Game has started!",
       status: 400,
     });
   }
@@ -268,6 +275,11 @@ io.on("connection", (socket: any) => {
   });
 
   socket.on("game_started", ({ gamePin, questions }: any) => {
+    games[gamePin].started = true;
+    saveGamesToFile();
+    io.emit("games_data_changed", {
+      games: objectToArray(getGamesData(), "gameRoom"),
+    });
     io.to(gamePin).emit("game_started", questions);
   });
 
