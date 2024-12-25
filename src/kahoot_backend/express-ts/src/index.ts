@@ -27,7 +27,6 @@ const corsOptions = {
   origin: [
     "https://cv2ns-7iaaa-aaaac-aac3q-cai.icp0.io",
     "https://smart-marketplace-web3.vercel.app",
-    "http://localhost:3000",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -225,15 +224,15 @@ app.get("/getLiveGames", (req: any, res: any) => {
   res.json({ message: "success", games: result });
 });
 
-app.post("/deleteGameRoom", (req: any, res: any) => {
-  const gameRoom = req.body.gameRoom;
-  delete games[gameRoom];
-  saveGamesToFile();
-  io.emit("games_data_changed", {
-    games: objectToArray(getGamesData(), "gameRoom"),
-  });
-  res.json({ message: "success", gameRoom: gameRoom });
-});
+// app.post("/deleteGameRoom", (req: any, res: any) => {
+//   const gameRoom = req.body.gameRoom;
+//   delete games[gameRoom];
+//   saveGamesToFile();
+//   io.emit("games_data_changed", {
+//     games: objectToArray(getGamesData(), "gameRoom"),
+//   });
+//   res.json({ message: "success", gameRoom: gameRoom });
+// });
 
 io.on("connection", (socket: any) => {
   console.log(`Someone just connected: ${socket.id}`);

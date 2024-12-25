@@ -126,17 +126,17 @@ function LiveGames() {
                       : "/logo.png"
                   }
                 />
-                <div className="flex flex-col items-start">
-                  <p className="text-black font-bold text-[20px]">
+                <div className="flex flex-col items-center md:items-start">
+                  <p className="text-black font-bold text-[20px] md:text-left text-center">
                     {liveGame?.title} ({liveGame?.gameRoom})
                   </p>
-                  <p className="text-black">
+                  <p className="text-black md:text-left text-center">
                     {Object.keys(liveGame?.players)?.length} players
                   </p>
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-x-3 gap-y-3 items-center">
-                <div className="flex gap-x-2 items-center">
+                <div className="flex gap-x-2 md:flex-row flex-col gap-y-2 items-center">
                   <div
                     className={`${"glowing-container-2"} font-bold px-[25px] py-[10px]`}
                   >
